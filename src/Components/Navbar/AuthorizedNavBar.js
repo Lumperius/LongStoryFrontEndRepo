@@ -1,0 +1,70 @@
+import React, { Component } from 'react';
+import NavBarButton from './NavBarButton';
+import styled from 'styled-components';
+import Service from '../../Services/Service';
+import Logout from '../Logout/Logout'
+
+class AuthorizedNavBar extends React.Component{
+
+  constructor(){
+    super();
+  }
+    NavBarListElement = styled.li`
+      background-color: #333;
+  
+      & a {
+        &:hover {
+            background-color: dimgray;
+          }
+      }
+      display:inline;
+      float: left;
+    `;    
+
+    LogoutElement = styled.li`
+    & div {
+      &:hover {
+          background-color: dimgray;
+          cursor: pointer;
+        }
+    }
+    display:inline;
+    float: right;
+  `;    
+
+    NavBarList = styled.ul`
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #333;
+    `;
+
+    render(){
+        return(
+                <nav>
+                    <this.NavBarList>
+                        <this.NavBarListElement>
+                    <NavBarButton linkInfo = {{
+                      link: "/",
+                      text: "LongStory" 
+                    }}/>
+                       </this.NavBarListElement>
+
+                       <this.NavBarListElement>
+                    <NavBarButton linkInfo = {{
+                      link: "Office",
+                      text: "Your office" 
+                    }}/>                  
+                       </this.NavBarListElement>
+
+                       <this.LogoutElement>
+                    <Logout />
+                       </this.LogoutElement>
+                    </this.NavBarList>
+                </nav>
+        )
+    }
+}
+
+export default AuthorizedNavBar;

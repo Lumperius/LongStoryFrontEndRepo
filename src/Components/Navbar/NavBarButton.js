@@ -1,0 +1,27 @@
+import React from 'react';
+import styled from 'styled-components';
+
+class TopBarButton extends React.Component
+{
+    constructor(){
+        super();
+    }
+
+    NavBarButton = styled.a`
+    text-decoration: none;
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    `;
+
+    render() {
+        return(
+            <this.NavBarButton href={this.props.linkInfo.link}>
+                {this.props.linkInfo.text}
+            </this.NavBarButton>
+        );
+    }
+}
+
+export default TopBarButton;
