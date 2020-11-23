@@ -1,15 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import NavBarButton from './NavBarButton';
 import styled from 'styled-components';
-import Service from '../../Services/Service';
 import Logout from '../Logout/Logout'
 
 class AuthorizedNavBar extends React.Component{
 
-  constructor(){
-    super();
-  }
-    NavBarListElement = styled.li`
+  NavBarListElement = styled.li`
       background-color: #333;
   
       & a {
@@ -20,8 +16,7 @@ class AuthorizedNavBar extends React.Component{
       display:inline;
       float: left;
     `;    
-
-    LogoutElement = styled.li`
+  LogoutElement = styled.li`
     & div {
       &:hover {
           background-color: dimgray;
@@ -31,14 +26,14 @@ class AuthorizedNavBar extends React.Component{
     display:inline;
     float: right;
   `;    
-
-    NavBarList = styled.ul`
+  NavBarList = styled.ul`
       list-style-type: none;
       margin: 0;
       padding: 0;
       overflow: hidden;
       background-color: #333;
     `;
+
 
     render(){
         return(
@@ -55,6 +50,13 @@ class AuthorizedNavBar extends React.Component{
                     <NavBarButton linkInfo = {{
                       link: "Office",
                       text: "Your office" 
+                    }}/>                  
+                       </this.NavBarListElement>
+                       
+                       <this.NavBarListElement>
+                    <NavBarButton linkInfo = {{
+                      link: "Admin",
+                      text: "Admin Page" 
                     }}/>                  
                        </this.NavBarListElement>
 

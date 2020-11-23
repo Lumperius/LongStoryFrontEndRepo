@@ -1,17 +1,17 @@
-import  React  from 'react';
-import axios from 'axios';
+import React from 'react';
 import Service from '../../Services/Service';
 import styled from 'styled-components';
+import axiosSetUp from '../../axiosConfig'
 
 class Welcome extends React.Component{
     service;
     constructor(){
         super();
-        this.service = new Service();
         this.state = {
     message :''
     }       
  }
+
 
     Wraper = styled.div`
     text-align:left;
@@ -34,19 +34,16 @@ class Welcome extends React.Component{
     `;
 
     sendRequest = () => {
-        if(!this.service.checkToken()){
-        this.props.history.push('/authentication'); 
-    }
-        axios.get('http://localhost:5002/api/welcome', {
+        axiosSetUp().get('http://localhost:5002/api/welcome', {
         })
         .then((response) => { console.log(response.data); this.setState({ message: response.data})
         })
-        .catch((ex)=> console.log('Failed', ex))   
+        .catch((ex)=> {debugger; console.log('Failed', ex)})   
     };
 
     
     render() {
-        if(this.state.message === 'You are welcome here! :)'){
+        if(this.state.message !== '' && this.state.message !== undefined){
             return(
                 <this.Wraper >
                    {this.state.message}
@@ -56,7 +53,7 @@ class Welcome extends React.Component{
                <this.Wraper >
                          <this.Text>Welcome to the LongStory! Site where you can create incredible stories, along with other users.
                          Just <a href="/registration">register</a> and click join story to start your writing career on this site.</this.Text>
-                   {this.state.message}<br/>
+                   <br/>
                    <this.TheButton type="button" onClick={this.sendRequest}>Introduce yourself</this.TheButton>
                </this.Wraper>
         );

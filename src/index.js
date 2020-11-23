@@ -3,10 +3,9 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import store from './Store/ReduxStore';
-import {Provider,  connect } from 'react-redux';
-import axios from 'axios';
+import {Provider } from 'react-redux';
 
-axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('Token')}`;
+//axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('Token')}`;
 //  axios.interceptors.response.use( function(response) { 
 //    if( response.status == 200 || response.status == 201){
 //     return response;

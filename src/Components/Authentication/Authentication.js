@@ -1,8 +1,10 @@
-import React  from 'react'
+import React  from 'react';
 import styled from 'styled-components';
-import login from '../../Actions/login'
 import { connect } from 'react-redux';
-import axios from 'axios';
+import axiosSetUp from '../../axiosConfig';
+import jwt_decode from 'jwt-decode';
+import setToken from '../../Actions/setToken'
+
 
 class Authentication extends React.Component{
 
@@ -50,7 +52,6 @@ class Authentication extends React.Component{
     font-size: 14px;
     `;
 
-
     handleChange = (event) => {
         this.setState({
             [event.target.name]: event.target.value
@@ -61,7 +62,7 @@ class Authentication extends React.Component{
         let emailRegex = /\S+@\S+\.\S+/;
         if(emailRegex.test( this.state.loginOrEmail)) return 'Email';
         else return 'Login';
-        }
+    }
 
     sendRequest = () => {
         let inputType = this.getLoginOrEmailType()
@@ -70,10 +71,10 @@ class Authentication extends React.Component{
             password: this.state.password,  
             inputType: inputType
      };
-     axios.post('http://localhost:5002/api/authenticate', body)
+     axiosSetUp().post('http://localhost:5002/api/authenticate', body)
         .then(response => {
-            console.log(response.data)
-            this.props.changeAuthenticate(true);
+            let tokenData = jwt_decode(response.data);
+            this.props.setToken(tokenData);
             localStorage.setItem('Token', response.data);
             this.props.history.push('/');
         })
@@ -89,8 +90,8 @@ class Authentication extends React.Component{
                 <h2>Login</h2>
                 <this.ErrorMessage>{this.state.message}</this.ErrorMessage>
                 <form>
-                     <this.Input name="loginOrEmail" onChange={this.handleChange} /> <this.InputLabel>Login or email </this.InputLabel><br/>                   
-                     <this.Input name="password" type="password" onChange={this.handleChange}/>  <this.InputLabel>Password </this.InputLabel><br/><hr/><br/>                       
+                     <this.Input name="loginOrEmail" type="text" onChange={this.handleChange}/> <this.InputLabel>Login or email </this.InputLabel><br/>                   
+                     <this.Input name="password" type="password" onChange={this.handleChange}/> <this.InputLabel>Password </this.InputLabel><br/><hr/><br/>                       
                      <this.SubmitButton type="button" onClick={this.sendRequest}>Submit</this.SubmitButton>
                 </form>
                  <this.RegistrationLink href="/registration">Not registred?</this.RegistrationLink>
@@ -101,13 +102,16 @@ class Authentication extends React.Component{
 
 const mapStateToProps = function (state) {
     return {
-        isAuthenticated: state.isAuthenticated,
+       // auth: state.auth.isAuthenticated,
+       // role: state.auth.role,
+       token: state.token.tokenObj
     };
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        changeAuthenticate: isAuthenticated => dispatch(login(isAuthenticated))
+        //changeAuthenticate: isAuthenticated => dispatch(login(isAuthenticated)),
+        setToken: token => dispatch(setToken(token))
     };
 };
   

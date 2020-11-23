@@ -3,9 +3,6 @@ import styled from 'styled-components';
 
 class TopBarButton extends React.Component
 {
-    constructor(){
-        super();
-    }
 
     NavBarButton = styled.a`
     text-decoration: none;

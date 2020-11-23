@@ -1,19 +1,15 @@
 import React  from 'react'
 import styled from 'styled-components';
-import login from '../../Actions/login'
 import { connect } from 'react-redux';
+import setToken from '../../Actions/setToken'
 
 
 
 class Logout extends React.Component{
 
-    constructor(){
-        super()
-    }
-
     handleClick = () => {
         localStorage.removeItem('Token');
-        this.props.changeAuthenticate(false);
+        this.props.setToken(null);
     }
 
     NavBarButton = styled.div`
@@ -33,7 +29,7 @@ class Logout extends React.Component{
 
  const mapDispatchToProps = dispatch => {
     return {
-        changeAuthenticate: isAuthenticated => dispatch(login(isAuthenticated))
+        setToken: token => dispatch(setToken(token))
     };
 };
   

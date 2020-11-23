@@ -1,8 +1,6 @@
 import  React  from 'react'
-import { useHistory } from 'react-router';
 import styled from 'styled-components';
-import axios from 'axios';
-import { Redirect } from "react-router-dom";
+import axiosSetUp from '../../axiosConfig';
 
 class Registration extends React.Component{
     
@@ -71,7 +69,7 @@ class Registration extends React.Component{
             message : 'Your password must be at least 8 symbols long'}
         ); return false}
 
-        if(this.state.repeat_password != this.state.password){ this.setState({
+        if(this.state.repeat_password !== this.state.password){ this.setState({
             message : 'Your repeat password must match your password'
         }); return true}
     }
@@ -83,7 +81,7 @@ class Registration extends React.Component{
             Email: this.state.email,
             Password: this.state.password,
         };
-        axios.post('http://localhost:5002/api/register', body)
+        axiosSetUp().post('http://localhost:5002/api/register', body)
         .then (response => { 
             this.props.history.push('/');
         })

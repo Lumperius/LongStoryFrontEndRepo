@@ -1,14 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import NavBarButton from './NavBarButton';
 import styled from 'styled-components';
-import Service from '../../Services/Service';
 
 class NavBar extends React.Component{
 
-  constructor(){
-    super();
-  }
-    NavBarListElement = styled.li`
+  NavBarListElement = styled.li`
       & a {
         &:hover {
             background-color: dimgray;

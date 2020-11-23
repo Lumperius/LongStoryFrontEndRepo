@@ -1,8 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import App from '../App';
-import { authenticationReducer } from '../Reducers/AthenticationReducer'
-import initialState from './InitialState';
+import rootReducer from './RootReducer';
 
-const store = configureStore( {reducer: authenticationReducer}, initialState)
+const store = configureStore( {reducer: rootReducer})
 
 export default store;
