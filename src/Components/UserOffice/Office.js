@@ -1,24 +1,33 @@
-import React  from 'react'
+import React from 'react'
 import styled from 'styled-components';
-import Info from './Panel/Info';
-import UserStories from './Panel/UserStrories';
-import Settings from './Panel/Settings';
+import Info from './OptionsBar/Info';
+import UserStories from './OptionsBar/UserStrories';
+import Settings from './OptionsBar/Settings';
 
 
-class Office extends React.Component{
+class Office extends React.Component {
 
-    constructor(){
-        super()
-        this.state = {   
-      }
+  constructor() {
+    super()
+    this.state = {
+      activeComponent: null
     }
+  }
+
+  button(text, Component) {
+    return (
+      <this.ListButton onClick={this.setState({ activeComponent: Component })}>
+        {text}
+      </this.ListButton>
+    )
+  }
 
   ListButton = styled.a`
     text-decoration: none;
     display: block;
     color: white;
     text-align: center;
-    padding: 1px 1px;
+    padding: 10px 10px;
     `;
   ListElement = styled.li`
     & a {
@@ -40,21 +49,25 @@ class Office extends React.Component{
   `;
 
 
-    render(){
-        return(
-                <this.List>
-                    <this.ListElement>
-                        <this.ListButton><Info /></this.ListButton>
-                    </this.ListElement>
-                    <this.ListElement>
-                        <this.ListButton><UserStories /></this.ListButton>
-                    </this.ListElement>
-                    <this.ListElement>
-                        <this.ListButton><Settings /></this.ListButton>
-                    </this.ListElement>
-                </this.List>
-        )
-    }
+  render() {
+    return (
+      <>
+        <this.List>
+          <this.ListElement>
+            {this.button('Info', <Info />)}
+          </this.ListElement>
+          <this.ListElement>
+            {this.button('Your stories', <UserStories />)}
+          </this.ListElement>
+          <this.ListElement>
+            {this.button('Settings', <Settings />)}
+          </this.ListElement>
+        </this.List>
+
+        { this.state.activeComponent}
+      </>
+    )
+  }
 }
 
 export default Office;

@@ -38,8 +38,10 @@ class Welcome extends React.Component{
         })
         .then((response) => { console.log(response.data); this.setState({ message: response.data})
         })
-        .catch((ex)=> {debugger; console.log('Failed', ex)})   
-    };
+        .catch((ex)=> {
+            this.props.history.push('authentication');
+        }
+        )};
 
     
     render() {

@@ -9,8 +9,9 @@ class Admin extends React.Component{
     constructor(){
         super()
         this.state = {   
-            List: [
-            ]
+            List: [],
+            page: 1,
+            pageSize: 2
       }
     }
 
@@ -53,31 +54,34 @@ class Admin extends React.Component{
     font-size: 28px;
     `;
 
-    componentDidMount() {
-        console.log(this.props.role); 
+    componentOnMount() {
         if(  this.props.token === undefined || this.props.token.scope !== 'Admin')  this.props.history.push('authentication');
     }
-
-    handleDelete = (id) => {
+    componentDidMount() {
+        this.sendRequestAndSetNewPage();
+    }
+    sendDeleteRequest = (id) => {
         axiosSetUp().delete(`http://localhost:5002/api/id=${id}`)
           .then((response) => { 
               console.log(response.data); 
+              this.sendRequest();
              })
            .catch((ex)=> console.log('Failed', ex))   
     }
-
     displayUserRow = (user) => {
         return <this.Row>
                  <this.Cell>{user.login}</this.Cell> <this.Cell>{user.email}</this.Cell>
                  <this.Cell>{user.roleName}</this.Cell> <this.Cell>{user.id}</this.Cell>
-                 <this.Cell><button type="button" key={user.login} onClick={() => this.handleDelete(user.id)}>Delete</button></this.Cell>
+                 <this.Cell><button type="button" key={user.login} onClick={() => this.sendDeleteRequest(user.id)}>Delete</button></this.Cell>
                </this.Row>
     }
-
-    sendRequest = () => {
-        axiosSetUp().get('http://localhost:5002/api/getall')
+    sendRequestAndSetNewPage = (page = this.state.page) => {
+        axiosSetUp().get(`http://localhost:5002/api/getrange?from=${(page - 1)*this.state.pageSize}&count=${this.state.pageSize}`)
           .then((response) => { 
-             this.setState({ List: response.data})
+             this.setState({ 
+                 List: response.data,
+                 page: page
+                })
             })
           .catch((ex)=> console.log('Failed', ex))   
     };
@@ -100,6 +104,10 @@ class Admin extends React.Component{
 
             </this.Table>  
             {<button type="button" onClick={this.sendRequest}>Refresh</button>  }
+            {<button type="button" onClick={() => this.sendRequestAndSetNewPage(this.state.page + 1)}>Next</button> }
+            {<button type="button" onClick={() => this.sendRequestAndSetNewPage(this.state.page - 1)}>Prev</button> }
+            <br/>
+            <h4>{this.state.page}</h4>
         </this.Wraper>       
         )
     }

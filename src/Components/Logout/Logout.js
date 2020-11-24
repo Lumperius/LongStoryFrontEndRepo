@@ -10,6 +10,7 @@ class Logout extends React.Component{
     handleClick = () => {
         localStorage.removeItem('Token');
         this.props.setToken(null);
+        //this.props.history.push('/');
     }
 
     NavBarButton = styled.div`

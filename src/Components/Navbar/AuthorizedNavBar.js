@@ -1,7 +1,8 @@
 import React from 'react';
 import NavBarButton from './NavBarButton';
 import styled from 'styled-components';
-import Logout from '../Logout/Logout'
+import Logout from '../Logout/Logout';
+import { connect } from 'react-redux';
 
 class AuthorizedNavBar extends React.Component{
 
@@ -35,6 +36,19 @@ class AuthorizedNavBar extends React.Component{
     `;
 
 
+    adminElement = () => {
+      if(this.props.token.scope === "Admin"){
+              return(                  
+        <this.NavBarListElement>
+        <NavBarButton linkInfo = {{
+          link: "Admin",
+          text: "Admin Page" 
+        }}/>                  
+           </this.NavBarListElement>
+      )
+      }
+    }
+
     render(){
         return(
                 <nav>
@@ -52,13 +66,8 @@ class AuthorizedNavBar extends React.Component{
                       text: "Your office" 
                     }}/>                  
                        </this.NavBarListElement>
-                       
-                       <this.NavBarListElement>
-                    <NavBarButton linkInfo = {{
-                      link: "Admin",
-                      text: "Admin Page" 
-                    }}/>                  
-                       </this.NavBarListElement>
+                      
+                      {this.adminElement()}
 
                        <this.LogoutElement>
                     <Logout />
@@ -69,4 +78,10 @@ class AuthorizedNavBar extends React.Component{
     }
 }
 
-export default AuthorizedNavBar;
+const mapStateToProps = state => {
+  return {
+    token: state.token.tokenObj
+  }
+}
+
+export default connect(mapStateToProps)(AuthorizedNavBar)

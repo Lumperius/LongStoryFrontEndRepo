@@ -1,4 +1,4 @@
-import React  from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import axiosSetUp from '../../axiosConfig';
@@ -6,15 +6,15 @@ import jwt_decode from 'jwt-decode';
 import setToken from '../../Actions/setToken'
 
 
-class Authentication extends React.Component{
+class Authentication extends React.Component {
 
-    constructor(){
+    constructor() {
         super()
-        this.state = {   
-          loginOrEmail: '',
-          password: '',
-          message: ''
-      }
+        this.state = {
+            loginOrEmail: '',
+            password: '',
+            message: ''
+        }
     }
 
     Wraper = styled.div`
@@ -47,7 +47,7 @@ class Authentication extends React.Component{
     text-decoration: none;
     color: blue;
     `;
-    ErrorMessage= styled.p` 
+    ErrorMessage = styled.p` 
     color: red;
     font-size: 14px;
     `;
@@ -60,41 +60,41 @@ class Authentication extends React.Component{
 
     getLoginOrEmailType = () => {
         let emailRegex = /\S+@\S+\.\S+/;
-        if(emailRegex.test( this.state.loginOrEmail)) return 'Email';
+        if (emailRegex.test(this.state.loginOrEmail)) return 'Email';
         else return 'Login';
     }
 
     sendRequest = () => {
         let inputType = this.getLoginOrEmailType()
-        const body = { 
+        const body = {
             loginOrEmail: this.state.loginOrEmail,
-            password: this.state.password,  
+            password: this.state.password,
             inputType: inputType
-     };
-     axiosSetUp().post('http://localhost:5002/api/authenticate', body)
-        .then(response => {
-            let tokenData = jwt_decode(response.data);
-            this.props.setToken(tokenData);
-            localStorage.setItem('Token', response.data);
-            this.props.history.push('/');
-        })
-        .catch(error => {
-            console.log(error.json);
-            this.setState({message: error.data});
-        })
+        };
+        axiosSetUp().post('http://localhost:5002/api/authenticate', body)
+            .then(response => {
+                let tokenData = jwt_decode(response.data);
+                this.props.setToken(tokenData);
+                localStorage.setItem('Token', response.data);
+                this.props.history.push('/');
+            })
+            .catch(error => {
+                console.log(error.json);
+                this.setState({ message: error.data });
+            })
     };
 
     render() {
-        return(
+        return (
             <this.Wraper>
                 <h2>Login</h2>
                 <this.ErrorMessage>{this.state.message}</this.ErrorMessage>
                 <form>
-                     <this.Input name="loginOrEmail" type="text" onChange={this.handleChange}/> <this.InputLabel>Login or email </this.InputLabel><br/>                   
-                     <this.Input name="password" type="password" onChange={this.handleChange}/> <this.InputLabel>Password </this.InputLabel><br/><hr/><br/>                       
-                     <this.SubmitButton type="button" onClick={this.sendRequest}>Submit</this.SubmitButton>
+                    <this.Input name="loginOrEmail" type="text" onChange={this.handleChange} /> <this.InputLabel>Login or email </this.InputLabel><br />
+                    <this.Input name="password" type="password" onChange={this.handleChange} /> <this.InputLabel>Password </this.InputLabel><br /><hr /><br />
+                    <this.SubmitButton type="button" onClick={this.sendRequest}>Submit</this.SubmitButton>
                 </form>
-                 <this.RegistrationLink href="/registration">Not registred?</this.RegistrationLink>
+                <this.RegistrationLink href="/registration">Not registred?</this.RegistrationLink>
             </this.Wraper>
         );
     }
@@ -102,17 +102,14 @@ class Authentication extends React.Component{
 
 const mapStateToProps = function (state) {
     return {
-       // auth: state.auth.isAuthenticated,
-       // role: state.auth.role,
-       token: state.token.tokenObj
+        token: state.token.tokenObj
     };
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        //changeAuthenticate: isAuthenticated => dispatch(login(isAuthenticated)),
         setToken: token => dispatch(setToken(token))
     };
 };
-  
-  export default connect(mapStateToProps, mapDispatchToProps)(Authentication)
+
+export default connect(mapStateToProps, mapDispatchToProps)(Authentication)
