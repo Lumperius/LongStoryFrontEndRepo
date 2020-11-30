@@ -11,7 +11,7 @@ class Admin extends React.Component{
         this.state = {   
             List: [],
             page: 1,
-            pageSize: 2
+            pageSize: 5
       }
     }
 
@@ -54,14 +54,12 @@ class Admin extends React.Component{
     font-size: 28px;
     `;
 
-    componentOnMount() {
-        if(  this.props.token === undefined || this.props.token.scope !== 'Admin')  this.props.history.push('authentication');
-    }
     componentDidMount() {
         this.sendRequestAndSetNewPage();
+        if(  this.props.token === undefined || this.props.token.scope !== 'Admin')  this.props.history.push('authentication');
     }
     sendDeleteRequest = (id) => {
-        axiosSetUp().delete(`http://localhost:5002/api/id=${id}`)
+        axiosSetUp().delete(`http://localhost:5002/user/id=${id}`)
           .then((response) => { 
               console.log(response.data); 
               this.sendRequest();
@@ -76,7 +74,7 @@ class Admin extends React.Component{
                </this.Row>
     }
     sendRequestAndSetNewPage = (page = this.state.page) => {
-        axiosSetUp().get(`http://localhost:5002/api/getrange?from=${(page - 1)*this.state.pageSize}&count=${this.state.pageSize}`)
+        axiosSetUp().get(`http://localhost:5002/user/getrange?from=${(page - 1)*this.state.pageSize}&count=${this.state.pageSize}`)
           .then((response) => { 
              this.setState({ 
                  List: response.data,

@@ -1,65 +1,119 @@
 import React from 'react';
-import Service from '../../Services/Service';
 import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig'
 
-class Welcome extends React.Component{
+class StartPage extends React.Component {
     service;
-    constructor(){
+    constructor() {
         super();
         this.state = {
-    message :''
-    }       
- }
+            message: '',
+            StoriesList: []
+        }
+    }
 
 
+    StoryBlock = styled.div`
+    margin: 20px;
+    padding: 15px;
+    background-color: lightgrey;
+    &:hover {
+        background-color: grey;
+    }`;
     Wraper = styled.div`
     text-align:left;
     margin-top: 1500px;
     margin:90px;
     font-size: 28px;
     `;
-    TheButton = styled.button`
-    background-color: #333; 
+    VoteUp = styled.button`
+    background-color: #759170;
+    display: inline-block; 
     border: none;
-    color: white;
-    padding: 15px 32px;
-    text-decoration: none;
-    font-size: 20px;
-    margin: 100px;
-    align-left:true;
+    align-right:true;
+    border-radius: 100px;
+    float: right;
+    padding: 10px;
+    margin: 2px;
+    &:hover {
+        padding: 15px;
+    }`;
+    VoteDown = styled.button`
+    background-color: #ad7a74; 
+    display: inline-block; 
+    border: none;
+    align-right:true;
+    border-radius: 100px;
+    float: right;
+    padding: 10px;
+    margin: 2px;
+    &:hover {
+        padding: 15px;
+    }
     `;
-    Text = styled.p`
-    font-size: 30px;
+    Title = styled.h2`
+    font-family: TimesNewRoman;
+    margin-left: 10px;
     `;
+    StoryBody = styled.p`
+    font-family: TimesNewRoman;
+    text-indent: 20px;
+    `;
+    DateAndMaster = styled.p`
+    margin-top: 20px;
+    font-size: 12px;
+    font-family: TimesNewRoman;
+    `;
+    Line = styled.hr`
+    border: 1px solid darkgrey;
+    margin: -15px;
+    `;
+
+    componentDidMount(){
+        axiosSetUp().get('http://localhost:5002/story/getrange')
+            .then((response) => {
+                this.setState({
+                    StoriesList: response.data,
+                })
+            })
+            .catch((ex) => console.log('Failed', ex))
+    }
+
+    displayAStory = (story) =>{
+    return <this.StoryBlock>
+                <this.Title>{story.title}</this.Title>
+                <this.StoryBody>{story.initialBody}</this.StoryBody><this.Line/>
+                <this.DateAndMaster>By {story.storyMaster} {story.dateStarted}</this.DateAndMaster> 
+                <this.VoteUp></this.VoteUp><this.VoteDown></this.VoteDown>
+            </this.StoryBlock>
+    }
+
 
     sendRequest = () => {
-        axiosSetUp().get('http://localhost:5002/api/welcome', {
-        })
-        .then((response) => { console.log(response.data); this.setState({ message: response.data})
-        })
-        .catch((ex)=> {
-            this.props.history.push('authentication');
-        }
-        )};
+    }
 
-    
+    sendwelcomeRequest = () => {
+        axiosSetUp().get('http://localhost:5002/user/welcome', {
+        })
+            .then((response) => {
+                console.log(response.data); this.setState({ message: response.data })
+            })
+            .catch((ex) => {
+                this.props.history.push('authentication');
+            }
+            )
+    };
+
+
     render() {
-        if(this.state.message !== '' && this.state.message !== undefined){
-            return(
-                <this.Wraper >
-                   {this.state.message}
-                </this.Wraper>  );  
-        }
-        return(
-               <this.Wraper >
-                         <this.Text>Welcome to the LongStory! Site where you can create incredible stories, along with other users.
-                         Just <a href="/registration">register</a> and click join story to start your writing career on this site.</this.Text>
-                   <br/>
-                   <this.TheButton type="button" onClick={this.sendRequest}>Introduce yourself</this.TheButton>
-               </this.Wraper>
-        );
+        return (
+            <this.Wraper >
+                {this.state.StoriesList.map((story, index) => {
+                    return <> {this.displayAStory(this.state.StoriesList[index])} </>
+                })}
+                {this.state.message}
+            </this.Wraper>);
     }
 }
 
-export default Welcome
+export default StartPage

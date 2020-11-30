@@ -55,7 +55,7 @@ class Registration extends React.Component {
         })
     }
 
-    checkInput = () => {
+    isInputValid = () => {
         if (this.state.login.length < 8) {
             this.setState({
                 message: 'Your login must be at least 8 symbols long'
@@ -93,7 +93,7 @@ class Registration extends React.Component {
     }
 
     sendRequest = () => {
-        if (!this.checkInput()) {
+        if (!this.isInputValid()) {
             return;
         }
         const body = {
@@ -101,7 +101,7 @@ class Registration extends React.Component {
             Email: this.state.email,
             Password: this.state.password,
         };
-        axiosSetUp().post('http://localhost:5002/api/register', body)
+        axiosSetUp().post('http://localhost:5002/user/register', body)
             .then(response => {
                 if (response.status == '200') {
                     this.setState({

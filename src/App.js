@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
 import getParsedToken from './Services/Service';
 import setToken from './Actions/setToken'
 import Logout from './Components/Logout/Logout';
+import InitializeStory from './Components/Story/InitializeStory';
 
 
 class App extends React.Component {
@@ -46,6 +47,7 @@ class App extends React.Component {
           <Route exact path="/admin" component={Admin} />
           <Route exact path="/office" component={Office} />
           <Route exact path="/logout" component={Logout} />
+          <Route exact path="/intializeStory" component={InitializeStory} />
         </Router>
       </div>
     );

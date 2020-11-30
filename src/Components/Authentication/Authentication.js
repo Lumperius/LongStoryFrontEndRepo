@@ -71,16 +71,22 @@ class Authentication extends React.Component {
             password: this.state.password,
             inputType: inputType
         };
-        axiosSetUp().post('http://localhost:5002/api/authenticate', body)
+        axiosSetUp().post('http://localhost:5002/user/authenticate', body)
             .then(response => {
-                let tokenData = jwt_decode(response.data);
-                this.props.setToken(tokenData);
-                localStorage.setItem('Token', response.data);
-                this.props.history.push('/');
+                if(response.status === 201){
+                   let tokenData = jwt_decode(response.data);
+                   this.props.setToken(tokenData);
+                   localStorage.setItem('Token', response.data);
+                   this.props.history.push('/');
+                }
+                if(response.status === 200){
+                    this.setState({ message: response.data });
+                }
             })
             .catch(error => {
+                debugger
                 console.log(error.json);
-                this.setState({ message: error.data });
+                this.setState({ message: 'Something went wrong, try again later' });
             })
     };
 

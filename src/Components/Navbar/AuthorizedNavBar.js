@@ -69,6 +69,13 @@ class AuthorizedNavBar extends React.Component{
                       
                       {this.adminElement()}
 
+                      <this.NavBarListElement>
+                    <NavBarButton linkInfo = {{
+                      link: "IntializeStory",
+                      text: "Start a story" 
+                    }}/>                  
+                       </this.NavBarListElement>
+
                        <this.LogoutElement>
                     <Logout />
                        </this.LogoutElement>

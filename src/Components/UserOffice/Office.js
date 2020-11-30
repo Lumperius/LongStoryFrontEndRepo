@@ -10,13 +10,13 @@ class Office extends React.Component {
   constructor() {
     super()
     this.state = {
-      activeComponent: null
+      activeComponent: undefined
     }
   }
 
   button(text, Component) {
     return (
-      <this.ListButton onClick={this.setState({ activeComponent: Component })}>
+      <this.ListButton onClick={() => this.setState({ activeComponent: Component })}>
         {text}
       </this.ListButton>
     )

@@ -25,7 +25,7 @@ class Logout extends React.Component{
  return(             
         <this.NavBarButton onClick={this.handleClick}>     
             Logout
-       </this.NavBarButton>);}
+        </this.NavBarButton>);}
  }
 
  const mapDispatchToProps = dispatch => {
