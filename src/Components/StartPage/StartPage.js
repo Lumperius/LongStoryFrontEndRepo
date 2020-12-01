@@ -1,6 +1,8 @@
 import React from 'react';
+import { Redirect, useHistory } from 'react-router';
 import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig'
+import Story from '../Story/Story';
 
 class StartPage extends React.Component {
     service;
@@ -8,7 +10,9 @@ class StartPage extends React.Component {
         super();
         this.state = {
             message: '',
-            StoriesList: []
+            StoriesList: [],
+            page: 1,
+            pageSize: 5
         }
     }
 
@@ -68,50 +72,54 @@ class StartPage extends React.Component {
     border: 1px solid darkgrey;
     margin: -15px;
     `;
+    Page = styled.p`
+    display: inline-block;
+    font-size:20px;
+    margin: 15px;
+    `;
+    componentDidMount() {
+        this.sendRequestAndSetNewPage();
+    }
 
-    componentDidMount(){
-        axiosSetUp().get('http://localhost:5002/story/getrange')
+    handleClick = (id) =>{
+        this.props.history.push(`Story${id}`)
+    }
+
+    displayAStory = (story) => {
+        return <this.StoryBlock onClick={() => this.handleClick(story.id)}>
+            <this.Title>{story.title}</this.Title>
+            <this.StoryBody>{story.firstElementBody}</this.StoryBody><this.Line />
+            <this.DateAndMaster>By {story.Author} {story.dateSubmitted}</this.DateAndMaster>
+            <this.VoteUp></this.VoteUp><this.VoteDown></this.VoteDown>
+        </this.StoryBlock>
+    }
+
+
+    sendRequestAndSetNewPage = (page = this.state.page) => {
+        if( page < 1 ) return;
+        axiosSetUp().get(`http://localhost:5002/story/getrange?page=${page - 1}&count=${this.state.pageSize}`, {})
             .then((response) => {
                 this.setState({
                     StoriesList: response.data,
+                    page: page
                 })
             })
-            .catch((ex) => console.log('Failed', ex))
-    }
-
-    displayAStory = (story) =>{
-    return <this.StoryBlock>
-                <this.Title>{story.title}</this.Title>
-                <this.StoryBody>{story.initialBody}</this.StoryBody><this.Line/>
-                <this.DateAndMaster>By {story.storyMaster} {story.dateStarted}</this.DateAndMaster> 
-                <this.VoteUp></this.VoteUp><this.VoteDown></this.VoteDown>
-            </this.StoryBlock>
-    }
-
-
-    sendRequest = () => {
-    }
-
-    sendwelcomeRequest = () => {
-        axiosSetUp().get('http://localhost:5002/user/welcome', {
-        })
-            .then((response) => {
-                console.log(response.data); this.setState({ message: response.data })
-            })
             .catch((ex) => {
-                this.props.history.push('authentication');
-            }
-            )
+                console.log('Failed', ex)
+            })
     };
 
 
     render() {
         return (
             <this.Wraper >
+                {this.state.message}
                 {this.state.StoriesList.map((story, index) => {
                     return <> {this.displayAStory(this.state.StoriesList[index])} </>
                 })}
-                {this.state.message}
+                {<button type="button" onClick={() => this.sendRequestAndSetNewPage(this.state.page - 1)}>Prev</button>}
+                <this.Page>{this.state.page}</this.Page>
+                {<button type="button" onClick={() => this.sendRequestAndSetNewPage(this.state.page + 1)}>Next</button>}
             </this.Wraper>);
     }
 }

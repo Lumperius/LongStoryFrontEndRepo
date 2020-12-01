@@ -3,7 +3,7 @@ import NavBar from './Components/Navbar/NavBar';
 import AuthorizedNavBar from './Components/Navbar/AuthorizedNavBar';
 import Authentication from './Components/Authentication/Authentication';
 import Registration from './Components/Registration/Registration';
-import Welcome from './Components/Welcome/Welcome';
+import Welcome from './Components/StartPage/StartPage';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Admin from './Components/Admin/Admin';
 import Office from './Components/UserOffice/Office';
@@ -12,6 +12,7 @@ import getParsedToken from './Services/Service';
 import setToken from './Actions/setToken'
 import Logout from './Components/Logout/Logout';
 import InitializeStory from './Components/Story/InitializeStory';
+import Story from './Components/Story/Story'
 
 
 class App extends React.Component {
@@ -48,6 +49,7 @@ class App extends React.Component {
           <Route exact path="/office" component={Office} />
           <Route exact path="/logout" component={Logout} />
           <Route exact path="/intializeStory" component={InitializeStory} />
+          <Route exact path="/story:id" component={Story} />
         </Router>
       </div>
     );

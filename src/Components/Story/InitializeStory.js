@@ -8,9 +8,9 @@ class InitializeStory extends React.Component {
     constructor() {
         super()
         this.state = {
-            title: "",
-            body: "",
-            message: ""
+            title: '',
+            body: '',
+            message: ''
         }
     }
 
@@ -81,21 +81,21 @@ class InitializeStory extends React.Component {
                     body: ''
                 })
             })
-            .catch(error => {
-                console.log(error)
-                this.setState({
-                    message: 'Error occured, try again later'
-                })
-            })
-    }
+                    .catch(error => {
+                        console.log(error)
+                        this.setState({
+                            message: 'Error occured, try again later'
+                        })
+                    })
+            }
 
-    render() {
-        return (
+    render(){
+                return(
             <this.Wraper >
-                <this.InputLabel>Start a story</this.InputLabel>
-                { this.state.message} < br />
-                <this.TitleInput name="title" maxLength="80" placeholder="Enter title..." onChange={this.handleChange}></this.TitleInput><br />
-                <this.BodyInput name="firstElementBody" maxLength="2500" placeholder="Enter story here..." onChange={this.handleChange}></this.BodyInput><br />
+                    <this.InputLabel>Start a story</this.InputLabel>
+                { this.state.message } < br />
+                <this.TitleInput name="title" maxLength="80" placeholder="Enter title..." onChange={this.handleChange}></this.TitleInput><br/>
+                <this.BodyInput name="firstElementBody" maxLength="2500" placeholder="Enter story here..." onChange={this.handleChange}></this.BodyInput><br/>
                 <this.SubmitButton onClick={this.sendRequest}>Submit</this.SubmitButton>
             </this.Wraper >
         )
@@ -104,7 +104,7 @@ class InitializeStory extends React.Component {
 
 const mapStateToProps = function (state) {
     return {
-        token: state.token.tokenObj
+        token: state.token.tokenObj,
     };
 }
 

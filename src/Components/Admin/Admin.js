@@ -53,6 +53,35 @@ class Admin extends React.Component{
     margin:90px;
     font-size: 28px;
     `;
+    DeleteButton = styled.button`
+    background-color: red;
+    display: inline-block; 
+    border: none;
+    align-right:true;
+    float: right;
+    padding: 10px;
+    margin: 2px;
+    `;
+    BanButton = styled.button`
+    background-color: orange;
+    display: inline-block; 
+    border: none;
+    align-right:true;
+    float: right;
+    padding: 10px;
+    margin: 2px;
+    `;
+    UnbanButton = styled.button`
+    background-color: lightgreen;
+    display: inline-block; 
+    border: none;
+    align-right:true;
+    float: right;
+    padding: 10px;
+    margin: 2px;
+    `;
+
+
 
     componentDidMount() {
         this.sendRequestAndSetNewPage();
@@ -64,17 +93,34 @@ class Admin extends React.Component{
               console.log(response.data); 
               this.sendRequest();
              })
-           .catch((ex)=> console.log('Failed', ex))   
+           .catch((ex)=> console.log('Failed', ex))  
+
+    this.sendRequestAndSetNewPage(); 
     }
+
+    doNothing = (id) => {
+        // axiosSetUp().delete(`http://localhost:5002/user/id=${id}`)
+        //   .then((response) => { 
+        //       console.log(response.data); 
+        //       this.sendRequest();
+        //      })
+        //    .catch((ex)=> console.log('Failed', ex))   
+    }
+
     displayUserRow = (user) => {
         return <this.Row>
                  <this.Cell>{user.login}</this.Cell> <this.Cell>{user.email}</this.Cell>
                  <this.Cell>{user.roleName}</this.Cell> <this.Cell>{user.id}</this.Cell>
-                 <this.Cell><button type="button" key={user.login} onClick={() => this.sendDeleteRequest(user.id)}>Delete</button></this.Cell>
+                 <this.Cell>
+                     <this.DeleteButton type="button" key={user.login} onClick={() => this.sendDeleteRequest(user.id)}>Delete</this.DeleteButton>
+                     <this.BanButton    type="button" key={user.login} onClick={() => this.doNothing(user.id)}>Ban</this.BanButton>
+                     <this.UnbanButton  type="button" key={user.login} onClick={() => this.doNothing(user.id)}>Unban</this.UnbanButton>
+                 </this.Cell>
                </this.Row>
     }
     sendRequestAndSetNewPage = (page = this.state.page) => {
-        axiosSetUp().get(`http://localhost:5002/user/getrange?from=${(page - 1)*this.state.pageSize}&count=${this.state.pageSize}`)
+        if( page < 1 ) return;
+        axiosSetUp().get(`http://localhost:5002/user/getrange?page=${page - 1}&count=${this.state.pageSize}`)
           .then((response) => { 
              this.setState({ 
                  List: response.data,
@@ -102,8 +148,8 @@ class Admin extends React.Component{
 
             </this.Table>  
             {<button type="button" onClick={this.sendRequest}>Refresh</button>  }
-            {<button type="button" onClick={() => this.sendRequestAndSetNewPage(this.state.page + 1)}>Next</button> }
             {<button type="button" onClick={() => this.sendRequestAndSetNewPage(this.state.page - 1)}>Prev</button> }
+            {<button type="button" onClick={() => this.sendRequestAndSetNewPage(this.state.page + 1)}>Next</button> }
             <br/>
             <h4>{this.state.page}</h4>
         </this.Wraper>       

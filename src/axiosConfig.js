@@ -32,10 +32,11 @@ axiosInstance.interceptors.response.use(function (response) {
 },
     error => {
         if (error.status === 403 || error.status === 401) {
-        }
         localStorage.removeItem('Token');
         let history = useHistory();
         history.push('authentication');
+    }
+    return error;
     })
 
 export default function axiosSetUp() {
