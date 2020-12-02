@@ -71,6 +71,7 @@ class Authentication extends React.Component {
             password: this.state.password,
             inputType: inputType
         };
+        
         axiosSetUp().post('http://localhost:5002/user/authenticate', body)
             .then(response => {
                 if(response.status === 201){

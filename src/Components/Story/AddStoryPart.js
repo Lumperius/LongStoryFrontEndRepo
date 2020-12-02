@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom'
 import styled from 'styled-components'
 import axiosSetUp from '../../axiosConfig';
 import { connect } from 'react-redux';
@@ -9,7 +10,7 @@ class AddStoryPart extends React.Component {
     constructor() {
         super();
         this.state = {
-            text: '',
+            body: '',
             message: ''
         }
     }
@@ -20,18 +21,28 @@ class AddStoryPart extends React.Component {
         })
     }
 
-    sendNewStoryPartRequest = () =>{
-        debugger
+    validateRequestParametrs = () => {
+        if(!this.state.body || this.state.body.length < 20){
+            this.setState({message: 'Incorrect text of the story part'})
+            return false;
+        }
+        return true;
+    }
+
+    sendNewStoryPartRequest = () => {
+        if(!this.validateRequestParametrs()) return;
         let requestBody = {
             storyId: this.props.storyId,
-            body: this.state.text,
-            Author: this.props.token.login,
+            userId: this.props.token.id,
+            body: this.state.body,
+            author: this.props.token.login,
+            dateSubmitted: new Date().toISOString()
         }
         axiosSetUp().post('http://localhost:5002/storyPart/create', requestBody)
         .then( response => {
             this.setState({
-                message: response.data
-            })    
+                message: response.data,
+            }) 
         })
         .catch( error => {
             console.log(error);
@@ -62,7 +73,7 @@ class AddStoryPart extends React.Component {
     render() {
         return <>
             <this.ErrorMessage>{this.state.message}</this.ErrorMessage>
-            <this.BodyInput name="text" onChange={this.handleChange}>Haaai!</this.BodyInput><br/>
+            <this.BodyInput name="body" onChange={this.handleChange}></this.BodyInput><br/>
             <this.SubmitButton onClick={this.sendNewStoryPartRequest}>submit</this.SubmitButton>
         </>
     }

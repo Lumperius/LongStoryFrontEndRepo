@@ -109,8 +109,8 @@ class Registration extends React.Component {
                     })
                 }
                 else {
-                    if (response.status == '200') {
-                        this.props.history.push('/');
+                    if (response.status == '201') {
+                        this.props.history.push('/authentication');
                     }
                     else {
                         this.setState({

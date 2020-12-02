@@ -16,10 +16,13 @@ class InitializeStory extends React.Component {
 
 
     TitleInput = styled.textarea`
-    padding: 5px;
-    text-indent: 30px;
+    text-indent: 20px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    padding-top: 10px;
+    margin-bottom: 10px;
     width: 80%;
-    height: 40px;
+    height: 50px;
     font-size: 30px;
     font-family: TimesNewRoman;
     outline: none;
@@ -29,7 +32,7 @@ class InitializeStory extends React.Component {
     text-indent: 20px;
     padding: 5px;
     width: 80%;
-    height: 500px;
+    height: 520px;
     font-size: 20px;
     font-family: TimesNewRoman;
     outline: none;
@@ -59,18 +62,36 @@ class InitializeStory extends React.Component {
     margin: 20px;
     `;
 
+    componentDidMount() {
+        if (this.props.token === undefined) this.props.history.push('authentication');
+    }
+
     handleChange = (event) => {
         this.setState({
             [event.target.name]: event.target.value
         })
     }
 
+    validateRequestParametrs = () => {
+        if (!this.state.title || this.state.title.length < 5) {
+            this.setState({ message: 'Incorrect title' });
+            return false;
+        }
+
+        if (!this.state.body || this.state.body.length < 20) {
+            this.setState({ message: 'Incorrect initial text of the story' });
+            return false;
+        }
+        return true;
+    }
+
     sendRequest = () => {
-        let login = this.props.token.login;
+        if (!this.validateRequestParametrs()) return;
         let body = {
+            userId: this.props.token.id,
             title: this.state.title,
-            body: this.state.firstElementBody,
-            userLogin: login,
+            body: this.state.body,
+            author: this.props.token.login,
             dateSubmitted: new Date().toISOString()
         }
         axiosSetUp().post("http://localhost:5002/story/createStory", body)
@@ -80,22 +101,23 @@ class InitializeStory extends React.Component {
                     title: '',
                     body: ''
                 })
+                this.props.history.push('/');
             })
-                    .catch(error => {
-                        console.log(error)
-                        this.setState({
-                            message: 'Error occured, try again later'
-                        })
-                    })
-            }
+            .catch(error => {
+                console.log(error)
+                this.setState({
+                    message: 'Error occured, try again later'
+                })
+            })
+    }
 
-    render(){
-                return(
+    render() {
+        return (
             <this.Wraper >
-                    <this.InputLabel>Start a story</this.InputLabel>
-                { this.state.message } < br />
-                <this.TitleInput name="title" maxLength="80" placeholder="Enter title..." onChange={this.handleChange}></this.TitleInput><br/>
-                <this.BodyInput name="firstElementBody" maxLength="2500" placeholder="Enter story here..." onChange={this.handleChange}></this.BodyInput><br/>
+                <this.InputLabel>Start a story</this.InputLabel>
+                { this.state.message} < br />
+                <this.TitleInput name="title" maxLength="80" placeholder="Enter title. It must be at least 5 symbols long" onChange={this.handleChange}></this.TitleInput><br />
+                <this.BodyInput name="body" maxLength="4000" placeholder="Enter story here. It must be at least 20 symbols long" onChange={this.handleChange}></this.BodyInput><br />
                 <this.SubmitButton onClick={this.sendRequest}>Submit</this.SubmitButton>
             </this.Wraper >
         )

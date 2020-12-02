@@ -1,18 +1,18 @@
-import React  from 'react'
+import React from 'react'
 import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig';
 import { connect } from 'react-redux';
 
 
-class Admin extends React.Component{
+class Admin extends React.Component {
 
-    constructor(){
+    constructor() {
         super()
-        this.state = {   
+        this.state = {
             List: [],
             page: 1,
             pageSize: 5
-      }
+        }
     }
 
     Button = styled.button`
@@ -85,74 +85,66 @@ class Admin extends React.Component{
 
     componentDidMount() {
         this.sendRequestAndSetNewPage();
-        if(  this.props.token === undefined || this.props.token.scope !== 'Admin')  this.props.history.push('authentication');
+        if (this.props.token === undefined || this.props.token.scope !== 'Admin') this.props.history.push('authentication');
     }
     sendDeleteRequest = (id) => {
         axiosSetUp().delete(`http://localhost:5002/user/id=${id}`)
-          .then((response) => { 
-              console.log(response.data); 
-              this.sendRequest();
-             })
-           .catch((ex)=> console.log('Failed', ex))  
-
-    this.sendRequestAndSetNewPage(); 
+            .then((response) => {
+                console.log(response.data);
+                this.sendRequestAndSetNewPage();
+                this.setState({});
+            })
+            .catch((ex) => console.log('Failed', ex))
     }
 
     doNothing = (id) => {
-        // axiosSetUp().delete(`http://localhost:5002/user/id=${id}`)
-        //   .then((response) => { 
-        //       console.log(response.data); 
-        //       this.sendRequest();
-        //      })
-        //    .catch((ex)=> console.log('Failed', ex))   
+        
     }
 
     displayUserRow = (user) => {
         return <this.Row>
-                 <this.Cell>{user.login}</this.Cell> <this.Cell>{user.email}</this.Cell>
-                 <this.Cell>{user.roleName}</this.Cell> <this.Cell>{user.id}</this.Cell>
-                 <this.Cell>
-                     <this.DeleteButton type="button" key={user.login} onClick={() => this.sendDeleteRequest(user.id)}>Delete</this.DeleteButton>
-                     <this.BanButton    type="button" key={user.login} onClick={() => this.doNothing(user.id)}>Ban</this.BanButton>
-                     <this.UnbanButton  type="button" key={user.login} onClick={() => this.doNothing(user.id)}>Unban</this.UnbanButton>
-                 </this.Cell>
-               </this.Row>
+            <this.Cell>{user.login}</this.Cell> <this.Cell>{user.email}</this.Cell>
+            <this.Cell>{user.roleName}</this.Cell> 
+            <this.Cell>
+                <this.DeleteButton type="button" key={user.login} onClick={() => this.sendDeleteRequest(user.id)}>Delete</this.DeleteButton>
+                <this.BanButton type="button" key={user.login} onClick={() => this.doNothing(user.id)}>Ban</this.BanButton>
+                <this.UnbanButton type="button" key={user.login} onClick={() => this.doNothing(user.id)}>Unban</this.UnbanButton>
+            </this.Cell>
+        </this.Row>
     }
     sendRequestAndSetNewPage = (page = this.state.page) => {
-        if( page < 1 ) return;
+        if (page < 1) return;
         axiosSetUp().get(`http://localhost:5002/user/getrange?page=${page - 1}&count=${this.state.pageSize}`)
-          .then((response) => { 
-             this.setState({ 
-                 List: response.data,
-                 page: page
+            .then((response) => {
+                this.setState({
+                    List: response.data,
+                    page: page
                 })
             })
-          .catch((ex)=> console.log('Failed', ex))   
+            .catch((ex) => console.log('Failed', ex))
     };
 
 
 
-    render(){
-        return(
-        <this.Wraper>
-            <this.Table>
-               
-               <this.Row>
-                 <this.TopCell>Login</this.TopCell> <this.TopCell>Email</this.TopCell> <this.TopCell>Role</this.TopCell>
-                 <this.TopCell>Id</this.TopCell> <this.TopCell></this.TopCell>
-               </this.Row>  
+    render() {
+        return (
+            <this.Wraper>
+                <this.Table>
 
-                {this.state.List.map((user, index) => {
-                    return <> {this.displayUserRow(this.state.List[index]) }</>                          
+                    <this.Row>
+                        <this.TopCell>Login</this.TopCell> <this.TopCell>Email</this.TopCell> <this.TopCell>Role</this.TopCell><this.TopCell></this.TopCell>
+                    </this.Row>
+
+                    {this.state.List.map((user) => {
+                        return <> {this.displayUserRow(user)}</>
                     })}
 
-            </this.Table>  
-            {<button type="button" onClick={this.sendRequest}>Refresh</button>  }
-            {<button type="button" onClick={() => this.sendRequestAndSetNewPage(this.state.page - 1)}>Prev</button> }
-            {<button type="button" onClick={() => this.sendRequestAndSetNewPage(this.state.page + 1)}>Next</button> }
-            <br/>
-            <h4>{this.state.page}</h4>
-        </this.Wraper>       
+                </this.Table>
+                {<button type="button" onClick={this.sendRequest}>Refresh</button>}
+                {<button type="button" onClick={() => this.sendRequestAndSetNewPage(this.state.page - 1)}>Prev</button>}
+                {<button type="button" onClick={() => this.sendRequestAndSetNewPage(this.state.page + 1)}>Next</button>}<br />
+                <h4>{this.state.page}</h4>
+            </this.Wraper>
         )
     }
 }

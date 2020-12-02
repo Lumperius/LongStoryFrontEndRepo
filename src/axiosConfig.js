@@ -13,16 +13,15 @@ axiosInstance.interceptors.request.use(config => {
     const token = localStorage.getItem('Token');
     if (token) {
         config.headers.Authorization = `Bearer ${localStorage.getItem('Token')}`
-        return config;
     }
     else {
         localStorage.removeItem('Token');
         delete config.headers.Authorization
-        return config;
     }
+    return config;
 })
 
-axiosInstance.interceptors.response.use(function (response) {
+axiosInstance.interceptors.response.use( response => {
     if (response.status === 200 || response.status === 201) {
         return response;
     }
@@ -30,13 +29,14 @@ axiosInstance.interceptors.response.use(function (response) {
         throw response;
     }
 },
-    error => {
-        if (error.status === 403 || error.status === 401) {
+error => {
+        debugger
+        if (error.response.status === 403 || error.response.status === 401) {
         localStorage.removeItem('Token');
         let history = useHistory();
-        history.push('authentication');
+        history.push('/authentication');
     }
-    return error;
+    return error.response;
     })
 
 export default function axiosSetUp() {

@@ -77,6 +77,7 @@ class StartPage extends React.Component {
     font-size:20px;
     margin: 15px;
     `;
+    
     componentDidMount() {
         this.sendRequestAndSetNewPage();
     }
@@ -85,11 +86,22 @@ class StartPage extends React.Component {
         this.props.history.push(`Story${id}`)
     }
 
+    modifyDate = (ISOdate) => {
+        if (ISOdate) {
+            let stringDate = ISOdate.toString();
+            stringDate = stringDate.replace('T', ' ');
+            stringDate = stringDate.replace('-', '.');
+            stringDate = stringDate.replace('-', '.');
+            stringDate = stringDate.substring(0, stringDate.length - 4);
+            return stringDate;
+        }
+    }
+
     displayAStory = (story) => {
         return <this.StoryBlock onClick={() => this.handleClick(story.id)}>
             <this.Title>{story.title}</this.Title>
             <this.StoryBody>{story.firstElementBody}</this.StoryBody><this.Line />
-            <this.DateAndMaster>By {story.Author} {story.dateSubmitted}</this.DateAndMaster>
+            <this.DateAndMaster>By {story.author} {this.modifyDate(story.dateSubmitted)}</this.DateAndMaster>
             <this.VoteUp></this.VoteUp><this.VoteDown></this.VoteDown>
         </this.StoryBlock>
     }
@@ -114,8 +126,8 @@ class StartPage extends React.Component {
         return (
             <this.Wraper >
                 {this.state.message}
-                {this.state.StoriesList.map((story, index) => {
-                    return <> {this.displayAStory(this.state.StoriesList[index])} </>
+                {this.state.StoriesList.map((story) => {
+                    return <> {this.displayAStory(story)} </>
                 })}
                 {<button type="button" onClick={() => this.sendRequestAndSetNewPage(this.state.page - 1)}>Prev</button>}
                 <this.Page>{this.state.page}</this.Page>
