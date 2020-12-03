@@ -12,6 +12,7 @@ class Story extends React.Component {
         super();
         this.state = {
             story: {
+                id: '',
                 title: '',
                 firstElementBody: '',
                 isFinishedMessage: true,
@@ -54,10 +55,11 @@ class Story extends React.Component {
 
     sendGetStoryRequest() {
         let id = this.props.match.params.id;
-        axiosSetUp().get(`http://localhost:5002/story/get?id=${id}`)
+        axiosSetUp().get(`http://localhost:5002/story/get?id=${id}&`)
             .then(response => {
                 this.setState({
                     story: {
+                        id: response.data.id,
                         title: response.data.title,
                         firstElementBody: response.data.firstElementBody,
                         dateSubmitted: response.data.dateSubmitted,
@@ -70,6 +72,7 @@ class Story extends React.Component {
             })
     }
 
+
     renderEditor = () => {
         if (this.props.token) {
             if (this.state.story.isFinishedMessage === 'In process') {
@@ -78,19 +81,19 @@ class Story extends React.Component {
                     return <AddStoryPart storyId={storyId} />
                 }
                 else return <>
-                <CandidatesScroller Candidates={this.state.StoryPartCandidates} /><br/>
-                <this.SuggestNextPartButton onClick={
-                    () => this.setState({ showEditor: true })}>
-                    Suggest next story part
+                    <CandidatesScroller storyId={this.state.story.id} /><br />
+                    <this.SuggestNextPartButton onClick={
+                        () => this.setState({ showEditor: true })}>
+                        Suggest next story part
                 </this.SuggestNextPartButton>
                 </>
             }
-            else{
+            else {
                 return <>This story is finished</>
             }
         }
         else {
-            return <>Authorize and you will be able to participate in creating of this story</>
+            return <>Authorize and you will be able to participate in writing of this story</>
         }
     }
 
