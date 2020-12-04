@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import NavBar from './Components/Navbar/NavBar';
 import AuthorizedNavBar from './Components/Navbar/AuthorizedNavBar';
 import Authentication from './Components/Authentication/Authentication';
@@ -12,7 +12,9 @@ import getParsedToken from './Services/Service';
 import setToken from './Actions/setToken'
 import Logout from './Components/Logout/Logout';
 import InitializeStory from './Components/Story/InitializeStory';
-import Story from './Components/Story/Story'
+import Story from './Components/Story/Story';
+import 'typeface-roboto'
+
 
 
 class App extends React.Component {

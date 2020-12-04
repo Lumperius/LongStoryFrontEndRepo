@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import axiosSetUp from '../../axiosConfig';
 import jwt_decode from 'jwt-decode';
 import setToken from '../../Actions/setToken'
-
+import Typography from '@material-ui/core/Typography'
+import Paper from '@material-ui/core/Paper'
 
 class Authentication extends React.Component {
 
@@ -74,35 +75,30 @@ class Authentication extends React.Component {
         
         axiosSetUp().post('http://localhost:5002/user/authenticate', body)
             .then(response => {
-                if(response.status === 201){
                    let tokenData = jwt_decode(response.data);
                    this.props.setToken(tokenData);
                    localStorage.setItem('Token', response.data);
                    this.props.history.push('/');
-                }
-                if(response.status === 200){
-                    this.setState({ message: response.data });
-                }
             })
             .catch(error => {
                 debugger
                 console.log(error.json);
-                this.setState({ message: 'Something went wrong, try again later' });
+                this.setState({ message: error.message });
             })
     };
 
     render() {
         return (
-            <this.Wraper>
-                <h2>Login</h2>
+            <Paper>
+                <Typography variant='title' align='center' gutterBottom>Login</Typography >
                 <this.ErrorMessage>{this.state.message}</this.ErrorMessage>
                 <form>
-                    <this.Input name="loginOrEmail" type="text" onChange={this.handleChange} /> <this.InputLabel>Login or email </this.InputLabel><br />
-                    <this.Input name="password" type="password" onChange={this.handleChange} /> <this.InputLabel>Password </this.InputLabel><br /><hr /><br />
+                    <this.Input name="loginOrEmail" type="text" onChange={this.handleChange} /> <Typography variant='body1'>Login or email </Typography><br />
+                    <this.Input name="password" type="password" onChange={this.handleChange} /> <Typography variant='body1'>Password </Typography><br /><hr /><br />
                     <this.SubmitButton type="button" onClick={this.sendRequest}>Submit</this.SubmitButton>
                 </form>
                 <this.RegistrationLink href="/registration">Not registred?</this.RegistrationLink>
-            </this.Wraper>
+            </Paper>
         );
     }
 }

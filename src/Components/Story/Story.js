@@ -17,7 +17,8 @@ class Story extends React.Component {
                 firstElementBody: '',
                 isFinishedMessage: true,
                 dateSubmitted: null,
-                author: ''
+                author: '',
+                rating: 0
             },
             showEditor: false,
             StoryParts: [],
@@ -37,21 +38,31 @@ class Story extends React.Component {
     font-size: 14px;
     text-align: right;
     `;
+    Vote = styled.button`
+    display: inline-block; 
+    border: none;
+    align-right :true;
+    border-radius: 100px;
+    float: right;
+    padding: 10px;
+    margin: 2px;
+    padding: 15px;
+    &:hover {
+        padding: 16px;
+    }
+    `;
+    Rating = styled.p`
+    margin: 10px;
+    padding: 0;
+    font-size: 40px;
+    color: darkred;
+    `;
+
 
     componentDidMount() {
         this.sendGetStoryRequest();
     }
 
-    modifyDate = (ISOdate) => {
-        if (ISOdate) {
-            let stringDate = ISOdate.toString();
-            stringDate = stringDate.replace('T', ' ');
-            stringDate = stringDate.replace('-', '.');
-            stringDate = stringDate.replace('-', '.');
-            stringDate = stringDate.substring(0, stringDate.length - 4);
-            return stringDate;
-        }
-    }
 
     sendGetStoryRequest() {
         let id = this.props.match.params.id;
@@ -64,7 +75,8 @@ class Story extends React.Component {
                         firstElementBody: response.data.firstElementBody,
                         dateSubmitted: response.data.dateSubmitted,
                         author: response.data.author,
-                        isFinishedMessage: response.data.isFinished ? 'finished' : 'In process'
+                        isFinishedMessage: response.data.isFinished ? 'finished' : 'In process',
+                        rating: response.data.rating
                     },
                     StoryParts: response.data.storyParts,
                     StoryPartCandidates: response.data.storyPartCandidates
@@ -72,58 +84,77 @@ class Story extends React.Component {
             })
     }
 
+    sendUpvoteRequest = (storyId) => {
+        let userId = this.props.token.id;
+        axiosSetUp().get(`http://localhost:5002/story/vote?storyId=${storyId}&userId=${userId}`)
+            .then((response) => {
+                let prevState = this.state;
+                prevState.message = response.data;
+                prevState.story.rating++;
+                this.setState(prevState)
+    })
+            .catch((ex) => {
+    console.log('Failed', ex)
+})
+    };
 
-    renderEditor = () => {
-        if (this.props.token) {
-            if (this.state.story.isFinishedMessage === 'In process') {
-                if (this.state.showEditor) {
-                    let storyId = this.props.match.params.id;
-                    return <AddStoryPart storyId={storyId} />
-                }
-                else return <>
-                    <CandidatesScroller storyId={this.state.story.id} /><br />
-                    <this.SuggestNextPartButton onClick={
-                        () => this.setState({ showEditor: true })}>
-                        Suggest next story part
+
+renderEditor = () => {
+    if (this.props.token) {
+        if (this.state.story.isFinishedMessage === 'In process') {
+            if (this.state.showEditor) {
+                let storyId = this.props.match.params.id;
+                return <AddStoryPart storyId={storyId} />
+            }
+            else return <>
+                <CandidatesScroller storyId={this.state.story.id} /><br />
+                <this.SuggestNextPartButton onClick={
+                    () => this.setState({ showEditor: true })}>
+                    Suggest next story part
                 </this.SuggestNextPartButton>
-                </>
-            }
-            else {
-                return <>This story is finished</>
-            }
-        }
-        else {
-            return <>Authorize and you will be able to participate in writing of this story</>
-        }
-    }
-
-    renderStoryPart = (storyPart) => {
-        if (storyPart.body) {
-            return <>
-                <p>{storyPart.body}</p>
-                <this.Signature>{storyPart.author} {this.modifyDate(storyPart.dateSubmitted)}</this.Signature>
-                <hr />
             </>
         }
+        else {
+            return <>This story is finished</>
+        }
     }
+    else {
+        return <>Authorize and you will be able to participate in writing of this story</>
+    }
+}
+
+renderStoryPart = (storyPart) => {
+    if (storyPart.body) {
+        return <>
+            <p>{storyPart.body}</p>
+            <this.Signature>{storyPart.author} {storyPart.dateSubmitted}</this.Signature>
+            <hr />
+        </>
+    }
+}
 
 
-    render() {
-        return <this.Wraper>
-            <h1>{this.state.story.title}</h1>
-            <p>{this.state.story.firstElementBody}</p>
-            <this.Signature>
-                {this.state.story.author}
-                {this.modifyDate(this.state.story.dateSubmitted)}
+render() {
+    return <this.Wraper>
+        <h1>{this.state.story.title}</h1>
+        <p>{this.state.story.firstElementBody}</p>
+        <this.Signature>
+            <this.Rating>{this.state.story.rating}</this.Rating>
+            {this.state.story.author}_
+                {this.state.story.dateSubmitted}
                 _{this.state.story.isFinishedMessage}
-            </this.Signature>
-            <hr /><hr />
-            {this.state.StoryParts.map((storyPart) => {
-                return <>{this.renderStoryPart(storyPart)}</>
-            })}
-            <br />{this.renderEditor()}
-        </this.Wraper>
-    }
+            <div>
+                <this.Vote style={{ backgroundColor: "green" }} onClick={() => this.sendUpvoteRequest(this.state.story.id)}></this.Vote >
+                <this.Vote style={{ backgroundColor: "red" }} onClick={() => this.sendUpvoteRequest(this.state.story.id)}></this.Vote>
+            </div>
+        </this.Signature>
+        <hr /><hr />
+        {this.state.StoryParts.map((storyPart) => {
+            return <>{this.renderStoryPart(storyPart)}</>
+        })}
+        <br />{this.renderEditor()}
+    </this.Wraper>
+}
 }
 
 const mapStateToProps = function (state) {

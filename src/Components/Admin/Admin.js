@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig';
 import { connect } from 'react-redux';
-
+import Button from '@material-ui/core/Button'
 
 class Admin extends React.Component {
 
@@ -15,16 +15,16 @@ class Admin extends React.Component {
         }
     }
 
-    Button = styled.button`
-    background-color: #333; 
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 20px;
-    `;
+    // Button = styled.button`
+    // background-color: #333; 
+    // border: none;
+    // color: white;
+    // padding: 15px 32px;
+    // text-align: center;
+    // text-decoration: none;
+    // display: inline-block;
+    // font-size: 20px;
+    // `;
     Table = styled.table`
     background-color: #555; 
     border-collapse: collapse;
@@ -87,6 +87,7 @@ class Admin extends React.Component {
         this.sendRequestAndSetNewPage();
         if (this.props.token === undefined || this.props.token.scope !== 'Admin') this.props.history.push('authentication');
     }
+
     sendDeleteRequest = (id) => {
         axiosSetUp().delete(`http://localhost:5002/user/id=${id}`)
             .then((response) => {
@@ -106,9 +107,9 @@ class Admin extends React.Component {
             <this.Cell>{user.login}</this.Cell> <this.Cell>{user.email}</this.Cell>
             <this.Cell>{user.roleName}</this.Cell> 
             <this.Cell>
-                <this.DeleteButton type="button" key={user.login} onClick={() => this.sendDeleteRequest(user.id)}>Delete</this.DeleteButton>
-                <this.BanButton type="button" key={user.login} onClick={() => this.doNothing(user.id)}>Ban</this.BanButton>
-                <this.UnbanButton type="button" key={user.login} onClick={() => this.doNothing(user.id)}>Unban</this.UnbanButton>
+                <Button type="button" style={{backgroundColor: "red"}} key={user.login} onClick={() => this.sendDeleteRequest(user.id)}>Delete</Button>
+                <Button variant="contained" style={{backgroundColor: "orange"}} key={user.login} onClick={() => this.doNothing(user.id)}>Ban</Button>
+                <Button type="button" style={{backgroundColor: "green"}} key={user.login} onClick={() => this.doNothing(user.id)}>Unban</Button>
             </this.Cell>
         </this.Row>
     }
@@ -116,6 +117,9 @@ class Admin extends React.Component {
         if (page < 1) return;
         axiosSetUp().get(`http://localhost:5002/user/getrange?page=${page - 1}&count=${this.state.pageSize}`)
             .then((response) => {
+                this.setState({
+                    List: [],
+                });
                 this.setState({
                     List: response.data,
                     page: page
@@ -134,7 +138,6 @@ class Admin extends React.Component {
                     <this.Row>
                         <this.TopCell>Login</this.TopCell> <this.TopCell>Email</this.TopCell> <this.TopCell>Role</this.TopCell><this.TopCell></this.TopCell>
                     </this.Row>
-
                     {this.state.List.map((user) => {
                         return <> {this.displayUserRow(user)}</>
                     })}

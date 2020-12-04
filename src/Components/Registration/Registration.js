@@ -103,23 +103,15 @@ class Registration extends React.Component {
         };
         axiosSetUp().post('http://localhost:5002/user/register', body)
             .then(response => {
-                if (response.status == '200') {
-                    this.setState({
-                        message: response.data
-                    })
-                }
-                else {
-                    if (response.status == '201') {
-                        this.props.history.push('/authentication');
-                    }
-                    else {
-                        this.setState({
-                            message: 'Error occured'
-                        })
-                    }
-                }
+                if(response.status === 201)
+                    this.props.history.push('/authentication');
+                else
+                    throw response
             })
             .catch(error => {
+                this.setState({
+                    message: error.data
+                })
                 console.log(error);
             })
 
@@ -135,7 +127,7 @@ class Registration extends React.Component {
                     <this.Input name="email" type="text" onChange={this.handleChange} />  <this.InputLabel>Email </this.InputLabel><br />
                     <this.Input name="password" type="password" onChange={this.handleChange} />  <this.InputLabel>Password </this.InputLabel>
                     <this.Input name="repeat_password" type="password" onChange={this.handleChange} />  <this.InputLabel>Repeat password </this.InputLabel><br /><hr /><br />
-                    
+
                     <this.SubmitButton type="button" onClick={this.sendRequest}>Submit</this.SubmitButton>
                 </form>
                 <this.RegistrationLink href="/authentication">Already have an account?</this.RegistrationLink>
