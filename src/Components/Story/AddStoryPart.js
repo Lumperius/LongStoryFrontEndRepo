@@ -1,8 +1,11 @@
 import React from 'react';
-import ReactDOM from 'react-dom'
-import styled from 'styled-components'
+import ReactDOM from 'react-dom';
+import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig';
 import { connect } from 'react-redux';
+import TextareaAutosize from '@material-ui/core/TextareaAutosize';
+import Typography from '@material-ui/core/Typography';
+
 
 
 class AddStoryPart extends React.Component {
@@ -30,15 +33,16 @@ class AddStoryPart extends React.Component {
     }
 
     sendNewStoryPartRequest = () => {
+        debugger
         if(!this.validateRequestParametrs()) return;
         let requestBody = {
             storyId: this.props.storyId,
-            userId: this.props.token.id,
+            authorId: this.props.token.id,
             body: this.state.body,
             author: this.props.token.login,
             dateSubmitted: new Date().toISOString()
         }
-        axiosSetUp().post('http://localhost:5002/storyPart/create', requestBody)
+        axiosSetUp().post('http://localhost:5002/storyPartCandidate/create', requestBody)
         .then( response => {
             this.setState({
                 message: response.data,
@@ -73,7 +77,7 @@ class AddStoryPart extends React.Component {
     render() {
         return <>
             <this.ErrorMessage>{this.state.message}</this.ErrorMessage>
-            <this.BodyInput name="body" onChange={this.handleChange}></this.BodyInput><br/>
+            <TextareaAutosize rowsMin={6} name="body" aria-label="empty textarea" style={{fontSize: "20px", width: "90%"}} onChange={this.handleChange}></TextareaAutosize><br/>
             <this.SubmitButton onClick={this.sendNewStoryPartRequest}>submit</this.SubmitButton>
         </>
     }

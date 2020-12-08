@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import { connect } from 'react-redux';
 import axiosSetUp from '../../axiosConfig';
 import jwt_decode from 'jwt-decode';
-import setToken from '../../Actions/setToken'
-import Typography from '@material-ui/core/Typography'
-import Paper from '@material-ui/core/Paper'
+import setToken from '../../Actions/setToken';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 class Authentication extends React.Component {
 
@@ -20,11 +20,11 @@ class Authentication extends React.Component {
 
     Wraper = styled.div`
     text-align:left;
-    margin:90px;
+    margin:50px;
     font-size: 28px;
     `;
     Input = styled.input`
-    upper-margin: 0px;
+    margin-up: 0px;
     border: 1px solid black;
     width: 30%;
     height: 30px;
@@ -38,10 +38,6 @@ class Authentication extends React.Component {
     text-decoration: none;
     display: inline-block;
     font-size: 20px;
-    `;
-    InputLabel = styled.h3`
-    font-size: 18px;
-    margin: 0px;
     `;
     RegistrationLink = styled.a`
     font-size: 15px;
@@ -89,16 +85,16 @@ class Authentication extends React.Component {
 
     render() {
         return (
-            <Paper>
-                <Typography variant='title' align='center' gutterBottom>Login</Typography >
+            <this.Wraper>
+                <Typography variant='h4' align='left' style={{margin: "30px"}} gutterBottom >Login</Typography >
                 <this.ErrorMessage>{this.state.message}</this.ErrorMessage>
                 <form>
-                    <this.Input name="loginOrEmail" type="text" onChange={this.handleChange} /> <Typography variant='body1'>Login or email </Typography><br />
-                    <this.Input name="password" type="password" onChange={this.handleChange} /> <Typography variant='body1'>Password </Typography><br /><hr /><br />
-                    <this.SubmitButton type="button" onClick={this.sendRequest}>Submit</this.SubmitButton>
+                    <this.Input name="loginOrEmail" type="text" onChange={this.handleChange} /> <Typography variant='subtitle1'>Login or email </Typography><br />
+                    <this.Input name="password" type="password" onChange={this.handleChange} /> <Typography variant='subtitle1'>Password </Typography><br /><hr /><br />
+                    <Button variant="contained" color="primary" onClick={this.sendRequest}>Submit</Button>
                 </form>
                 <this.RegistrationLink href="/registration">Not registred?</this.RegistrationLink>
-            </Paper>
+            </this.Wraper>
         );
     }
 }

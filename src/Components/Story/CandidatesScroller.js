@@ -24,7 +24,7 @@ class CandidatesScroller extends React.Component {
     display: block;
     margin: 0px;
     &:hover {
-        background-color: grey;
+        background-color: gray;
     }`;
 
     Scroller = styled.div`
@@ -53,12 +53,14 @@ class CandidatesScroller extends React.Component {
         let userId = this.props.token.id;
         axiosSetUp().get(`http://localhost:5002/storyPartCandidate/getAll?storyId=${this.props.storyId}&userId=${userId}`)
             .then(response => {
+                if(typeof response.data === 'string') throw response
                 this.setState({
-                    CandidatesList: response.data
+                    CandidatesList: response.data || []
                 })
             })
             .catch(error => {
                 console.log(error);
+                this.setState({message: error.data})
             })
 
     }

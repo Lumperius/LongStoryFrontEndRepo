@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 
 class Registration extends React.Component {
 
@@ -17,10 +19,11 @@ class Registration extends React.Component {
 
     Wraper = styled.div`
     text-align:left;
-    margin:90px;
+    margin:50px;
     font-size: 28px;
     `;
     Input = styled.input`
+    margin-up: 0px;
     border: 1px solid black;
     width: 30%;
     height: 30px;
@@ -120,15 +123,15 @@ class Registration extends React.Component {
     render() {
         return (
             <this.Wraper>
-                <h2>Registration</h2>
+                <Typography variant='h4' align='left' style={{margin: "30px"}} gutterBottom >Registration</Typography >
                 <this.ErrorMessage>{this.state.message}</this.ErrorMessage>
                 <form>
-                    <this.Input name="login" type="text" onChange={this.handleChange} />  <this.InputLabel>Login </this.InputLabel><br />
-                    <this.Input name="email" type="text" onChange={this.handleChange} />  <this.InputLabel>Email </this.InputLabel><br />
-                    <this.Input name="password" type="password" onChange={this.handleChange} />  <this.InputLabel>Password </this.InputLabel>
-                    <this.Input name="repeat_password" type="password" onChange={this.handleChange} />  <this.InputLabel>Repeat password </this.InputLabel><br /><hr /><br />
+                    <this.Input name="login" type="text" onChange={this.handleChange} />  <Typography variant='subtitle1'>Login </Typography><br /><br />
+                    <this.Input name="email" type="text" onChange={this.handleChange} /> <Typography variant='subtitle1'>Email </Typography><br /><br />
+                    <this.Input name="password" type="password" onChange={this.handleChange} />  <Typography variant='subtitle1'>Password </Typography><br />
+                    <this.Input name="repeat_password" type="password" onChange={this.handleChange} />  <Typography variant='subtitle1'>Repeat password </Typography><br /><br /><hr /><br />
 
-                    <this.SubmitButton type="button" onClick={this.sendRequest}>Submit</this.SubmitButton>
+                    <Button variant="contained" color="primary" onClick={this.sendRequest}>Submit</Button>
                 </form>
                 <this.RegistrationLink href="/authentication">Already have an account?</this.RegistrationLink>
             </this.Wraper>

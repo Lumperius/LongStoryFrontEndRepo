@@ -2,6 +2,8 @@ import React from 'react'
 import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig';
 import { connect } from 'react-redux';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 class InitializeStory extends React.Component {
 
@@ -51,9 +53,7 @@ class InitializeStory extends React.Component {
     `;
     Wraper = styled.div`
     text-align:left;
-    margin:10px;
-    margin-right: 0px;
-    margin-left: 20px;
+    margin:50px;
     font-size: 15px;
     font-weight: 100;
     `;
@@ -114,11 +114,11 @@ class InitializeStory extends React.Component {
     render() {
         return (
             <this.Wraper >
-                <this.InputLabel>Start a story</this.InputLabel>
+                <Typography variant='h4' align='left' style={{margin: "30px"}} gutterBottom >Start a story</Typography >
                 { this.state.message} < br />
                 <this.TitleInput name="title" maxLength="80" placeholder="Enter title. It must be at least 5 symbols long" onChange={this.handleChange}></this.TitleInput><br />
                 <this.BodyInput name="body" maxLength="4000" placeholder="Enter story here. It must be at least 20 symbols long" onChange={this.handleChange}></this.BodyInput><br />
-                <this.SubmitButton onClick={this.sendRequest}>Submit</this.SubmitButton>
+                <Button variant="contained" color="primary" onClick={this.sendRequest}>Submit</Button>
             </this.Wraper >
         )
     }

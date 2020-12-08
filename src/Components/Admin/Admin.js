@@ -80,6 +80,12 @@ class Admin extends React.Component {
     padding: 10px;
     margin: 2px;
     `;
+    Page = styled.p`
+    display: inline-block;
+    font-size:28px;
+    margin: 30px;
+    `;
+
 
 
 
@@ -107,9 +113,9 @@ class Admin extends React.Component {
             <this.Cell>{user.login}</this.Cell> <this.Cell>{user.email}</this.Cell>
             <this.Cell>{user.roleName}</this.Cell> 
             <this.Cell>
-                <Button type="button" style={{backgroundColor: "red"}} key={user.login} onClick={() => this.sendDeleteRequest(user.id)}>Delete</Button>
-                <Button variant="contained" style={{backgroundColor: "orange"}} key={user.login} onClick={() => this.doNothing(user.id)}>Ban</Button>
-                <Button type="button" style={{backgroundColor: "green"}} key={user.login} onClick={() => this.doNothing(user.id)}>Unban</Button>
+                <Button variant="contained" style={{backgroundColor: "red"}} key={user.login} onClick={() => this.sendDeleteRequest(user.id)}>Delete</Button>
+                <Button variant="outlined" style={{backgroundColor: "orange", margin: "10px"}} key={user.login} onClick={() => this.doNothing(user.id)}>Ban</Button>
+                <Button variant="contained" style={{backgroundColor: "green"}} key={user.login} onClick={() => this.doNothing(user.id)}>Unban</Button>
             </this.Cell>
         </this.Row>
     }
@@ -143,10 +149,10 @@ class Admin extends React.Component {
                     })}
 
                 </this.Table>
-                {<button type="button" onClick={this.sendRequest}>Refresh</button>}
-                {<button type="button" onClick={() => this.sendRequestAndSetNewPage(this.state.page - 1)}>Prev</button>}
-                {<button type="button" onClick={() => this.sendRequestAndSetNewPage(this.state.page + 1)}>Next</button>}<br />
-                <h4>{this.state.page}</h4>
+                {<Button variant="outlined" color="primary" style={{margin: "10px"}} onClick={() => this.sendRequestAndSetNewPage(this.state.page)}>Refresh</Button>}
+                {<Button variant="contained" color="primary" onClick={() => this.sendRequestAndSetNewPage(this.state.page - 1)}>Prev</Button>}
+                <this.Page>{this.state.page}</this.Page>
+                {<Button variant="contained" color="primary" onClick={() => this.sendRequestAndSetNewPage(this.state.page + 1)}>Next</Button>}
             </this.Wraper>
         )
     }

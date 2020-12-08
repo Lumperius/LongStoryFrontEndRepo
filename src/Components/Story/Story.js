@@ -4,7 +4,9 @@ import axiosSetUp from '../../axiosConfig';
 import AddStoryPart from './AddStoryPart';
 import CandidatesScroller from './CandidatesScroller'
 import { connect } from 'react-redux';
-
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 
 class Story extends React.Component {
 
@@ -15,10 +17,11 @@ class Story extends React.Component {
                 id: '',
                 title: '',
                 firstElementBody: '',
-                isFinishedMessage: true,
                 dateSubmitted: null,
                 author: '',
-                rating: 0
+                rating: 0,
+                isFinishedMessage: true,
+                isVoted: true,
             },
             showEditor: false,
             StoryParts: [],
@@ -65,8 +68,9 @@ class Story extends React.Component {
 
 
     sendGetStoryRequest() {
-        let id = this.props.match.params.id;
-        axiosSetUp().get(`http://localhost:5002/story/get?id=${id}&`)
+        let storyId = this.props.match.params.id;
+        let userId = this.props.token.id;
+        axiosSetUp().get(`http://localhost:5002/story/get?storyId=${storyId}&userId=${userId}`)
             .then(response => {
                 this.setState({
                     story: {
@@ -75,86 +79,105 @@ class Story extends React.Component {
                         firstElementBody: response.data.firstElementBody,
                         dateSubmitted: response.data.dateSubmitted,
                         author: response.data.author,
+                        rating: response.data.rating,
                         isFinishedMessage: response.data.isFinished ? 'finished' : 'In process',
-                        rating: response.data.rating
+                        isVoted: response.data.isVoted,
                     },
-                    StoryParts: response.data.storyParts,
-                    StoryPartCandidates: response.data.storyPartCandidates
+                    StoryParts: response.data.storyParts || [],
+                    StoryPartCandidates: response.data.storyPartCandidates || []
                 })
             })
     }
 
-    sendUpvoteRequest = (storyId) => {
+    sendVoteRequest = (storyId, voteType) => {
         let userId = this.props.token.id;
-        axiosSetUp().get(`http://localhost:5002/story/vote?storyId=${storyId}&userId=${userId}`)
+        let body = {
+            storyId: storyId,
+            userId: userId,
+            isPositive: voteType
+        }
+        axiosSetUp().post(`http://localhost:5002/story/vote`, body)
             .then((response) => {
                 let prevState = this.state;
                 prevState.message = response.data;
-                prevState.story.rating++;
-                this.setState(prevState)
-    })
+                if(voteType)    prevState.story.rating++;
+                else prevState.story.rating--;
+                let state = this.state;
+                state.story.isVoted = true;
+                this.setState({state});
+                })
             .catch((ex) => {
-    console.log('Failed', ex)
-})
+                console.log('Failed', ex)
+            })
     };
 
 
-renderEditor = () => {
-    if (this.props.token) {
-        if (this.state.story.isFinishedMessage === 'In process') {
-            if (this.state.showEditor) {
-                let storyId = this.props.match.params.id;
-                return <AddStoryPart storyId={storyId} />
+    renderEditor = () => {
+        if (this.props.token) {
+            if (this.state.story.isFinishedMessage === 'In process') {
+                if (this.state.showEditor) {
+                    let storyId = this.props.match.params.id;
+                    return <AddStoryPart storyId={storyId} />
+                }
+                else return <>
+                    <Button variant="contained" color="primary" onClick={
+                        () => this.setState({ showEditor: true })}>
+                        Suggest next story part
+                </Button>
+
+                    <CandidatesScroller storyId={this.state.story.id} /><br />
+                </>
             }
-            else return <>
-                <CandidatesScroller storyId={this.state.story.id} /><br />
-                <this.SuggestNextPartButton onClick={
-                    () => this.setState({ showEditor: true })}>
-                    Suggest next story part
-                </this.SuggestNextPartButton>
-            </>
+            else {
+                return <Typography>This story is finished</Typography>
+            }
         }
         else {
-            return <>This story is finished</>
+            return <Typography>Authorize and you will be able to participate in writing this story</Typography>
         }
     }
-    else {
-        return <>Authorize and you will be able to participate in writing of this story</>
+
+    renderStoryPart = (storyPart) => {
+        if (storyPart.body) {
+            return <>
+                <p>{storyPart.body}</p>
+                <this.Signature>{storyPart.author} {storyPart.dateSubmitted}</this.Signature>
+                <hr />
+            </>
+        }
     }
-}
 
-renderStoryPart = (storyPart) => {
-    if (storyPart.body) {
-        return <>
-            <p>{storyPart.body}</p>
-            <this.Signature>{storyPart.author} {storyPart.dateSubmitted}</this.Signature>
-            <hr />
-        </>
+    renderVoteButtons = () => {
+        if(this.state.story.isVoted === true) {
+            return <Typography variant="subtitle1">You voted this story</Typography>
+        }
+        else{
+            return   <div>
+            <Button variant="contained" style={{ backgroundColor: "LimeGreen", margin: "10px"}} onClick={() => this.sendVoteRequest(this.state.story.id, true)}>Vote up</Button>
+            <Button variant="contained" style={{ backgroundColor: "FireBrick"   }} onClick={() => this.sendVoteRequest(this.state.story.id, false)}>Vote down</Button>
+        </div>
+        }
     }
-}
 
 
-render() {
-    return <this.Wraper>
-        <h1>{this.state.story.title}</h1>
-        <p>{this.state.story.firstElementBody}</p>
-        <this.Signature>
-            <this.Rating>{this.state.story.rating}</this.Rating>
-            {this.state.story.author}_
+    render() {
+        return <this.Wraper>
+            <h1>{this.state.story.title}</h1>
+            <p>{this.state.story.firstElementBody}</p>
+            <this.Signature>
+                <this.Rating>{this.state.story.rating}</this.Rating>
+                {this.state.story.author}_
                 {this.state.story.dateSubmitted}
                 _{this.state.story.isFinishedMessage}
-            <div>
-                <this.Vote style={{ backgroundColor: "green" }} onClick={() => this.sendUpvoteRequest(this.state.story.id)}></this.Vote >
-                <this.Vote style={{ backgroundColor: "red" }} onClick={() => this.sendUpvoteRequest(this.state.story.id)}></this.Vote>
-            </div>
-        </this.Signature>
-        <hr /><hr />
-        {this.state.StoryParts.map((storyPart) => {
-            return <>{this.renderStoryPart(storyPart)}</>
-        })}
-        <br />{this.renderEditor()}
-    </this.Wraper>
-}
+                {this.renderVoteButtons()}
+            </this.Signature>
+            <hr /><hr />
+            {this.state.StoryParts.map((storyPart) => {
+                return <>{this.renderStoryPart(storyPart)}</>
+            })}
+            {this.renderEditor()}
+        </this.Wraper>
+    }
 }
 
 const mapStateToProps = function (state) {

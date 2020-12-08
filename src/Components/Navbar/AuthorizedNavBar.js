@@ -7,11 +7,11 @@ import { connect } from 'react-redux';
 class AuthorizedNavBar extends React.Component{
 
   NavBarListElement = styled.li`
-      background-color: #333;
+      background-color: #3f51b5;
   
       & a {
         &:hover {
-            background-color: dimgray;
+            background-color: lightblue;
           }
       }
       display:inline;
@@ -20,7 +20,7 @@ class AuthorizedNavBar extends React.Component{
   LogoutElement = styled.li`
     & div {
       &:hover {
-          background-color: dimgray;
+          background-color: lightblue;
           cursor: pointer;
         }
     }
@@ -32,7 +32,7 @@ class AuthorizedNavBar extends React.Component{
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background-color: #333;
+      background-color: #3f51b5;
     `;
 
 

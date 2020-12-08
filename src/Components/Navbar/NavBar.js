@@ -8,7 +8,7 @@ class NavBar extends React.Component {
   NavBarListElement = styled.li`
       & a {
         &:hover {
-            background-color: dimgray;
+            background-color: lightblue;
           }
       }
       display:inline;
@@ -19,7 +19,7 @@ class NavBar extends React.Component {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background-color: #333;
+      background-color: #3f51b5;
     `;
 
   _service;

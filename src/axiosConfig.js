@@ -32,9 +32,14 @@ axiosInstance.interceptors.response.use(response => {
     error => {
         debugger
         if (error.response.status === 403 || error.response.status === 401) {
+            debugger
             localStorage.removeItem('Token');
             let history = useHistory();
-            history.push('/authentication');
+            history.push('authentication');
+            debugger
+        }
+        if (error.response.status === 400){
+            error.response.data = 'Something bad happend. Contact administrator or try again later'
         }
         if (error.response.status.toString().startsWith('5')){
             error.response.data = 'Something bad happend. Contact administrator or try again later'

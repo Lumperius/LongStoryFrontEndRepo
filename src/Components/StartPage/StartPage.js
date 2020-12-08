@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig'
 import { connect } from 'react-redux'
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 class StartPage extends React.Component {
     service;
@@ -50,8 +52,8 @@ class StartPage extends React.Component {
     `;
     Page = styled.p`
     display: inline-block;
-    font-size:20px;
-    margin: 15px;
+    font-size:28px;
+    margin: 30px;
     `;
     Rating = styled.p`
     margin: 0;
@@ -63,6 +65,11 @@ class StartPage extends React.Component {
 
     componentDidMount() {
         this.sendRequestAndSetNewPage();
+    }
+
+    cutStoryBody = (body) => {
+        if(body)
+        return body.substring(0, 10) + '...'
     }
 
     handleClick = (id) =>{
@@ -85,9 +92,10 @@ class StartPage extends React.Component {
     };
 
     renderAStory = (story) => {
+        story.body = this.cutStoryBody(story.firstPartBody);
         return <this.StoryBlock onClick={() => this.handleClick(story.id)}>
-            <this.Title>{story.title}</this.Title>
-            <TextField  value={story.firstElementBody} margin='normal'/><this.Line />
+            <Typography variant='normal'>{story.title}</Typography>
+            <Typography variant='subtitle1'>{story.firstPartBody}</Typography><this.Line />
     <this.Signature>
         By {story.author} {story.dateSubmitted} <this.Rating >{story.rating}</this.Rating>
     </this.Signature>
@@ -101,9 +109,9 @@ class StartPage extends React.Component {
                 {this.state.StoriesList.map((story) => {
                     return <> {this.renderAStory(story)} </>
                 })}
-                {<button type="button" onClick={() => this.sendRequestAndSetNewPage(this.state.page - 1)}>Prev</button>}
+                {<Button variant="contained" color="primary" onClick={() => this.sendRequestAndSetNewPage(this.state.page - 1)}>Prev</Button>}
                 <this.Page>{this.state.page}</this.Page>
-                {<button type="button" onClick={() => this.sendRequestAndSetNewPage(this.state.page + 1)}>Next</button>}
+                {<Button variant="contained" color="primary" onClick={() => this.sendRequestAndSetNewPage(this.state.page + 1)}>Next</Button>}
             </this.Wraper>);
     }
 }
