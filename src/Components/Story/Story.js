@@ -31,8 +31,14 @@ class Story extends React.Component {
 
     Wraper = styled.div`
     text-align:left;
-    margin: 90px;
+    margin-top: 1500px;
+    margin:30px;
+    padding: 50px;
     font-size: 28px;
+    border-style: solid;
+    border-width:1px;
+    border-radius: 20px;
+    border-color: lightgrey;
     `;
     SuggestNextPartButton = styled.button`
     
@@ -69,8 +75,12 @@ class Story extends React.Component {
 
     sendGetStoryRequest() {
         let storyId = this.props.match.params.id;
-        let userId = this.props.token.id;
-        axiosSetUp().get(`http://localhost:5002/story/get?storyId=${storyId}&userId=${userId}`)
+        let requestUrl = `http://localhost:5002/story/get?storyId=${storyId}`;
+        
+        if (this.props.token)
+        requestUrl = `${requestUrl}&userId=${this.props.token.id}`;
+
+        axiosSetUp().get(requestUrl)
             .then(response => {
                 this.setState({
                     story: {
@@ -100,12 +110,12 @@ class Story extends React.Component {
             .then((response) => {
                 let prevState = this.state;
                 prevState.message = response.data;
-                if(voteType)    prevState.story.rating++;
+                if (voteType) prevState.story.rating++;
                 else prevState.story.rating--;
                 let state = this.state;
                 state.story.isVoted = true;
-                this.setState({state});
-                })
+                this.setState({ state });
+            })
             .catch((ex) => {
                 console.log('Failed', ex)
             })
@@ -141,21 +151,21 @@ class Story extends React.Component {
         if (storyPart.body) {
             return <>
                 <p>{storyPart.body}</p>
-                <this.Signature>{storyPart.author} {storyPart.dateSubmitted}</this.Signature>
+        <this.Signature>{storyPart.author} at {storyPart.dateAdded} with {storyPart.finalRating} votes</this.Signature>
                 <hr />
             </>
         }
     }
 
     renderVoteButtons = () => {
-        if(this.state.story.isVoted === true) {
+        if (this.state.story.isVoted === true) {
             return <Typography variant="subtitle1">You voted this story</Typography>
         }
-        else{
-            return   <div>
-            <Button variant="contained" style={{ backgroundColor: "LimeGreen", margin: "10px"}} onClick={() => this.sendVoteRequest(this.state.story.id, true)}>Vote up</Button>
-            <Button variant="contained" style={{ backgroundColor: "FireBrick"   }} onClick={() => this.sendVoteRequest(this.state.story.id, false)}>Vote down</Button>
-        </div>
+        else {
+            return <div>
+                <Button variant="contained" style={{ backgroundColor: "LimeGreen", margin: "10px" }} onClick={() => this.sendVoteRequest(this.state.story.id, true)}>Vote up</Button>
+                <Button variant="contained" style={{ backgroundColor: "FireBrick" }} onClick={() => this.sendVoteRequest(this.state.story.id, false)}>Vote down</Button>
+            </div>
         }
     }
 

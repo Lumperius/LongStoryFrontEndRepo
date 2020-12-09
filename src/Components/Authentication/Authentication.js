@@ -6,6 +6,7 @@ import jwt_decode from 'jwt-decode';
 import setToken from '../../Actions/setToken';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 
 class Authentication extends React.Component {
 
@@ -20,10 +21,17 @@ class Authentication extends React.Component {
 
     Wraper = styled.div`
     text-align:left;
-    margin:50px;
+    margin-top: 1500px;
+    margin:30px;
+    padding: 50px;
     font-size: 28px;
+    border-style: solid;
+    border-width:1px;
+    border-radius: 20px;
+    border-color: lightgrey;
     `;
     Input = styled.input`
+    margin:10px;
     margin-up: 0px;
     border: 1px solid black;
     width: 30%;
@@ -68,31 +76,32 @@ class Authentication extends React.Component {
             password: this.state.password,
             inputType: inputType
         };
-        
         axiosSetUp().post('http://localhost:5002/user/authenticate', body)
             .then(response => {
-                   let tokenData = jwt_decode(response.data);
-                   this.props.setToken(tokenData);
-                   localStorage.setItem('Token', response.data);
-                   this.props.history.push('/');
+                let tokenData = jwt_decode(response.data);
+                this.props.setToken(tokenData);
+                localStorage.setItem('Token', response.data);
+                this.props.history.push('/');
             })
             .catch(error => {
-                debugger
                 console.log(error.json);
-                this.setState({ message: error.message });
+                this.setState({ message: error.data });
             })
     };
 
     render() {
         return (
             <this.Wraper>
-                <Typography variant='h4' align='left' style={{margin: "30px"}} gutterBottom >Login</Typography >
+                    <Typography variant='h4' align='left' style={{ margin: "30px" }} gutterBottom >Login</Typography >
+
                 <this.ErrorMessage>{this.state.message}</this.ErrorMessage>
-                <form>
-                    <this.Input name="loginOrEmail" type="text" onChange={this.handleChange} /> <Typography variant='subtitle1'>Login or email </Typography><br />
-                    <this.Input name="password" type="password" onChange={this.handleChange} /> <Typography variant='subtitle1'>Password </Typography><br /><hr /><br />
-                    <Button variant="contained" color="primary" onClick={this.sendRequest}>Submit</Button>
-                </form>
+                <ExpansionPanel>
+                    <form>
+                        <this.Input name="loginOrEmail" type="text" onChange={this.handleChange} /> <Typography variant='subtitle1'>Login or email </Typography><br />
+                        <this.Input name="password" type="password" onChange={this.handleChange} /> <Typography variant='subtitle1'>Password </Typography><br />
+                    </form>
+                </ExpansionPanel>
+                <Button variant="contained" color="primary" onClick={this.sendRequest}>Submit</Button>
                 <this.RegistrationLink href="/registration">Not registred?</this.RegistrationLink>
             </this.Wraper>
         );

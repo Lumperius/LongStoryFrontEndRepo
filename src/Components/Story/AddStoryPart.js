@@ -72,14 +72,24 @@ class AddStoryPart extends React.Component {
     color: red;
     font-size: 14px;
     `;
-
+    Wraper = styled.div`
+    text-align:left;
+    margin-top: 1500px;
+    margin:30px;
+    padding: 50px;
+    font-size: 28px;
+    border-style: solid;
+    border-width:1px;
+    border-radius: 20px;
+    border-color: lightgrey;
+    `;
 
     render() {
-        return <>
+        return <this.Wraper>
             <this.ErrorMessage>{this.state.message}</this.ErrorMessage>
             <TextareaAutosize rowsMin={6} name="body" aria-label="empty textarea" style={{fontSize: "20px", width: "90%"}} onChange={this.handleChange}></TextareaAutosize><br/>
             <this.SubmitButton onClick={this.sendNewStoryPartRequest}>submit</this.SubmitButton>
-        </>
+        </this.Wraper>
     }
 }
 

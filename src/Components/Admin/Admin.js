@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig';
 import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button'
+import {Table, TableRow, TableCell, TableHead, TableBody}from '@material-ui/core';
+
 
 class Admin extends React.Component {
 
@@ -15,16 +17,6 @@ class Admin extends React.Component {
         }
     }
 
-    // Button = styled.button`
-    // background-color: #333; 
-    // border: none;
-    // color: white;
-    // padding: 15px 32px;
-    // text-align: center;
-    // text-decoration: none;
-    // display: inline-block;
-    // font-size: 20px;
-    // `;
     Table = styled.table`
     background-color: #555; 
     border-collapse: collapse;
@@ -50,8 +42,14 @@ class Admin extends React.Component {
     `;
     Wraper = styled.div`
     text-align:left;
-    margin:90px;
+    margin-top: 1500px;
+    margin:30px;
+    padding: 50px;
     font-size: 28px;
+    border-style: solid;
+    border-width:1px;
+    border-radius: 20px;
+    border-color: lightgrey;
     `;
     DeleteButton = styled.button`
     background-color: red;
@@ -105,19 +103,19 @@ class Admin extends React.Component {
     }
 
     doNothing = (id) => {
-        
+
     }
 
     displayUserRow = (user) => {
-        return <this.Row>
-            <this.Cell>{user.login}</this.Cell> <this.Cell>{user.email}</this.Cell>
-            <this.Cell>{user.roleName}</this.Cell> 
-            <this.Cell>
-                <Button variant="contained" style={{backgroundColor: "red"}} key={user.login} onClick={() => this.sendDeleteRequest(user.id)}>Delete</Button>
-                <Button variant="outlined" style={{backgroundColor: "orange", margin: "10px"}} key={user.login} onClick={() => this.doNothing(user.id)}>Ban</Button>
-                <Button variant="contained" style={{backgroundColor: "green"}} key={user.login} onClick={() => this.doNothing(user.id)}>Unban</Button>
-            </this.Cell>
-        </this.Row>
+        return <TableRow>
+            <TableCell >{user.login}</TableCell> <TableCell>{user.email}</TableCell>
+            <TableCell >{user.roleName}</TableCell>
+            <TableCell style={{ width: "20%"}}>
+                <Button variant="outlined" style={{ backgroundColor: "red" }} key={user.login} onClick={() => this.sendDeleteRequest(user.id)}>Delete</Button>
+                <Button variant="outlined" style={{ backgroundColor: "orange", margin: "10px" }} key={user.login} onClick={() => this.doNothing(user.id)}>Ban</Button>
+                <Button variant="outlined" style={{ backgroundColor: "green" }} key={user.login} onClick={() => this.doNothing(user.id)}>Unban</Button>
+            </TableCell>
+        </TableRow>
     }
     sendRequestAndSetNewPage = (page = this.state.page) => {
         if (page < 1) return;
@@ -139,17 +137,19 @@ class Admin extends React.Component {
     render() {
         return (
             <this.Wraper>
-                <this.Table>
-
-                    <this.Row>
-                        <this.TopCell>Login</this.TopCell> <this.TopCell>Email</this.TopCell> <this.TopCell>Role</this.TopCell><this.TopCell></this.TopCell>
-                    </this.Row>
+                <Table style={{ width: "100%" }}>
+                    <TableHead style={{ backgroundColor: "grey" }}>
+                        <TableRow >
+                            <TableCell>Login</TableCell> <TableCell>Email</TableCell> <TableCell>Role</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
                     {this.state.List.map((user) => {
-                        return <> {this.displayUserRow(user)}</>
-                    })}
-
-                </this.Table>
-                {<Button variant="outlined" color="primary" style={{margin: "10px"}} onClick={() => this.sendRequestAndSetNewPage(this.state.page)}>Refresh</Button>}
+                            return <> {this.displayUserRow(user)}</>
+                        })}
+                    </TableBody>
+                </Table>
+                {<Button variant="outlined" color="primary" style={{ margin: "10px" }} onClick={() => this.sendRequestAndSetNewPage(this.state.page)}>Refresh</Button>}
                 {<Button variant="contained" color="primary" onClick={() => this.sendRequestAndSetNewPage(this.state.page - 1)}>Prev</Button>}
                 <this.Page>{this.state.page}</this.Page>
                 {<Button variant="contained" color="primary" onClick={() => this.sendRequestAndSetNewPage(this.state.page + 1)}>Next</Button>}

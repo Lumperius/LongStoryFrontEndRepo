@@ -53,9 +53,13 @@ class InitializeStory extends React.Component {
     `;
     Wraper = styled.div`
     text-align:left;
-    margin:50px;
-    font-size: 15px;
-    font-weight: 100;
+    margin:30px;
+    padding: 50px;
+    font-size: 28px;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 20px;
+    border-color: lightgrey;
     `;
     InputLabel = styled.h3`
     font-size: 30px;
@@ -92,6 +96,7 @@ class InitializeStory extends React.Component {
             title: this.state.title,
             body: this.state.body,
             author: this.props.token.login,
+            authorId: this.props.token.id,
             dateSubmitted: new Date().toISOString()
         }
         axiosSetUp().post("http://localhost:5002/story/createStory", body)

@@ -3,9 +3,10 @@ import { Redirect, useHistory } from 'react-router';
 import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig'
 import { connect } from 'react-redux'
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+
 
 class StartPage extends React.Component {
     service;
@@ -23,15 +24,21 @@ class StartPage extends React.Component {
     StoryBlock = styled.div`
     margin: 20px;
     padding: 15px;
-    background-color: lightgrey;
+    border-style: solid;
+    border-width:1px;
     &:hover {
-        background-color: grey;
+        background-color: lightgrey;
     }`;
     Wraper = styled.div`
     text-align:left;
     margin-top: 1500px;
-    margin:90px;
+    margin:30px;
+    padding: 50px;
     font-size: 28px;
+    border-style: solid;
+    border-width:1px;
+    border-radius: 20px;
+    border-color: lightgrey;
     `;
     Title = styled.h2`
     font-family: TimesNewRoman;

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 
 class Registration extends React.Component {
 
@@ -19,8 +20,14 @@ class Registration extends React.Component {
 
     Wraper = styled.div`
     text-align:left;
-    margin:50px;
+    margin-top: 1500px;
+    margin:30px;
+    padding: 50px;
     font-size: 28px;
+    border-style: solid;
+    border-width:1px;
+    border-radius: 20px;
+    border-color: lightgrey;
     `;
     Input = styled.input`
     margin-up: 0px;
@@ -106,7 +113,7 @@ class Registration extends React.Component {
         };
         axiosSetUp().post('http://localhost:5002/user/register', body)
             .then(response => {
-                if(response.status === 201)
+                if (response.status === 201)
                     this.props.history.push('/authentication');
                 else
                     throw response
@@ -123,16 +130,17 @@ class Registration extends React.Component {
     render() {
         return (
             <this.Wraper>
-                <Typography variant='h4' align='left' style={{margin: "30px"}} gutterBottom >Registration</Typography >
+                <Typography variant='h4' align='left' style={{ margin: "30px" }} gutterBottom >Registration</Typography >
                 <this.ErrorMessage>{this.state.message}</this.ErrorMessage>
-                <form>
-                    <this.Input name="login" type="text" onChange={this.handleChange} />  <Typography variant='subtitle1'>Login </Typography><br /><br />
-                    <this.Input name="email" type="text" onChange={this.handleChange} /> <Typography variant='subtitle1'>Email </Typography><br /><br />
-                    <this.Input name="password" type="password" onChange={this.handleChange} />  <Typography variant='subtitle1'>Password </Typography><br />
-                    <this.Input name="repeat_password" type="password" onChange={this.handleChange} />  <Typography variant='subtitle1'>Repeat password </Typography><br /><br /><hr /><br />
-
-                    <Button variant="contained" color="primary" onClick={this.sendRequest}>Submit</Button>
-                </form>
+                <ExpansionPanel>
+                    <form>
+                        <this.Input name="login" type="text" onChange={this.handleChange} />  <Typography variant='subtitle1'>Login </Typography><br />
+                        <this.Input name="email" type="text" onChange={this.handleChange} /> <Typography variant='subtitle1'>Email </Typography><br />
+                        <this.Input name="password" type="password" onChange={this.handleChange} />  <Typography variant='subtitle1'>Password </Typography><br />
+                        <this.Input name="repeat_password" type="password" onChange={this.handleChange} />  <Typography variant='subtitle1'>Repeat password </Typography><br />
+                    </form>
+                </ExpansionPanel>
+                <Button variant="contained" color="primary" onClick={this.sendRequest}>Submit</Button>
                 <this.RegistrationLink href="/authentication">Already have an account?</this.RegistrationLink>
             </this.Wraper>
         );

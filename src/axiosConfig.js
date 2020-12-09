@@ -38,13 +38,11 @@ axiosInstance.interceptors.response.use(response => {
             history.push('authentication');
             debugger
         }
-        if (error.response.status === 400){
-            error.response.data = 'Something bad happend. Contact administrator or try again later'
-        }
         if (error.response.status.toString().startsWith('5')){
             error.response.data = 'Something bad happend. Contact administrator or try again later'
+            throw error.response;
         }
-        return error.response;
+        throw error.response;
     })
 
 export default function axiosSetUp() {

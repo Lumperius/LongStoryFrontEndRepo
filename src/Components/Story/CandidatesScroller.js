@@ -65,10 +65,14 @@ class CandidatesScroller extends React.Component {
 
     }
 
-    sendVoteCandidateRequsest = (storyPartId, candidate) => {
+    sendVoteCandidateRequsest = ( candidate) => {
         if (candidate.isRated) return this.setState({message: 'You can not vote twice on same candidate'});
         let userId = this.props.token.id;
-        axiosSetUp().get(`http://localhost:5002/storyPartCandidate/vote?storyPartId=${storyPartId}&userId=${userId}`)
+        let body ={
+            storyPartCandidateId: candidate.id,
+            userId: userId
+        }
+        axiosSetUp().post(`http://localhost:5002/storyPartCandidate/vote`, body)
             .then(response => {
                 this.setState({
                     message: response.data
@@ -88,7 +92,7 @@ class CandidatesScroller extends React.Component {
         if (candidate.isRated) voteMessage = 'Already rated'
         else voteMessage = 'Click to rate'
         return <this.CandidateBlock onClick={() => {
-            this.sendVoteCandidateRequsest(candidate.id, candidate);
+            this.sendVoteCandidateRequsest(candidate);
         }}>
             {candidate.body} <this.Signature><b>{candidate.rating} {voteMessage}</b> {candidate.author} {candidate.dateSubmitted}</this.Signature>
         </this.CandidateBlock>
