@@ -10,6 +10,9 @@ class UserStories extends React.Component{
       }
     }
 
+    componentDidMount(){
+
+    }
 
     Wraper = styled.div`
     text-align:left;

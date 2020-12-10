@@ -5,7 +5,7 @@ import axiosSetUp from '../../axiosConfig';
 import { connect } from 'react-redux';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import Typography from '@material-ui/core/Typography';
-
+import Button from '@material-ui/core/Button';
 
 
 class AddStoryPart extends React.Component {
@@ -33,7 +33,6 @@ class AddStoryPart extends React.Component {
     }
 
     sendNewStoryPartRequest = () => {
-        debugger
         if(!this.validateRequestParametrs()) return;
         let requestBody = {
             storyId: this.props.storyId,
@@ -88,7 +87,7 @@ class AddStoryPart extends React.Component {
         return <this.Wraper>
             <this.ErrorMessage>{this.state.message}</this.ErrorMessage>
             <TextareaAutosize rowsMin={6} name="body" aria-label="empty textarea" style={{fontSize: "20px", width: "90%"}} onChange={this.handleChange}></TextareaAutosize><br/>
-            <this.SubmitButton onClick={this.sendNewStoryPartRequest}>submit</this.SubmitButton>
+            <Button onClick={this.sendNewStoryPartRequest}>submit</Button>
         </this.Wraper>
     }
 }

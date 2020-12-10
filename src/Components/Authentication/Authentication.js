@@ -21,7 +21,6 @@ class Authentication extends React.Component {
 
     Wraper = styled.div`
     text-align:left;
-    margin-top: 1500px;
     margin:30px;
     padding: 50px;
     font-size: 28px;

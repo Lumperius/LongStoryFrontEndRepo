@@ -76,9 +76,9 @@ class Story extends React.Component {
     sendGetStoryRequest() {
         let storyId = this.props.match.params.id;
         let requestUrl = `http://localhost:5002/story/get?storyId=${storyId}`;
-        
+
         if (this.props.token)
-        requestUrl = `${requestUrl}&userId=${this.props.token.id}`;
+            requestUrl = `${requestUrl}&userId=${this.props.token.id}`;
 
         axiosSetUp().get(requestUrl)
             .then(response => {
@@ -90,7 +90,7 @@ class Story extends React.Component {
                         dateSubmitted: response.data.dateSubmitted,
                         author: response.data.author,
                         rating: response.data.rating,
-                        isFinishedMessage: response.data.isFinished ? 'finished' : 'In process',
+                        state: response.data.state,
                         isVoted: response.data.isVoted,
                     },
                     StoryParts: response.data.storyParts || [],
@@ -124,22 +124,28 @@ class Story extends React.Component {
 
     renderEditor = () => {
         if (this.props.token) {
-            if (this.state.story.isFinishedMessage === 'In process') {
-                if (this.state.showEditor) {
-                    let storyId = this.props.match.params.id;
-                    return <AddStoryPart storyId={storyId} />
-                }
-                else return <>
-                    <Button variant="contained" color="primary" onClick={
-                        () => this.setState({ showEditor: true })}>
-                        Suggest next story part
-                </Button>
+            switch (this.state.story.state) {
+                case 'Alive':
+                    if (this.state.showEditor) {
+                        let storyId = this.props.match.params.id;
+                        return <AddStoryPart storyId={storyId} />
+                    }
+                    else return <>
+                        <Button variant="contained" color="primary" onClick={
+                            () => this.setState({ showEditor: true })}>
+                            Suggest next story part
+                    </Button>
 
-                    <CandidatesScroller storyId={this.state.story.id} /><br />
-                </>
-            }
-            else {
-                return <Typography>This story is finished</Typography>
+                        <CandidatesScroller storyId={this.state.story.id} /><br />
+                    </>
+                case 'Finished':
+                    return <Typography>This story is finished</Typography>
+                case 'Rated':
+                    return <> 
+                    <Typography>This story is being rated right now, you need to wait a little before you can submit</Typography>
+                        <CandidatesScroller storyId={this.state.story.id} /><br />
+                        </>
+
             }
         }
         else {
@@ -151,7 +157,7 @@ class Story extends React.Component {
         if (storyPart.body) {
             return <>
                 <p>{storyPart.body}</p>
-        <this.Signature>{storyPart.author} at {storyPart.dateAdded} with {storyPart.finalRating} votes</this.Signature>
+                <this.Signature>{storyPart.author} at {storyPart.dateAdded} with {storyPart.finalRating} votes</this.Signature>
                 <hr />
             </>
         }
