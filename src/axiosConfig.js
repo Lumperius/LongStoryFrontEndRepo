@@ -1,6 +1,5 @@
 import axios from 'axios';
-import jwt_decode from 'jwt-decode';
-import { useHistory } from "react-router-dom";
+import history from './history.js';
 
 const axiosInstance = axios.create({
     headers: {
@@ -8,6 +7,8 @@ const axiosInstance = axios.create({
         'Authorization': `Bearer ${localStorage.getItem('Token')}`
     }
 });
+
+
 
 axiosInstance.interceptors.request.use(config => {
     const token = localStorage.getItem('Token');
@@ -23,6 +24,7 @@ axiosInstance.interceptors.request.use(config => {
 
 axiosInstance.interceptors.response.use(response => {
     if (response.status.toString().startsWith('2')) {
+
         return response;
     }
     else {
@@ -30,13 +32,9 @@ axiosInstance.interceptors.response.use(response => {
     }
 },
     error => {
-        debugger
         if (error.response.status === 403 || error.response.status === 401) {
-            debugger
             localStorage.removeItem('Token');
-            let history = useHistory();
-            history.push('authentication');
-            debugger
+            history.push('/authentication');
         }
         if (error.response.status.toString().startsWith('5')){
             error.response.data = 'Something bad happend. Contact administrator or try again later'

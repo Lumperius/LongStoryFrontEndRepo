@@ -10,7 +10,7 @@ class Office extends React.Component {
   constructor() {
     super()
     this.state = {
-      activeComponent: undefined
+      activeComponent: <Info/>
     }
   }
 

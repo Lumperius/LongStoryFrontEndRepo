@@ -4,7 +4,7 @@ import AuthorizedNavBar from './Components/Navbar/AuthorizedNavBar';
 import Authentication from './Components/Authentication/Authentication';
 import Registration from './Components/Registration/Registration';
 import Welcome from './Components/StartPage/StartPage';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { Router, Route } from 'react-router-dom';
 import Admin from './Components/Admin/Admin';
 import Office from './Components/UserOffice/Office';
 import { connect } from 'react-redux';
@@ -13,6 +13,7 @@ import setToken from './Actions/setToken'
 import Logout from './Components/Logout/Logout';
 import InitializeStory from './Components/Story/InitializeStory';
 import Story from './Components/Story/Story';
+import history from './history.js'
 import 'typeface-roboto'
 
 
@@ -43,7 +44,7 @@ class App extends React.Component {
     return (
       <div className="App">
         {NavBarOption}
-        <Router>
+        <Router history={history}>
           <Route exact path="/" component={Welcome} />
           <Route exact path="/authentication" component={Authentication} />
           <Route exact path="/registration" component={Registration} />

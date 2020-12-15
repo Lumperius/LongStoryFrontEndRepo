@@ -13,7 +13,10 @@ class StartPage extends React.Component {
     constructor() {
         super();
         this.state = {
-            message: '',
+            message: {
+                body: '',
+                type: ''
+            },
             StoriesList: [],
             page: 1,
             pageSize: 5
@@ -69,50 +72,72 @@ class StartPage extends React.Component {
     color: darkred;
     text-align: right;
     `;
+    ErrorMessage = styled.p` 
+    color: red;
+    font-size: 14px;
+    `;
 
     componentDidMount() {
         this.sendRequestAndSetNewPage();
     }
 
-    cutStoryBody = (body) => {
-        if(body)
-        return body.substring(0, 10) + '...'
-    }
-
-    handleClick = (id) =>{
-        this.props.history.push(`Story${id}`)
-    }
-
-
     sendRequestAndSetNewPage = (page = this.state.page) => {
-        if( page < 1 ) return;
-        axiosSetUp().get(`http://localhost:5002/story/getrange?page=${page - 1}&count=${this.state.pageSize}`)
+        if (page < 1) return;
+        axiosSetUp().get(`http://localhost:5002/story/getPage?page=${page - 1}&count=${this.state.pageSize}`)
             .then((response) => {
                 this.setState({
-                    StoriesList: response.data,
+                    StoriesList: response.data || '',
                     page: page
                 })
             })
-            .catch((ex) => {
-                console.log('Failed', ex)
+            .catch((error) => {
+                console.log('Failed', error)
+                this.setState({
+                    message: {
+                        body: error.data || '',
+                        type: 'error'
+                    }
+                })
             })
     };
+
+
+    cutStoryBody = (body) => {
+        if (body)
+            return body.substring(0, 10) + '...'
+    }
+
+
+    handleClick = (id) => {
+        this.props.history.push(`Story${id}`)
+    }
+
 
     renderAStory = (story) => {
         story.body = this.cutStoryBody(story.firstPartBody);
         return <this.StoryBlock onClick={() => this.handleClick(story.id)}>
             <Typography variant='normal'>{story.title}</Typography>
-            <Typography variant='subtitle1'>{story.firstPartBody}</Typography><this.Line />
-    <this.Signature>
-        By {story.author} {story.dateSubmitted} <this.Rating >{story.rating}</this.Rating>
-    </this.Signature>
+            <Typography variant='subtitle1' style={{wordWrap: "break-word", textIndent: "15px"}}>{story.firstPartBody}</Typography><this.Line />
+            <this.Signature>
+                By {story.author} {story.dateSubmitted} <this.Rating >{story.rating}</this.Rating>
+            </this.Signature>
         </this.StoryBlock>
     }
+
+    renderMessage = () => {
+        switch (this.state.message.type) {
+            case 'error':
+                return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
+            case 'info':
+                return <Typography variant="subtitle1">{this.state.message.body}</Typography>
+        }
+    }
+
 
     render() {
         return (
             <this.Wraper >
-                {this.state.message}
+                {this.renderMessage()}
                 {this.state.StoriesList.map((story) => {
                     return <> {this.renderAStory(story)} </>
                 })}

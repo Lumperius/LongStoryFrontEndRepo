@@ -15,7 +15,10 @@ class Authentication extends React.Component {
         this.state = {
             loginOrEmail: '',
             password: '',
-            message: ''
+            message: {
+                body: '',
+                type: ''
+            },
         }
     }
 
@@ -62,11 +65,13 @@ class Authentication extends React.Component {
         })
     }
 
+
     getLoginOrEmailType = () => {
         let emailRegex = /\S+@\S+\.\S+/;
         if (emailRegex.test(this.state.loginOrEmail)) return 'Email';
         else return 'Login';
     }
+
 
     sendRequest = () => {
         let inputType = this.getLoginOrEmailType()
@@ -84,27 +89,41 @@ class Authentication extends React.Component {
             })
             .catch(error => {
                 console.log(error.json);
-                this.setState({ message: error.data });
-            })
-    };
+                this.setState({
+                    message: {
+                        body: error.data,
+                        type: 'error'
+                    }
+                })
+        })
+};
 
-    render() {
-        return (
-            <this.Wraper>
-                    <Typography variant='h4' align='left' style={{ margin: "30px" }} gutterBottom >Login</Typography >
-
-                <this.ErrorMessage>{this.state.message}</this.ErrorMessage>
-                <ExpansionPanel>
-                    <form>
-                        <this.Input name="loginOrEmail" type="text" onChange={this.handleChange} /> <Typography variant='subtitle1'>Login or email </Typography><br />
-                        <this.Input name="password" type="password" onChange={this.handleChange} /> <Typography variant='subtitle1'>Password </Typography><br />
-                    </form>
-                </ExpansionPanel>
-                <Button variant="contained" color="primary" onClick={this.sendRequest}>Submit</Button>
-                <this.RegistrationLink href="/registration">Not registred?</this.RegistrationLink>
-            </this.Wraper>
-        );
+renderMessage = () =>{
+    switch(this.state.message.type){
+        case 'error':
+    return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
+        case 'info':
+    return <Typography variant="subtitle1">{this.state.message.body}</Typography>
     }
+}
+
+render() {
+    return (
+        <this.Wraper>
+            <Typography variant='h4' align='left' style={{ margin: "30px" }} gutterBottom >Login</Typography >
+
+            {this.renderMessage()}
+            <ExpansionPanel>
+                <form>
+                    <this.Input name="loginOrEmail" type="text" onChange={this.handleChange} /> <Typography variant='subtitle1'>Login or email </Typography><br />
+                    <this.Input name="password" type="password" onChange={this.handleChange} /> <Typography variant='subtitle1'>Password </Typography><br />
+                </form>
+            </ExpansionPanel>
+            <Button variant="contained" color="primary" onClick={this.sendRequest}>Submit</Button>
+            <this.RegistrationLink href="/registration">Not registred?</this.RegistrationLink>
+        </this.Wraper>
+    );
+}
 }
 
 const mapStateToProps = function (state) {

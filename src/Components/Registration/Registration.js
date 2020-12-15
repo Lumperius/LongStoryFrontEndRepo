@@ -14,7 +14,10 @@ class Registration extends React.Component {
             email: '',
             password: '',
             repeat_password: '',
-            message: ''
+            message: {
+                body: '',
+                type: ''
+            },
         }
     }
 
@@ -120,18 +123,31 @@ class Registration extends React.Component {
             })
             .catch(error => {
                 this.setState({
-                    message: error.data
+                    message: {
+                        body: error.data || [],
+                        type: 'error'
+                    }
                 })
                 console.log(error);
             })
 
     };
 
+    renderMessage = () =>{
+        switch(this.state.message.type){
+            case 'error':
+        return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
+            case 'info':
+        return <Typography variant="subtitle1">{this.state.message.body}</Typography>
+        }
+    }
+    
+
     render() {
         return (
             <this.Wraper>
                 <Typography variant='h4' align='left' style={{ margin: "30px" }} gutterBottom >Registration</Typography >
-                <this.ErrorMessage>{this.state.message}</this.ErrorMessage>
+                {this.renderMessage()}
                 <ExpansionPanel>
                     <form>
                         <this.Input name="login" type="text" onChange={this.handleChange} />  <Typography variant='subtitle1'>Login </Typography><br />

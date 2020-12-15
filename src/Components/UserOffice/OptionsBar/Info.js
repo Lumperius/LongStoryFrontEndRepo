@@ -11,9 +11,13 @@ class Info extends React.Component {
     constructor() {
         super()
         this.state = {
-            message: '',
+            message: {
+                body: '',
+                type: ''
+            },
             showEditor: false,
             info: {},
+            login: '',
             firstName: '',
             lastName: ''
         }
@@ -46,13 +50,19 @@ class Info extends React.Component {
             .then(response => {
                 this.setState({
                     info: response.data,
+                    login: response.data.login,
                     firstName: response.data.firstName,
                     lastName: response.data.lastName
                 })
             })
             .catch(error => {
                 console.log(error.response.data);
-                this.setState({ message: error.response.data });
+                this.setState({
+                    message: {
+                        body: error.data,
+                        type: 'error'
+                    }
+                })
             });
     }
 
@@ -60,6 +70,7 @@ class Info extends React.Component {
         let userId = this.props.token.id;
         let body = {
             userId: userId,
+            login: this.state.login,
             firstName: this.state.firstName,
             lastName: this.state.lastName
         }
@@ -69,22 +80,38 @@ class Info extends React.Component {
             })
             .catch(error => {
                 console.log(error.response.data);
-                this.setState({ message: error.response.data });
+                this.setState({
+                    message: {
+                        body: error.data,
+                        type: 'error'
+                    }
+                })
             });
     }
 
+    renderMessage = () =>{
+        switch(this.state.message.type){
+            case 'error':
+        return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
+            case 'info':
+        return <Typography variant="subtitle1">{this.state.message.body}</Typography>
+        }
+    }
 
     render() {
         return (
             <this.Wraper>
-                <Typography variant="title1">Your info</Typography><br/><br/>
-                <Typography variant="subtitle1">Login: {this.state.info.email}</Typography>
-                <Typography variant="subtitle1">Email: {this.state.info.role}</Typography>
-                <Typography variant="subtitle1">First and second name:</Typography>
-                <TextField name="firstName" label={this.state.info.firstName} onChange={this.handleChange}/>
-                <TextField name="lastName" label={this.state.info.lastName} onChange={this.handleChange} /><br/><br/>
+            {this.renderMessage()}
+                <Typography variant="title1">Your info</Typography><br /><br />
+                <Typography variant="subtitle1" >Login: {this.state.info.login}</Typography>
+                <TextField name="login" label="Change login" onChange={this.handleChange}/><br />
+                <Typography variant="subtitle1">Email: {this.state.info.email}</Typography>
+                <Typography variant="subtitle1">Role: {this.state.info.role}</Typography>
+                <Typography variant="subtitle1">First and second name: {this.state.info.firstName} {this.state.info.lastName}</Typography> 
+                <TextField name="firstName" label="First name" onChange={this.handleChange} style={{ width: "100px" }}/>
+                <TextField name="lastName" label="Last name" onChange={this.handleChange} style={{ width: "100px" }}/><br /><br />
                 <Typography variant="subtitle1">Birtday: {this.state.info.birthDay}</Typography>
-                <Typography variant="subtitle1">Registered: {this.state.info.dateRegistered}</Typography><hr/>
+                <Typography variant="subtitle1">Registered: {this.state.info.dateRegistered}</Typography><hr />
                 <Button onClick={this.sendPostUserInfoRequest}>Edit</Button>
             </this.Wraper>
         )

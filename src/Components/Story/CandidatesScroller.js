@@ -2,12 +2,17 @@ import React from 'react';
 import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig';
 import { connect } from 'react-redux';
+import Typography from '@material-ui/core/Typography';
+
 
 class CandidatesScroller extends React.Component {
     constructor() {
         super();
         this.state = {
-            message: '',
+            message: {
+                body: '',
+                type: ''
+            },
             CandidatesList: []
         }
     }
@@ -23,15 +28,17 @@ class CandidatesScroller extends React.Component {
     background-color: lightgray;
     display: block;
     margin: 0px;
+    wordWrap: break-word;
+    textIndent: "15px";
     &:hover {
-        background-color: gray;
+        background-color: grey;
     }`;
 
     Scroller = styled.div`
     width: 100%;
-    height: 500px;
-    white-space:nowrap; 
     overflow-y: scroll;
+    overflow-x: hidden;
+    max-height: 200px;
     `;
     InfoMessage = styled.p` 
     color: black;
@@ -41,45 +48,67 @@ class CandidatesScroller extends React.Component {
     font-size: 14px;
     text-align: right;
     `;
-
+    ErrorMessage = styled.p` 
+    color: red;
+    font-size: 14px;
+    `;
 
 
     componentDidMount() {
         this.sendGetCandidatesRequest();
     }
 
-
     sendGetCandidatesRequest = () => {
         let userId = this.props.token.id;
         axiosSetUp().get(`http://localhost:5002/storyPartCandidate/getAll?storyId=${this.props.storyId}&userId=${userId}`)
             .then(response => {
-                if(typeof response.data === 'string') throw response
+                if (typeof response.data === 'string') throw response
                 this.setState({
                     CandidatesList: response.data || []
                 })
             })
             .catch(error => {
                 console.log(error);
-                this.setState({message: error.data})
+                this.setState({
+                    message: {
+                        body: error.data,
+                        type: 'error'
+                    }
+                })
             })
 
     }
 
-    sendVoteCandidateRequsest = ( candidate) => {
-        if (candidate.isRated) return this.setState({message: 'You can not vote twice on same candidate'});
+    sendVoteCandidateRequsest = (candidate) => {
+        if (candidate.isRated) return this.setState({ 
+            message:{
+            body:  'You can not vote twice on same candidate' ,
+            type: 'error'
+            }
+        });
         let userId = this.props.token.id;
-        let body ={
+        let body = {
             storyPartCandidateId: candidate.id,
             userId: userId
         }
         axiosSetUp().post(`http://localhost:5002/storyPartCandidate/vote`, body)
             .then(response => {
                 this.setState({
-                    message: response.data
+                    message: {
+                        body: response.data,
+                        type: 'info'
+                    }
                 })
             })
             .catch(error => {
                 console.log(error);
+                this.setState({
+                    message: {
+                        body: error.data,
+                        type: 'error'
+                    }
+                })
+
             })
         candidate.isRated = true;
         candidate.rating = ++candidate.rating;
@@ -94,14 +123,25 @@ class CandidatesScroller extends React.Component {
         return <this.CandidateBlock onClick={() => {
             this.sendVoteCandidateRequsest(candidate);
         }}>
-            {candidate.body} <this.Signature><b>{candidate.rating} {voteMessage}</b> {candidate.author} {candidate.dateSubmitted}</this.Signature>
+            <Typography variant="body" style={{wordWrap: "break-word", textIndent: "15px"}}>
+                {candidate.body}
+            </Typography>
+            <this.Signature><b>{candidate.rating} {voteMessage}</b> {candidate.author} {candidate.dateSubmitted}</this.Signature>
         </this.CandidateBlock>
     }
 
+    renderMessage = () =>{
+        switch(this.state.message.type){
+            case 'error':
+        return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
+            case 'info':
+        return <Typography variant="subtitle1">{this.state.message.body}</Typography>
+        }
+    }
 
     render() {
         return <this.Scroller>
-            <this.InfoMessage>{this.state.message}</this.InfoMessage>
+            {this.renderMessage()}
             {this.state.CandidatesList.map((candidate) => {
                 return <>
                     {this.renderCandidate(candidate)}

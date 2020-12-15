@@ -54,10 +54,7 @@ class Logout extends React.Component {
                     Logout
                 </this.NavBarButton>
                 <Dialog open={this.state.open}>
-                    <MuiDialogTitle style={{margin: "10px"}}>
-                        Confirm your actions
-                    </MuiDialogTitle>
-                    <Typography style={{marginLeft: "30px"}} gutterBottom>
+                    <Typography style={{margin: "30px"}} gutterBottom>
                         Are you sure?
                     </Typography>
                     <MuiDialogActions>

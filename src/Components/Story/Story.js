@@ -13,11 +13,16 @@ class Story extends React.Component {
     constructor() {
         super();
         this.state = {
+            message: {
+                body: '',
+                type: ''
+            },
             story: {
                 id: '',
+                authorId: '',
                 title: '',
                 firstElementBody: '',
-                dateSubmitted: null,
+                dateSubmitted: '',
                 author: '',
                 rating: 0,
                 isFinishedMessage: true,
@@ -66,6 +71,11 @@ class Story extends React.Component {
     font-size: 40px;
     color: darkred;
     `;
+    ErrorMessage = styled.p` 
+    color: red;
+    font-size: 14px;
+    `;
+
 
 
     componentDidMount() {
@@ -85,6 +95,7 @@ class Story extends React.Component {
                 this.setState({
                     story: {
                         id: response.data.id,
+                        authorId: response.data.authorId,
                         title: response.data.title,
                         firstElementBody: response.data.firstElementBody,
                         dateSubmitted: response.data.dateSubmitted,
@@ -95,6 +106,15 @@ class Story extends React.Component {
                     },
                     StoryParts: response.data.storyParts || [],
                     StoryPartCandidates: response.data.storyPartCandidates || []
+                })
+            })
+            .catch(error => {
+                console.log(error);
+                this.setState({
+                    message: {
+                        body: error.data,
+                        type: 'error'
+                    }
                 })
             })
     }
@@ -117,8 +137,39 @@ class Story extends React.Component {
                 this.setState({ state });
             })
             .catch((ex) => {
-                console.log('Failed', ex)
+                console.log('Failed', ex);
+                this.setState({
+                    message: {
+                        body: ex.response.data,
+                        type: 'error'
+                    }
+                })
             })
+    };
+
+    sendFinishStoryRequest = () =>{
+        let storyId = this.props.match.params.id;
+        let body={
+            storyId: storyId,
+            userId: this.props.token.id
+        }
+        axiosSetUp().post(`http://localhost:5002/story/finish`, body)
+        .then(response => {
+            this.setState({
+                message:{
+                    body: response.data,
+                    type: 'info'
+                }
+            })
+        })
+        .catch(error =>{
+            this.setState({
+                message:{
+                    body: error.data,
+                    type: 'error'
+                }
+            })
+        });
     };
 
 
@@ -134,17 +185,17 @@ class Story extends React.Component {
                         <Button variant="contained" color="primary" onClick={
                             () => this.setState({ showEditor: true })}>
                             Suggest next story part
-                    </Button>
+                        </Button>
 
                         <CandidatesScroller storyId={this.state.story.id} /><br />
                     </>
                 case 'Finished':
                     return <Typography>This story is finished</Typography>
                 case 'Rated':
-                    return <> 
-                    <Typography>This story is being rated right now, you need to wait a little before you can submit</Typography>
+                    return <>
+                        <Typography>This story is being rated right now, you need to wait a wee bit before you can submit new parts</Typography>
                         <CandidatesScroller storyId={this.state.story.id} /><br />
-                        </>
+                    </>
 
             }
         }
@@ -156,7 +207,7 @@ class Story extends React.Component {
     renderStoryPart = (storyPart) => {
         if (storyPart.body) {
             return <>
-                <p>{storyPart.body}</p>
+                <Typography variant="body" style={{wordWrap: "break-word", textIndent: "15px"}}>{storyPart.body}</Typography>
                 <this.Signature>{storyPart.author} at {storyPart.dateAdded} with {storyPart.finalRating} votes</this.Signature>
                 <hr />
             </>
@@ -175,11 +226,28 @@ class Story extends React.Component {
         }
     }
 
+    renderFinishStoryButton = () =>{
+        if(this.props.token)
+        if(this.props.token.id === this.state.story.authorId)
+        return<>
+            <Button variant="outlined" onClick={this.sendFinishStoryRequest}>Finish this story</Button>
+        </>
+    }
+
+    renderMessage = () =>{
+        switch(this.state.message.type){
+            case 'error':
+        return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
+            case 'info':
+        return <Typography variant="subtitle1">{this.state.message.body}</Typography>
+        }
+    }
+
 
     render() {
         return <this.Wraper>
-            <h1>{this.state.story.title}</h1>
-            <p>{this.state.story.firstElementBody}</p>
+            {this.renderMessage()}
+            <Typography variant="h3">{this.state.story.title}</Typography>
             <this.Signature>
                 <this.Rating>{this.state.story.rating}</this.Rating>
                 {this.state.story.author}_
@@ -192,6 +260,7 @@ class Story extends React.Component {
                 return <>{this.renderStoryPart(storyPart)}</>
             })}
             {this.renderEditor()}
+            {this.renderFinishStoryButton()}
         </this.Wraper>
     }
 }
