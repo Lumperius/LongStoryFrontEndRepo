@@ -17,9 +17,10 @@ class Info extends React.Component {
             },
             showEditor: false,
             info: {},
-            login: '',
-            firstName: '',
-            lastName: ''
+            inputLogin: '',
+            inputFirstName: '',
+            inputLastName: '',
+            avatar: null
         }
     }
 
@@ -44,9 +45,37 @@ class Info extends React.Component {
         })
     }
 
+    handleImageChange = (event) => {
+        debugger
+        this.setState({
+            avatar: event.target.files[0]
+        })
+    }
+
+    
+    handleSubmit = (event) => {
+        event.preventDefault();
+        console.log(this.state);
+        let formData = new FormData();
+        formData.append('avatar', this.state.avatar, 'this.state.image.name');
+        formData.append('title', '');
+        formData.append('content', '');
+        let url = `http://localhost:5002/userInfo/setAvatar?userId=${this.props.token.id}`;
+        axiosSetUp().post(url, formData, {
+            headers: {
+                'content-type': 'multipart/form-data',
+              }
+        })
+            .then(response => {
+              console.log(response.data);
+            })
+            .catch(err => console.log(err))
+      };
+
+
     sendGetUserInfoRequest = () => {
-        let token = this.props.token.id;
-        axiosSetUp().get(`http://localhost:5002/userInfo/getInfo?userId=${token}`)
+        let userId = this.props.token.id;
+        axiosSetUp().get(`http://localhost:5002/userInfo/getInfo?userId=${userId}`)
             .then(response => {
                 this.setState({
                     info: response.data,
@@ -56,7 +85,6 @@ class Info extends React.Component {
                 })
             })
             .catch(error => {
-                console.log(error.response.data);
                 this.setState({
                     message: {
                         body: error.data,
@@ -76,7 +104,12 @@ class Info extends React.Component {
         }
         axiosSetUp().post(`http://localhost:5002/userInfo/setInfo`, body)
             .then(response => {
-                this.setState()
+                let state = this.state;
+                state.info.login = this.state.inputLogin;
+                state.info.firstName = this.state.inputFirstName;
+                state.info.lastName = this.state.inputLastName;
+
+                this.setState(state)
             })
             .catch(error => {
                 console.log(error.response.data);
@@ -98,21 +131,34 @@ class Info extends React.Component {
         }
     }
 
+    renderAvatar = () =>{
+        var state = this.state;
+        debugger
+        return<img src={`data:image/jpeg;base64,${this.state.info.avatar}`} />
+    }
+
     render() {
         return (
             <this.Wraper>
             {this.renderMessage()}
                 <Typography variant="title1">Your info</Typography><br /><br />
-                <Typography variant="subtitle1" >Login: {this.state.info.login}</Typography>
-                <TextField name="login" label="Change login" onChange={this.handleChange}/><br />
-                <Typography variant="subtitle1">Email: {this.state.info.email}</Typography>
-                <Typography variant="subtitle1">Role: {this.state.info.role}</Typography>
-                <Typography variant="subtitle1">First and second name: {this.state.info.firstName} {this.state.info.lastName}</Typography> 
-                <TextField name="firstName" label="First name" onChange={this.handleChange} style={{ width: "100px" }}/>
-                <TextField name="lastName" label="Last name" onChange={this.handleChange} style={{ width: "100px" }}/><br /><br />
-                <Typography variant="subtitle1">Birtday: {this.state.info.birthDay}</Typography>
-                <Typography variant="subtitle1">Registered: {this.state.info.dateRegistered}</Typography><hr />
-                <Button onClick={this.sendPostUserInfoRequest}>Edit</Button>
+                <Typography variant="subtitle1" >LOGIN: {this.state.info.login}</Typography>
+                <TextField name="inputLogin" label="Change login" onChange={this.handleChange}/><br />
+                <Typography variant="subtitle1">EMAIL: {this.state.info.email}</Typography>
+                <Typography variant="subtitle1">ROLE: {this.state.info.role}</Typography>
+                <Typography variant="subtitle1">FIRST AND SECOND NAME: {this.state.info.firstName} {this.state.info.lastName}</Typography> 
+                <TextField name="inputFirstName" label="First name" onChange={this.handleChange} style={{ width: "100px" }}/>
+                <TextField name="inputLastName" label="Last name" onChange={this.handleChange} style={{ width: "100px" }}/><br /><br />
+                <Typography variant="subtitle1">BIRTHDAY: {this.state.info.birthDay}</Typography>
+                <Typography variant="subtitle1">REGISTERED: {this.state.info.dateRegistered}</Typography>
+                <Button variant="outlined" onClick={this.sendPostUserInfoRequest}>Edit</Button><hr />
+                {this.renderAvatar()}
+                <form onSubmit={this.handleSubmit}>
+                   <Typography variant="subtitle1">CURRENT AVATAR</Typography>
+                   <TextField id="image" type="file" label="Change avatar" accept="image/png, image/jpeg"onChange={this.handleImageChange}/><br />
+                   <Button variant="outlined" type="submit" on>Change avatar</Button>
+                </form>
+
             </this.Wraper>
         )
     }

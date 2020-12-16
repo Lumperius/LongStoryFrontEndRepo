@@ -3,7 +3,7 @@ import history from './history.js';
 
 const axiosInstance = axios.create({
     headers: {
-        'Content-type': 'application/json',
+        'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
         'Authorization': `Bearer ${localStorage.getItem('Token')}`
     }
 });

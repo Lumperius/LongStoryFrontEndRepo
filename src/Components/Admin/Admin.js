@@ -103,7 +103,7 @@ class Admin extends React.Component {
 
     sendRequestAndSetNewPage = (page = this.state.page) => {
         if (page < 1) return;
-        axiosSetUp().get(`http://localhost:5002/user/getrange?page=${page - 1}&count=${this.state.pageSize}`)
+        axiosSetUp().get(`http://localhost:5002/user/getpage?page=${page - 1}&count=${this.state.pageSize}`)
             .then((response) => {
                 this.setState({
                     List: [],

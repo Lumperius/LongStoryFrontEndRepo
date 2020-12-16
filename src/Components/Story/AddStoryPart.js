@@ -57,7 +57,7 @@ class AddStoryPart extends React.Component {
     }
 
     validateRequestParametrs = () => {
-        if (!this.state.body || this.state.body.length < 20) {
+        if (!this.state.body || this.state.body.length < 20 || this.state.body >= 4000) {
             this.setState({ message: 'Incorrect text of the story part' })
             return false;
         }
@@ -75,9 +75,13 @@ class AddStoryPart extends React.Component {
         }
         axiosSetUp().post('http://localhost:5002/storyPartCandidate/create', requestBody)
             .then(response => {
+                this.props.stopRenderEditor();
                 this.setState({
-                    message: response.data ,
-                })
+                    message: {
+                        body: response.data,
+                        tyoe: 'info'
+                    }
+                });
             })
             .catch(error => {
                 console.log(error);
@@ -102,11 +106,13 @@ class AddStoryPart extends React.Component {
     
 
     render() {
-        return <this.Wraper>
+        return <>
             {this.renderMessage()}
-            <TextareaAutosize rowsMin={6} name="body" aria-label="empty textarea" style={{ fontSize: "20px", width: "90%" }} onChange={this.handleChange}></TextareaAutosize><br />
+            <TextareaAutosize rowsMin={6} name="body" placeholder="Min length is 20 symbols, max - 4000 symbols"
+             style={{ fontSize: "20px", width: "90%" }} onChange={this.handleChange}></TextareaAutosize><br />
+
             <Button onClick={this.sendNewStoryPartRequest}>submit</Button>
-        </this.Wraper>
+        </>
     }
 }
 

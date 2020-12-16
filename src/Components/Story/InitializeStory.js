@@ -74,7 +74,8 @@ class InitializeStory extends React.Component {
     `;
 
     componentDidMount() {
-        if (this.props.token === undefined) this.props.history.push('authentication');
+        if (this.props.token === undefined) 
+        this.props.history.push('authentication');
     }
 
     handleChange = (event) => {
@@ -84,7 +85,7 @@ class InitializeStory extends React.Component {
     }
 
     validateRequestParametrs = () => {
-        if (!this.state.title || this.state.title.length < 5 || this.state.title.length > 50) {
+        if (!this.state.title || this.state.title.length < 5 || this.state.title.length >= 50) {
             this.setState({ message: {
                 body:'Incorrect title. It must more than 5 and less than 50 symbols.',
                 type: 'error'
@@ -92,7 +93,7 @@ class InitializeStory extends React.Component {
             return false;
         }
 
-        if (!this.state.body || this.state.body.length < 20 || this.state.body.length > 4000) {
+        if (!this.state.body || this.state.body.length < 20 || this.state.body.length >= 4000) {
             this.setState({ message: {
                 body:'Incorrect text. It must more than 20 and less than 4000 symbols.',
                 type: 'error'

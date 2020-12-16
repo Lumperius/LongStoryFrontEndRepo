@@ -45,9 +45,6 @@ class Story extends React.Component {
     border-radius: 20px;
     border-color: lightgrey;
     `;
-    SuggestNextPartButton = styled.button`
-    
-    `;
     Signature = styled.p`
     font-size: 14px;
     text-align: right;
@@ -172,6 +169,11 @@ class Story extends React.Component {
         });
     };
 
+    handleStopRenderingEditor = () => {
+        this.setState({
+            showEditor: false
+        })
+    }
 
     renderEditor = () => {
         if (this.props.token) {
@@ -179,7 +181,7 @@ class Story extends React.Component {
                 case 'Alive':
                     if (this.state.showEditor) {
                         let storyId = this.props.match.params.id;
-                        return <AddStoryPart storyId={storyId} />
+                        return <AddStoryPart storyId={storyId} stopRenderEditor={this.handleStopRenderingEditor}/>
                     }
                     else return <>
                         <Button variant="contained" color="primary" onClick={
