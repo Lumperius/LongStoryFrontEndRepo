@@ -3,7 +3,7 @@ import NavBar from './Components/Navbar/NavBar';
 import AuthorizedNavBar from './Components/Navbar/AuthorizedNavBar';
 import Authentication from './Components/Authentication/Authentication';
 import Registration from './Components/Registration/Registration';
-import Welcome from './Components/StartPage/StartPage';
+import Welcome from './Components/IndexPage/IndexPage';
 import { Router, Route } from 'react-router-dom';
 import Admin from './Components/Admin/Admin';
 import Office from './Components/UserOffice/Office';
@@ -35,7 +35,7 @@ class App extends React.Component {
 
   render() {
     let isAuthenticated = false;
-    if (this.props.tokenObj !== null && this.props.tokenObj !== undefined){
+    if (this.props.tokenObj){
             isAuthenticated = true;
     }
     let NavBarOption;

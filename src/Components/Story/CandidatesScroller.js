@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig';
 import { connect } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
-
+import renderMessage from '../../message';
 
 class CandidatesScroller extends React.Component {
     constructor() {
@@ -47,10 +47,6 @@ class CandidatesScroller extends React.Component {
     Signature = styled.p`
     font-size: 14px;
     text-align: right;
-    `;
-    ErrorMessage = styled.p` 
-    color: red;
-    font-size: 14px;
     `;
 
 
@@ -141,7 +137,7 @@ class CandidatesScroller extends React.Component {
 
     render() {
         return <this.Scroller>
-            {this.renderMessage()}
+            {renderMessage(this.state.message.body, this.state.message.type)}
             {this.state.CandidatesList.map((candidate) => {
                 return <>
                     {this.renderCandidate(candidate)}

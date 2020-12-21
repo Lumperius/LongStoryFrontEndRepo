@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import {Table, TableRow, TableCell, TableHead, TableBody}from '@material-ui/core';
-
+import renderMessage from '../../message';
 
 class Admin extends React.Component {
 
@@ -48,13 +48,14 @@ class Admin extends React.Component {
     Wraper = styled.div`
     text-align:left;
     margin-top: 1500px;
-    margin:30px;
-    padding: 50px;
+    margin:10px;
+    padding: 30px;
     font-size: 28px;
     border-style: solid;
     border-width:1px;
-    border-radius: 20px;
-    border-color: lightgrey;
+    border-radius: 10px;
+    border-color: dark;
+    background-color: white
     `;
     DeleteButton = styled.button`
     background-color: red;
@@ -88,16 +89,11 @@ class Admin extends React.Component {
     font-size:28px;
     margin: 30px;
     `;
-    ErrorMessage = styled.p` 
-    color: red;
-    font-size: 14px;
-    `;
 
 
     componentDidMount() {
         if (this.props.token === undefined || this.props.token.scope !== 'Admin') 
             this.props.history.push('authentication');
-
         this.sendRequestAndSetNewPage();
     }
 
@@ -109,7 +105,7 @@ class Admin extends React.Component {
                     List: [],
                 });
                 this.setState({
-                    List: response.data,
+                    List: response.data || [],
                     page: page
                 })
             })
@@ -129,7 +125,12 @@ class Admin extends React.Component {
             .then((response) => {
                 console.log(response.data);
                 this.sendRequestAndSetNewPage();
-                this.setState({});
+                this.setState({
+                    message:{
+                        body: response.data,
+                        type: 'info'
+                    }
+                });
             })
             .catch((ex) => {
                 this.setState({
@@ -160,20 +161,10 @@ class Admin extends React.Component {
         </TableRow>
     }
 
-    renderMessage = () =>{
-        switch(this.state.message.type){
-            case 'error':
-        return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
-            case 'info':
-        return <Typography variant="subtitle1">{this.state.message.body}</Typography>
-        }
-    }
-
 
     render() {
         return (
             <this.Wraper>
-                {this.renderMessage()}
                 <Table style={{ width: "100%" }}>
                     <TableHead style={{ backgroundColor: "grey" }}>
                         <TableRow >
@@ -190,6 +181,7 @@ class Admin extends React.Component {
                 {<Button variant="contained" color="primary" onClick={() => this.sendRequestAndSetNewPage(this.state.page - 1)}>Prev</Button>}
                 <this.Page>{this.state.page}</this.Page>
                 {<Button variant="contained" color="primary" onClick={() => this.sendRequestAndSetNewPage(this.state.page + 1)}>Next</Button>}
+                {renderMessage(this.state.message.body, this.state.message.type)}
             </this.Wraper>
         )
     }

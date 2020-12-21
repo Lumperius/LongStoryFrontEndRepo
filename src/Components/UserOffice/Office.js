@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Info from './OptionsBar/Info';
 import UserStories from './OptionsBar/UserStrories';
 import Settings from './OptionsBar/Settings';
-
+import { connect } from 'react-redux';
 
 class Office extends React.Component {
 
@@ -14,6 +14,11 @@ class Office extends React.Component {
     }
   }
 
+  componentDidMount = () => {
+    if (this.props.token === undefined) 
+     this.props.history.push('authentication');
+  }
+
   button(text, Component) {
     return (
       <this.ListButton onClick={() => this.setState({ activeComponent: Component })}>
@@ -21,6 +26,17 @@ class Office extends React.Component {
       </this.ListButton>
     )
   }
+  Wraper = styled.div`
+    text-align:left;
+    margin: 10px;
+    padding: 30px;
+    font-size: 28px;
+    border-style: solid;
+    border-width:1px;
+    border-radius: 20px;
+    border-color: dark;
+    background-color: white;
+    `;
 
   ListButton = styled.a`
     text-decoration: none;
@@ -51,7 +67,7 @@ class Office extends React.Component {
 
   render() {
     return (
-      <>
+    <>
         <this.List>
           <this.ListElement>
             {this.button('Info', <Info />)}
@@ -63,11 +79,18 @@ class Office extends React.Component {
             {this.button('Settings', <Settings />)}
           </this.ListElement>
         </this.List>
-
-        { this.state.activeComponent}
-      </>
+      <this.Wraper>
+         { this.state.activeComponent}
+      </this.Wraper>
+    </>
     )
   }
 }
 
-export default Office;
+const mapStateToProps = function (state) {
+  return {
+      token: state.token.tokenObj,
+  };
+}
+
+export default connect(mapStateToProps)(Office)

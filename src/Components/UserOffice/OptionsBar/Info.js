@@ -5,6 +5,9 @@ import { connect } from 'react-redux'
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import setAvatar from '../../../Actions/setAvatar.js';
+import renderMessage from '../../../message';
+
 
 class Info extends React.Component {
 
@@ -15,27 +18,24 @@ class Info extends React.Component {
                 body: '',
                 type: ''
             },
+
             showEditor: false,
             info: {},
-            inputLogin: '',
-            inputFirstName: '',
-            inputLastName: '',
+
+            inputLogin: null,
+            inputFirstName: null,
+            inputLastName: null,
+            inputBirthday: null,
+            avatarPath: '',
+
             avatar: null
         }
     }
 
-    Wraper = styled.div`
-    text-align:left;
-    margin:30px;
-    padding: 50px;
-    font-size: 28px;
-    border-style: solid;
-    border-width:1px;
-    border-radius: 20px;
-    border-color: lightgrey;
-    `;
 
     componentDidMount() {
+        if (this.props.token === undefined)
+            this.props.history.push('authentication');
         this.sendGetUserInfoRequest();
     }
 
@@ -45,18 +45,40 @@ class Info extends React.Component {
         })
     }
 
+    handleImageLoadEvent = (result) => {
+        this.setState({
+            avatarPath: result
+        });
+    }
+
     handleImageChange = (event) => {
-        debugger
         this.setState({
             avatar: event.target.files[0]
         })
+        var fr = new FileReader();
+
+        fr.addEventListener('load',() => this.handleImageLoadEvent(fr.result), false);
+
+        if (event.target.files[0]) {
+            fr.readAsDataURL(event.target.files[0]);
+        }
+
     }
 
-    
+
     handleSubmit = (event) => {
         event.preventDefault();
         console.log(this.state);
         let formData = new FormData();
+        if (this.state.avatar === null) {
+            this.setState({
+                message: {
+                    body: 'You need to choose avatar before submitting it.',
+                    type: 'error'
+                }
+            })
+            return;
+        }
         formData.append('avatar', this.state.avatar, 'this.state.image.name');
         formData.append('title', '');
         formData.append('content', '');
@@ -64,13 +86,13 @@ class Info extends React.Component {
         axiosSetUp().post(url, formData, {
             headers: {
                 'content-type': 'multipart/form-data',
-              }
+            }
         })
             .then(response => {
-              console.log(response.data);
+                console.log(response.data);
             })
             .catch(err => console.log(err))
-      };
+    };
 
 
     sendGetUserInfoRequest = () => {
@@ -95,12 +117,17 @@ class Info extends React.Component {
     }
 
     sendPostUserInfoRequest = () => {
+        if(!this.state.inputLogin && !this.state.inputFirstName &&
+             !this.state.inputLastName && !this.state.inputBirthday)
+             return;
+
         let userId = this.props.token.id;
         let body = {
             userId: userId,
-            login: this.state.login,
-            firstName: this.state.firstName,
-            lastName: this.state.lastName
+            login: this.state.inputLogin,
+            firstName: this.state.inputFirstName,
+            lastName: this.state.inputLastName,
+            birthDay: new Date(this.state.inputBirthday).toISOString()
         }
         axiosSetUp().post(`http://localhost:5002/userInfo/setInfo`, body)
             .then(response => {
@@ -108,11 +135,13 @@ class Info extends React.Component {
                 state.info.login = this.state.inputLogin;
                 state.info.firstName = this.state.inputFirstName;
                 state.info.lastName = this.state.inputLastName;
-
+                state.message = {
+                    body: response.data,
+                    type: 'success'
+                }
                 this.setState(state)
             })
             .catch(error => {
-                console.log(error.response.data);
                 this.setState({
                     message: {
                         body: error.data,
@@ -122,52 +151,56 @@ class Info extends React.Component {
             });
     }
 
-    renderMessage = () =>{
-        switch(this.state.message.type){
-            case 'error':
-        return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
-            case 'info':
-        return <Typography variant="subtitle1">{this.state.message.body}</Typography>
+    renderAvatarSelction = () => {
+        if (this.state.avatar) {
+            return <form onSubmit={this.handleSubmit}>
+                <img src={this.state.avatarPath} width="40px" height="40px" /><br />
+                <TextField id="image" type="file" label="Change avatar" accept="image/png, image/jpeg" onChange={this.handleImageChange} /><br />
+                <Button variant="outlined" type="submit" on>Change avatar</Button>
+            </form>
         }
-    }
-
-    renderAvatar = () =>{
-        var state = this.state;
-        debugger
-        return<img src={`data:image/jpeg;base64,${this.state.info.avatar}`} />
+        if(this.props.avatar) {
+            return <form onSubmit={this.handleSubmit}>
+                <Typography variant="subtitle1">CURRENT AVATAR</Typography>
+                <img src={`data:image/jpeg;base64,${this.props.avatar}`} width="40px" height="40px" /><br />
+                <TextField id="image" type="file" label="Change avatar" accept="image/png, image/jpeg" onChange={this.handleImageChange} /><br />
+            </form>
+        }
     }
 
     render() {
         return (
-            <this.Wraper>
-            {this.renderMessage()}
+            <>
                 <Typography variant="title1">Your info</Typography><br /><br />
                 <Typography variant="subtitle1" >LOGIN: {this.state.info.login}</Typography>
-                <TextField name="inputLogin" label="Change login" onChange={this.handleChange}/><br />
+                <TextField name="inputLogin" label="Change login" onChange={this.handleChange} /><br />
                 <Typography variant="subtitle1">EMAIL: {this.state.info.email}</Typography>
                 <Typography variant="subtitle1">ROLE: {this.state.info.role}</Typography>
-                <Typography variant="subtitle1">FIRST AND SECOND NAME: {this.state.info.firstName} {this.state.info.lastName}</Typography> 
-                <TextField name="inputFirstName" label="First name" onChange={this.handleChange} style={{ width: "100px" }}/>
-                <TextField name="inputLastName" label="Last name" onChange={this.handleChange} style={{ width: "100px" }}/><br /><br />
+                <Typography variant="subtitle1">FIRST AND SECOND NAME: {this.state.info.firstName} {this.state.info.lastName}</Typography>
+                <TextField name="inputFirstName" label="First name" onChange={this.handleChange} style={{ width: "100px" }} />
+                <TextField name="inputLastName" label="Last name" onChange={this.handleChange} style={{ width: "100px" }} /><br /><br />
                 <Typography variant="subtitle1">BIRTHDAY: {this.state.info.birthDay}</Typography>
+                <TextField name="inputBirthday" type="date" onChange={this.handleChange} /><br />
                 <Typography variant="subtitle1">REGISTERED: {this.state.info.dateRegistered}</Typography>
+                {renderMessage(this.state.message.body, this.state.message.type)}
                 <Button variant="outlined" onClick={this.sendPostUserInfoRequest}>Edit</Button><hr />
-                {this.renderAvatar()}
-                <form onSubmit={this.handleSubmit}>
-                   <Typography variant="subtitle1">CURRENT AVATAR</Typography>
-                   <TextField id="image" type="file" label="Change avatar" accept="image/png, image/jpeg"onChange={this.handleImageChange}/><br />
-                   <Button variant="outlined" type="submit" on>Change avatar</Button>
-                </form>
-
-            </this.Wraper>
+                {this.renderAvatarSelction()}
+            </>
         )
     }
 }
 
-const mapStateToProps = function (state) {
+const mapDispatchToProps = dispatch => {
     return {
-        token: state.token.tokenObj,
+        setAvatar: avatar => dispatch(setAvatar(avatar))
     };
+};
+
+const mapStateToProps = state => {
+    return {
+        avatar: state.avatar.avatar || 'default',
+        token: state.token.tokenObj
+    }
 }
 
-export default connect(mapStateToProps)(Info)
+export default connect(mapStateToProps, mapDispatchToProps)(Info)

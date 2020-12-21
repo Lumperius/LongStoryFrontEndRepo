@@ -5,10 +5,9 @@ import axiosSetUp from '../../axiosConfig'
 import { connect } from 'react-redux'
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import renderMessage from '../../message';
 
-
-class StartPage extends React.Component {
+class IndexPage extends React.Component {
     service;
     constructor() {
         super();
@@ -18,6 +17,7 @@ class StartPage extends React.Component {
                 type: ''
             },
             StoriesList: [],
+            UserInfoList: [],
             page: 1,
             pageSize: 5
         }
@@ -26,22 +26,25 @@ class StartPage extends React.Component {
 
     StoryBlock = styled.div`
     margin: 20px;
-    padding: 15px;
+    padding: 30px;
+    padding-bottom: 0px;
     border-style: solid;
     border-width:1px;
     &:hover {
         background-color: lightgrey;
-    }`;
+    }
+    `;
     Wraper = styled.div`
     text-align:left;
     margin-top: 1500px;
-    margin:30px;
-    padding: 50px;
+    margin:10px;
+    padding: 30px;
     font-size: 28px;
     border-style: solid;
-    border-width:1px;
-    border-radius: 20px;
-    border-color: lightgrey;
+    border-width: 1px;
+    border-radius: 10px;
+    border-color: dark;
+    background-color: white;
     `;
     Title = styled.h2`
     font-family: TimesNewRoman;
@@ -69,16 +72,43 @@ class StartPage extends React.Component {
     margin: 0;
     padding: 0;
     font-size: 28px;
-    color: darkred;
+    color: black;
     text-align: right;
     `;
-    ErrorMessage = styled.p` 
-    color: red;
-    font-size: 14px;
+    Avatar = styled.img`
+    border-style: solid;
+    border-width: 2px;
+    display:inline;
+    float: left;
+    margin: 0px;
+    margin-right: 10px;
     `;
-
+  
     componentDidMount() {
         this.sendRequestAndSetNewPage();
+    }
+
+    sendGetUserInfoRequest = () => {
+        let userIdList = [];
+        this.state.StoriesList.forEach(story => {
+            userIdList.push(story.userId);
+        })
+        let jsonIds = JSON.stringify(userIdList);
+        axiosSetUp().get(`http://localhost:5002/userInfo/getRange?userIdList=${jsonIds}`)
+            .then(response => {
+                this.setState({
+                    UserInfoList: response.data.userInfoList || []
+                })
+            })
+            .catch((error) => {
+                console.log('Failed', error)
+                this.setState({
+                    message: {
+                        body: error.data || '',
+                        type: 'error'
+                    }
+                })
+            })
     }
 
     sendRequestAndSetNewPage = (page = this.state.page) => {
@@ -89,6 +119,8 @@ class StartPage extends React.Component {
                     StoriesList: response.data || '',
                     page: page
                 })
+                this.sendGetUserInfoRequest();
+
             })
             .catch((error) => {
                 console.log('Failed', error)
@@ -114,33 +146,26 @@ class StartPage extends React.Component {
 
 
     renderAStory = (story) => {
+        let info = this.state.UserInfoList.find(ui => ui.userId == story.userId) || ''
         story.body = this.cutStoryBody(story.firstPartBody);
         return <this.StoryBlock onClick={() => this.handleClick(story.id)}>
-            <Typography variant='normal'>{story.title}</Typography>
-            <Typography variant='subtitle1' style={{wordWrap: "break-word", textIndent: "15px"}}>{story.firstPartBody}</Typography><this.Line />
+            <Typography variant='h5'>{story.title}</Typography><br />
+            <Typography variant='subtitle1' style={{ wordWrap: "break-word", textIndent: "15px" }}>{story.firstPartBody}</Typography><this.Line />
             <this.Signature>
-                By {story.author} {story.dateSubmitted} <this.Rating >{story.rating}</this.Rating>
+                <this.Avatar src={`data:image/jpeg;base64,${info.avatarBase64}`} width="40px" height="40px" />
+                <Typography variant="subtitle2">By {info.userLogin} {story.dateSubmitted}</Typography> <this.Rating >{story.rating}</this.Rating>
             </this.Signature>
         </this.StoryBlock>
-    }
-
-    renderMessage = () => {
-        switch (this.state.message.type) {
-            case 'error':
-                return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
-            case 'info':
-                return <Typography variant="subtitle1">{this.state.message.body}</Typography>
-        }
     }
 
 
     render() {
         return (
             <this.Wraper >
-                {this.renderMessage()}
                 {this.state.StoriesList.map((story) => {
                     return <> {this.renderAStory(story)} </>
                 })}
+                {renderMessage(this.state.message.body, this.state.message.type)}
                 {<Button variant="contained" color="primary" onClick={() => this.sendRequestAndSetNewPage(this.state.page - 1)}>Prev</Button>}
                 <this.Page>{this.state.page}</this.Page>
                 {<Button variant="contained" color="primary" onClick={() => this.sendRequestAndSetNewPage(this.state.page + 1)}>Next</Button>}
@@ -154,4 +179,4 @@ const mapStateToProps = function (state) {
     };
 }
 
-export default connect(mapStateToProps)(StartPage)
+export default connect(mapStateToProps)(IndexPage)

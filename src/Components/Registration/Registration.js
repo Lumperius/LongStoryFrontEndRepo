@@ -4,7 +4,8 @@ import axiosSetUp from '../../axiosConfig';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-
+import renderMessage from '../../message';
+ 
 class Registration extends React.Component {
 
     constructor() {
@@ -24,13 +25,14 @@ class Registration extends React.Component {
     Wraper = styled.div`
     text-align:left;
     margin-top: 1500px;
-    margin:30px;
-    padding: 50px;
+    margin:10px;
+    padding: 30px;
     font-size: 28px;
     border-style: solid;
     border-width:1px;
-    border-radius: 20px;
-    border-color: lightgrey;
+    border-radius: 10px;
+    border-color: dark;
+    background-color: white:
     `;
     Input = styled.input`
     margin-up: 0px;
@@ -57,10 +59,6 @@ class Registration extends React.Component {
     text-decoration: none;
     color: blue;
     `;
-    ErrorMessage = styled.p`
-    font-size: 14px;
-    color: red;
-    `;
 
     handleChange = (event) => {
         this.setState({
@@ -69,16 +67,24 @@ class Registration extends React.Component {
     }
 
     isInputValid = () => {
-        if (this.state.login.length < 8) {
+        debugger
+        if (this.state.login.length < 8 || this.state.login.length > 16) {
             this.setState({
-                message: 'Your login must be at least 8 symbols long'
+                message: {
+                    body: 'Your login must be 8-16 symbols long',
+                    type: 'error'
+                }
             }
             ); return false
         }
 
         if (this.state.login.includes('@')) {
             this.setState({
-                message: 'No (@) symbol allowed in login'
+                message:
+                {
+                    body: 'No (@) symbol allowed in login',
+                    type: 'error'
+                }
             }
             ); return false
         }
@@ -86,26 +92,37 @@ class Registration extends React.Component {
         let emailRegex = /\S+@\S+\.\S+/;
         if (!emailRegex.test(this.state.email)) {
             this.setState(prevState => {
-                return { message: 'This email is not valid' }
+                return {
+                    message: {
+                        body: 'This email is not valid',
+                        type: 'error'
+                    }
+                }
             }); return false
         }
 
-        if (this.state.password.length < 8) {
+        if (this.state.password.length < 8 || this.state.password.length > 16) {
             this.setState({
-                message: 'Your password must be at least 8 symbols long'
+                message:{
+                    body: 'Your password must be at least 8-16 symbols long',
+                    type: 'error'
+                } 
             }
             ); return false
         }
 
         if (this.state.repeat_password !== this.state.password) {
             this.setState({
-                message: 'Your repeat password must match your password'
+                message: {
+                    body: 'Your repeat password must match your password',
+                    type: 'error'
+                }
             }); return false
         }
         return true;
     }
 
-    sendRequest = () => {
+    sendRequest = () => { 
         if (!this.isInputValid()) {
             return;
         }
@@ -133,21 +150,20 @@ class Registration extends React.Component {
 
     };
 
-    renderMessage = () =>{
-        switch(this.state.message.type){
+    renderMessage = () => {
+        switch (this.state.message.type) {
             case 'error':
-        return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
+                return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
             case 'info':
-        return <Typography variant="subtitle1">{this.state.message.body}</Typography>
+                return <Typography variant="subtitle1">{this.state.message.body}</Typography>
         }
     }
-    
+
 
     render() {
         return (
             <this.Wraper>
                 <Typography variant='h4' align='left' style={{ margin: "30px" }} gutterBottom >Registration</Typography >
-                {this.renderMessage()}
                 <ExpansionPanel>
                     <form>
                         <this.Input name="login" type="text" onChange={this.handleChange} />  <Typography variant='subtitle1'>Login </Typography><br />
@@ -156,6 +172,7 @@ class Registration extends React.Component {
                         <this.Input name="repeat_password" type="password" onChange={this.handleChange} />  <Typography variant='subtitle1'>Repeat password </Typography><br />
                     </form>
                 </ExpansionPanel>
+                {renderMessage(this.state.message.body, this.state.message.type)}
                 <Button variant="contained" color="primary" onClick={this.sendRequest}>Submit</Button>
                 <this.RegistrationLink href="/authentication">Already have an account?</this.RegistrationLink>
             </this.Wraper>

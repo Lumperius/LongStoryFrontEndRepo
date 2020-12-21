@@ -4,11 +4,10 @@ import { connect } from 'react-redux';
 import setToken from '../../Actions/setToken'
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
 import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
+import history from '../../history.js';
+
 
 class Logout extends React.Component {
 
@@ -28,7 +27,7 @@ class Logout extends React.Component {
     handleConfirm = () => {
         localStorage.removeItem('Token');
         this.props.setToken(null);
-        //this.props.history.push('/')
+        history.push('/');
     }
 
     handleClose = () => {

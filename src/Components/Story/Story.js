@@ -6,7 +6,7 @@ import CandidatesScroller from './CandidatesScroller'
 import { connect } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import renderMessage from '../../message';
 
 class Story extends React.Component {
 
@@ -37,17 +37,19 @@ class Story extends React.Component {
     Wraper = styled.div`
     text-align:left;
     margin-top: 1500px;
-    margin:30px;
-    padding: 50px;
+    margin:10px;
+    padding: 30px;
     font-size: 28px;
     border-style: solid;
     border-width:1px;
-    border-radius: 20px;
-    border-color: lightgrey;
+    border-radius: 10px;
+    border-color: dark;
+    background-color: white;
     `;
     Signature = styled.p`
     font-size: 14px;
     text-align: right;
+    dipaly: inline;
     `;
     Vote = styled.button`
     display: inline-block; 
@@ -68,11 +70,6 @@ class Story extends React.Component {
     font-size: 40px;
     color: darkred;
     `;
-    ErrorMessage = styled.p` 
-    color: red;
-    font-size: 14px;
-    `;
-
 
 
     componentDidMount() {
@@ -232,23 +229,13 @@ class Story extends React.Component {
         if(this.props.token)
         if(this.props.token.id === this.state.story.authorId)
         return<>
-            <Button variant="outlined" onClick={this.sendFinishStoryRequest}>Finish this story</Button>
+            <Button variant="outlined" onClick={this.sendFinishStoryRequest} style={{color: "red"}}>Finish this story</Button>
         </>
-    }
-
-    renderMessage = () =>{
-        switch(this.state.message.type){
-            case 'error':
-        return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
-            case 'info':
-        return <Typography variant="subtitle1">{this.state.message.body}</Typography>
-        }
     }
 
 
     render() {
         return <this.Wraper>
-            {this.renderMessage()}
             <Typography variant="h3">{this.state.story.title}</Typography>
             <this.Signature>
                 <this.Rating>{this.state.story.rating}</this.Rating>
@@ -260,8 +247,9 @@ class Story extends React.Component {
             <hr /><hr />
             {this.state.StoryParts.map((storyPart) => {
                 return <>{this.renderStoryPart(storyPart)}</>
-            })}
-            {this.renderEditor()}
+            })}    
+            {renderMessage(this.state.message.body, this.state.message.type)}
+            {this.renderEditor()}<br /><br />
             {this.renderFinishStoryButton()}
         </this.Wraper>
     }

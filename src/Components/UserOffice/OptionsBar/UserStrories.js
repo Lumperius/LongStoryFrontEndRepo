@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import renderMessage from '../../../message';
 
 
 class UserStories extends React.Component{
@@ -33,10 +34,10 @@ class UserStories extends React.Component{
     border-color: lightgrey;
     `;
 
- 
-
 
     componentDidMount(){
+        if (this.props.token === undefined) 
+        this.props.history.push('authentication');   
         this.sendGetStoriesRequest();
     }
 
@@ -97,11 +98,13 @@ class UserStories extends React.Component{
 
     render(){
         return(
-            <this.Wraper>
+            <>
+                <Typography variant="title1">Your stories</Typography><br /><br />
+                {renderMessage(this.state.message.body, this.state.message.type)}
                 <Button variant="outlined" onClick={() => this.handleClick('stories')}>Stories</Button>
                 <Button variant="outlined" onClick={() => this.handleClick('storyParts')}>Story parts</Button><br/><br/>
                 {this.renderList()}
-            </this.Wraper>
+            </>
         )
     }
 }

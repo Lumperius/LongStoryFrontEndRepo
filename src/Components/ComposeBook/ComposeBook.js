@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
-
-
+import renderMessage from '../message';
+ 
 class ComposeBook extends React.Component {
     constructor(){
         this.state = {
@@ -18,13 +18,14 @@ class ComposeBook extends React.Component {
     Wraper = styled.div`
     text-align:left;
     margin-top: 1500px;
-    margin:30px;
-    padding: 50px;
+    margin:10px;
+    padding: 30px;
     font-size: 28px;
     border-style: solid;
     border-width:1px;
-    border-radius: 20px;
-    border-color: lightgrey;
+    border-radius: 10px;
+    border-color: dark;
+    background-color: white:
     `;
 
 
@@ -45,7 +46,7 @@ class ComposeBook extends React.Component {
 
     render(){
         return(<this.Wraper>
-            {this.renderMessage()}
+            {renderMessage(this.state.message.body, this.state.message.type)}
         Template
         </this.Wraper>)
     }

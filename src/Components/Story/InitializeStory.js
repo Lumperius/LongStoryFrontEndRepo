@@ -4,6 +4,7 @@ import axiosSetUp from '../../axiosConfig';
 import { connect } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import renderMessage from '../../message';
 
 class InitializeStory extends React.Component {
 
@@ -56,26 +57,23 @@ class InitializeStory extends React.Component {
     `;
     Wraper = styled.div`
     text-align:left;
-    margin:30px;
-    padding: 50px;
+    margin:10px;
+    padding: 30px;
     font-size: 28px;
     border-style: solid;
     border-width: 1px;
-    border-radius: 20px;
-    border-color: lightgrey;
+    border-radius: 10px;
+    border-color: dark;
+    background-color: white:
     `;
     InputLabel = styled.h3`
     font-size: 30px;
     margin: 20px;
     `;
-    ErrorMessage = styled.p` 
-    color: red;
-    font-size: 14px;
-    `;
 
     componentDidMount() {
-        if (this.props.token === undefined) 
-        this.props.history.push('authentication');
+        if (this.props.token === undefined)
+            this.props.history.push('authentication');
     }
 
     handleChange = (event) => {
@@ -86,18 +84,22 @@ class InitializeStory extends React.Component {
 
     validateRequestParametrs = () => {
         if (!this.state.title || this.state.title.length < 5 || this.state.title.length >= 50) {
-            this.setState({ message: {
-                body:'Incorrect title. It must more than 5 and less than 50 symbols.',
-                type: 'error'
-            } });
+            this.setState({
+                message: {
+                    body: 'Incorrect title. It must more than 5 and less than 50 symbols.',
+                    type: 'error'
+                }
+            });
             return false;
         }
 
         if (!this.state.body || this.state.body.length < 20 || this.state.body.length >= 4000) {
-            this.setState({ message: {
-                body:'Incorrect text. It must more than 20 and less than 4000 symbols.',
-                type: 'error'
-            } });
+            this.setState({
+                message: {
+                    body: 'Incorrect text. It must more than 20 and less than 4000 symbols.',
+                    type: 'error'
+                }
+            });
             return false;
         }
         return true;
@@ -116,7 +118,10 @@ class InitializeStory extends React.Component {
         axiosSetUp().post("http://localhost:5002/story/createStory", body)
             .then(response => {
                 this.setState({
-                    message: response.data.message,
+                    message: {
+                        body: response.data.message,
+                        type: 'success'
+                    },
                     title: '',
                     body: ''
                 })
@@ -133,23 +138,14 @@ class InitializeStory extends React.Component {
             })
     }
 
-    renderMessage = () =>{
-        switch(this.state.message.type){
-            case 'error':
-        return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
-            case 'info':
-        return <Typography variant="subtitle1">{this.state.message.body}</Typography>
-        }
-    }
-
     render() {
         return (
             <this.Wraper >
-            {this.renderMessage()}
                 <Typography variant='h4' align='left' style={{ margin: "30px" }} gutterBottom >Start a story</Typography >
-                 < br />
+                < br />
                 <this.TitleInput name="title" maxLength="80" placeholder="Enter title. It must be at least 5 symbols long" onChange={this.handleChange}></this.TitleInput><br />
                 <this.BodyInput name="body" maxLength="4000" placeholder="Enter story here. It must be at least 20 symbols long" onChange={this.handleChange}></this.BodyInput><br />
+                {renderMessage(this.state.message.body, this.state.message.type)}
                 <Button variant="contained" color="primary" onClick={this.sendRequest}>Submit</Button>
             </this.Wraper >
         )

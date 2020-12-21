@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-
+import renderMessage from '../../message';
 
 class AddStoryPart extends React.Component {
 
@@ -40,13 +40,14 @@ class AddStoryPart extends React.Component {
     Wraper = styled.div`
     text-align:left;
     margin-top: 1500px;
-    margin:30px;
-    padding: 50px;
+    margin:10px;
+    padding: 30px;
     font-size: 28px;
     border-style: solid;
     border-width:1px;
-    border-radius: 20px;
-    border-color: lightgrey;
+    border-radius: 10px;
+    border-color: dark;
+    background-color: white:
     `;
 
 
@@ -58,7 +59,11 @@ class AddStoryPart extends React.Component {
 
     validateRequestParametrs = () => {
         if (!this.state.body || this.state.body.length < 20 || this.state.body >= 4000) {
-            this.setState({ message: 'Incorrect text of the story part' })
+            this.setState({ message:{
+                body: 'Incorrect text of the story part.',
+                type: 'error'
+                } 
+            })
             return false;
         }
         return true;
@@ -79,7 +84,7 @@ class AddStoryPart extends React.Component {
                 this.setState({
                     message: {
                         body: response.data,
-                        tyoe: 'info'
+                        type: 'success'
                     }
                 });
             })
@@ -95,22 +100,11 @@ class AddStoryPart extends React.Component {
     }
 
 
-    renderMessage = () =>{
-        switch(this.state.message.type){
-            case 'error':
-        return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
-            case 'info':
-        return <Typography variant="subtitle1">{this.state.message.body}</Typography>
-        }
-    }
-    
-
     render() {
         return <>
-            {this.renderMessage()}
             <TextareaAutosize rowsMin={6} name="body" placeholder="Min length is 20 symbols, max - 4000 symbols"
              style={{ fontSize: "20px", width: "90%" }} onChange={this.handleChange}></TextareaAutosize><br />
-
+            {renderMessage(this.state.message.body, this.state.message.type)}
             <Button onClick={this.sendNewStoryPartRequest}>submit</Button>
         </>
     }

@@ -1,6 +1,9 @@
 import React  from 'react'
 import styled from 'styled-components';
-
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import renderMessage from '../../../message';
 
 class Settings extends React.Component{
 
@@ -10,20 +13,18 @@ class Settings extends React.Component{
       }
     }
 
-
-    Wraper = styled.div`
-    text-align:left;
-    margin:10px;
-    margin-right: 20px;
-    margin-left: 20px;
-    font-size: 15px;
-    font-weight: 100;
-    `;
+    componentDidMount = () => {
+        if (this.props.token === undefined) 
+        this.props.history.push('authentication');   
+    }
 
 
     render(){
         return(
-            <this.Wraper>Settings</this.Wraper>
+            <>
+               {renderMessage(this.state.message.body, this.state.message.type)}
+               <Typography variant="title1">Your settings</Typography><br /><br />
+            </>
         )
     }
 }
