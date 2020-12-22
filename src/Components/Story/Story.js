@@ -217,6 +217,8 @@ class Story extends React.Component {
         if (this.state.story.isVoted === true) {
             return <Typography variant="subtitle1">You voted this story</Typography>
         }
+        if (!this.props.token)
+             return /*<Typography variant="subtitle1">You voted this story</Typography>*/
         else {
             return <div>
                 <Button variant="contained" style={{ backgroundColor: "LimeGreen", margin: "10px" }} onClick={() => this.sendVoteRequest(this.state.story.id, true)}>Vote up</Button>

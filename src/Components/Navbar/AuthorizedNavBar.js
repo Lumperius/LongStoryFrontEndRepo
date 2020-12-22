@@ -83,11 +83,11 @@ class AuthorizedNavBar extends React.Component {
 
   sendGetAvatarRequest = () => {
     let userId = this.props.token.id;
-    axios.get(`http://localhost:5002/userInfo/getAvatar?userId=${userId}`, {
-      headers: {
-        'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
-        'Authorization': `Bearer ${localStorage.getItem('Token')}`
-      }
+    axiosSetUp().get(`http://localhost:5002/userInfo/getAvatar?userId=${userId}`, {
+      // headers: {
+      //   'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
+      //   'Authorization': `Bearer ${localStorage.getItem('Token')}`
+      // }
     })
       .then(response => {
         this.props.setAvatar(response.data)

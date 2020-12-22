@@ -91,6 +91,7 @@ class IndexPage extends React.Component {
     sendGetUserInfoRequest = () => {
         let userIdList = [];
         this.state.StoriesList.forEach(story => {
+            if(!userIdList.find( id => id == story.userId))
             userIdList.push(story.userId);
         })
         let jsonIds = JSON.stringify(userIdList);

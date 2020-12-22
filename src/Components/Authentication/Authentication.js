@@ -6,17 +6,18 @@ import jwt_decode from 'jwt-decode';
 import setToken from '../../Actions/setToken';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import { FormikTextField } from 'formik-material-fields';
 import setAvatar from '../../Actions/setAvatar';
 import renderMessage from '../../message';
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
+
 
 class Authentication extends React.Component {
 
     constructor() {
         super()
         this.state = {
-            loginOrEmail: '',
-            password: '',
             message: {
                 body: '',
                 type: ''
@@ -24,23 +25,27 @@ class Authentication extends React.Component {
         }
     }
 
+    LoginSchema = Yup.object().shape({
+        loginOrEmail: Yup.string()
+        .min(8, 'This login is too short, 8 symbols is minimum')
+        .max(16, 'This login is too long, 16 symbols maximum')
+        .required('Required'),
+        password: Yup.string()
+        .min(8, 'This login is too short, 8 symbols is minimum')
+        .max(16, 'This login is too long, 16 symbols maximum')
+        .required('Required'),
+    });
+
     Wraper = styled.div`
     text-align:left;
     margin:10px;
     padding: 30px;
     font-size: 28px;
     border-style: solid;
-    border-width:1px;
+    border-width: 1px;
     border-radius: 10px;
     border-color: dark;
-    background-color: white:
-    `;
-    Input = styled.input`
-    margin:10px;
-    margin-up: 0px;
-    border: 1px solid black;
-    width: 30%;
-    height: 30px;
+    background-color: white;
     `;
     SubmitButton = styled.button`
     background-color: #333; 
@@ -52,60 +57,57 @@ class Authentication extends React.Component {
     display: inline-block;
     font-size: 20px;
     `;
-    RegistrationLink = styled.a`
+    Link = styled.a`
     font-size: 15px;
     text-decoration: none;
-    color: blue;
+    color: darkgrey;
+    font-weight: 600;
+    text-decoration: underline;
+    margin: 10px;
     `;
     ErrorMessage = styled.p` 
     color: red;
     font-size: 14px;
     `;
 
-    handleChange = (event) => {
-        this.setState({
-            [event.target.name]: event.target.value
-        })
-    }
 
-
-    getLoginOrEmailType = () => {
+    getLoginOrEmailType = (loginOrEmail) => {
         let emailRegex = /\S+@\S+\.\S+/;
-        if (emailRegex.test(this.state.loginOrEmail)) return 'Email';
-                                                 else return 'Login';
+        if (emailRegex.test(loginOrEmail)) return 'Email';
+        else return 'Login';
     }
 
     validateAuthRequest = (body) => {
-            if(body.loginOrEmail.toString().length < 1 || body.loginOrEmail.toString().length > 30){
-                this.setState({
-                    message:{
-                        body: 'Invalid login or email',
-                        type: 'error'
-                    }
-                })
-                return false;
-            }
-            if(body.password.toString().length < 1 || body.password.toString().length > 30){
-                this.setState({
-                    message:{
-                        body: 'Invalid password',
-                        type: 'error'
-                    }
-                })
-                return false;
-            }
-            return true;
+        if (body.loginOrEmail.toString().length < 1 || body.loginOrEmail.toString().length > 30) {
+            this.setState({
+                message: {
+                    body: 'Invalid login or email',
+                    type: 'error'
+                }
+            })
+            return false;
+        }
+        if (body.password.toString().length < 1 || body.password.toString().length > 30) {
+            this.setState({
+                message: {
+                    body: 'Invalid password',
+                    type: 'error'
+                }
+            })
+            return false;
+        }
+        return true;
     }
 
 
-    sendAuthenticationRequest = () => {
-        let inputType = this.getLoginOrEmailType()
+    sendAuthenticationRequest = (values) => {
+        let inputType = this.getLoginOrEmailType(values.login)
         const body = {
-            loginOrEmail: this.state.loginOrEmail,
-            password: this.state.password,
+            loginOrEmail: values.loginOrEmail,
+            password: values.password,
             inputType: inputType
         };
-        if(!this.validateAuthRequest(body)) {return;}
+        if (!this.validateAuthRequest(body)) { return; }
         axiosSetUp().post('http://localhost:5002/user/authenticate', body)
             .then(response => {
                 let tokenData = jwt_decode(response.data);
@@ -121,27 +123,41 @@ class Authentication extends React.Component {
                         type: 'error'
                     }
                 })
-        })
-};
+            })
+    };
 
 
-render() {
-    return (
-        <this.Wraper>
-            <Typography variant='h4' align='left' style={{ margin: "30px" }} gutterBottom >Login</Typography >
-
-            <ExpansionPanel>
-                <form>
-                    <this.Input name="loginOrEmail" type="text" onChange={this.handleChange} /> <Typography variant='subtitle1'>Login or email </Typography><br />
-                    <this.Input name="password" type="password" onChange={this.handleChange} /> <Typography variant='subtitle1'>Password </Typography><br />
-                </form>
-            </ExpansionPanel>
-            {renderMessage(this.state.message.body, this.state.message.type)}
-            <Button variant="contained" color="primary" onClick={this.sendAuthenticationRequest}>Submit</Button>
-            <this.RegistrationLink href="/registration">Not registred?</this.RegistrationLink>
-        </this.Wraper>
-    );
-}
+    render() {
+        return (
+            <this.Wraper>
+                <Typography variant='h4' align='left' style={{ margin: "30px" }} gutterBottom >Login</Typography >
+                <Formik
+                    initialValues={{
+                        loginOrEmail: '',
+                        password: ''
+                    }}
+                    validationSchema={this.LoginSchema}
+                    onSubmit= {values => {
+                        debugger
+                        delete values.repeat_password;
+                        this.sendAuthenticationRequest(values)
+                    }}
+                >
+                    {({ errors, touched }) => (
+                    <Form>
+                        <FormikTextField label="Login or email" name="loginOrEmail" type="text" style={{ width: "20%" }} /><br />
+                        <FormikTextField label="Password" name="password" type="password" style={{ width: "20%" }} /><br />
+                       
+                        {renderMessage(this.state.message.body, this.state.message.type)}
+                        <Button variant="contained" color="primary" type="submit">Submit</Button>
+                        <this.Link href="/">or continue as guest</this.Link><br /><br />
+                    </Form>
+                    )}
+                </Formik>
+                <this.Link style={{ color: "blue" }} href="/registration">Not registered?</this.Link>
+            </this.Wraper>
+        );
+    }
 }
 
 const mapStateToProps = function (state) {
