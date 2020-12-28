@@ -18,13 +18,14 @@ class Template extends React.Component {
     Wraper = styled.div`
     text-align:left;
     margin-top: 1500px;
-    margin:30px;
-    padding: 50px;
+    margin:10px;
+    padding: 30px;
     font-size: 28px;
     border-style: solid;
-    border-width:1px;
-    border-radius: 20px;
-    border-color: lightgrey;
+    border-width: 1px;
+    border-radius: 10px;
+    border-color: dark;
+    background-color: white;
     `;
 
 

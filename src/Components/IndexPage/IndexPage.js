@@ -4,8 +4,12 @@ import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig'
 import { connect } from 'react-redux'
 import Typography from '@material-ui/core/Typography';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Popper from '@material-ui/core/Popper';
 import Button from '@material-ui/core/Button';
 import renderMessage from '../../message';
+import Select from '@material-ui/core/Select';
 
 class IndexPage extends React.Component {
     service;
@@ -19,10 +23,11 @@ class IndexPage extends React.Component {
             StoriesList: [],
             UserInfoList: [],
             page: 1,
-            pageSize: 5
+            pageSize: 10,
+            sortBy: 'rating',
+            openSortMenu: false,
         }
     }
-
 
     StoryBlock = styled.div`
     margin: 20px;
@@ -76,14 +81,12 @@ class IndexPage extends React.Component {
     text-align: right;
     `;
     Avatar = styled.img`
-    border-style: solid;
-    border-width: 2px;
     display:inline;
     float: left;
     margin: 0px;
     margin-right: 10px;
     `;
-  
+
     componentDidMount() {
         this.sendRequestAndSetNewPage();
     }
@@ -91,8 +94,8 @@ class IndexPage extends React.Component {
     sendGetUserInfoRequest = () => {
         let userIdList = [];
         this.state.StoriesList.forEach(story => {
-            if(!userIdList.find( id => id == story.userId))
-            userIdList.push(story.userId);
+            if (!userIdList.find(id => id == story.userId))
+                userIdList.push(story.userId);
         })
         let jsonIds = JSON.stringify(userIdList);
         axiosSetUp().get(`http://localhost:5002/userInfo/getRange?userIdList=${jsonIds}`)
@@ -112,16 +115,15 @@ class IndexPage extends React.Component {
             })
     }
 
-    sendRequestAndSetNewPage = (page = this.state.page) => {
+    sendRequestAndSetNewPage = (page = this.state.page, sortBy = this.state.sortBy) => {
         if (page < 1) return;
-        axiosSetUp().get(`http://localhost:5002/story/getPage?page=${page - 1}&count=${this.state.pageSize}`)
+        axiosSetUp().get(`http://localhost:5002/story/getPage?page=${page - 1}&count=${this.state.pageSize}&sortBy=${sortBy}`)
             .then((response) => {
                 this.setState({
                     StoriesList: response.data || '',
                     page: page
                 })
                 this.sendGetUserInfoRequest();
-
             })
             .catch((error) => {
                 console.log('Failed', error)
@@ -145,6 +147,20 @@ class IndexPage extends React.Component {
         this.props.history.push(`Story${id}`)
     }
 
+    handleSortButtonClick = () => {
+        this.setState({
+            openSortMenu: true
+        })
+    }
+
+
+    handleMenuChange = (event) => {
+        this.setState({
+            sortBy: event.target.value
+        })
+        this.sendRequestAndSetNewPage( undefined, event.target.value);
+    }
+
 
     renderAStory = (story) => {
         let info = this.state.UserInfoList.find(ui => ui.userId == story.userId) || ''
@@ -154,7 +170,7 @@ class IndexPage extends React.Component {
             <Typography variant='subtitle1' style={{ wordWrap: "break-word", textIndent: "15px" }}>{story.firstPartBody}</Typography><this.Line />
             <this.Signature>
                 <this.Avatar src={`data:image/jpeg;base64,${info.avatarBase64}`} width="40px" height="40px" />
-                <Typography variant="subtitle2">By {info.userLogin} {story.dateSubmitted}</Typography> <this.Rating >{story.rating}</this.Rating>
+                <Typography variant="subtitle2">By {info.userLogin || 'Unknown'} {story.dateSubmitted}</Typography> <this.Rating >{story.rating}</this.Rating>
             </this.Signature>
         </this.StoryBlock>
     }
@@ -163,6 +179,18 @@ class IndexPage extends React.Component {
     render() {
         return (
             <this.Wraper >
+                <Typography variant="button">Sort by: </Typography>
+                <Select
+                    style={{width: "4%"}}
+                    labelId="demo-simple-select-placeholder-label-label"
+                    id="demo-simple-select-placeholder-label"
+                    value={this.state.sortBy}
+                    onChange={this.handleMenuChange}
+                >
+                    <MenuItem value={'rating'}>Rating</MenuItem>
+                    <MenuItem value={'date'}>Date</MenuItem>
+                    <MenuItem value={'title'}>Title</MenuItem>
+                </Select>
                 {this.state.StoriesList.map((story) => {
                     return <> {this.renderAStory(story)} </>
                 })}

@@ -5,7 +5,7 @@ import Logout from '../Logout/Logout';
 import { connect } from 'react-redux';
 import axiosSetUp from '../../axiosConfig';
 import setAvatar from '../../Actions/setAvatar';
-import axios from 'axios';
+import { withTheme } from '@material-ui/core/styles';
 
 class AuthorizedNavBar extends React.Component {
 
@@ -17,17 +17,17 @@ class AuthorizedNavBar extends React.Component {
     }
   }
   NavBarListElement = styled.li`
-  background-color: #3f51b5;
   & a {
     &:hover {
         background-color: lightblue;
       }
   }
+  font-size: 17px;
   display:inline;
   float: left;
-  border-style: solid;
-  border-width: 1px;
-  margin: -5px;
+  border-right-style: solid;
+  border-right-width: 1px;
+  margin-bottom: -5px;
   `;
   LogoutElement = styled.li`
   & div {
@@ -36,10 +36,13 @@ class AuthorizedNavBar extends React.Component {
         cursor: pointer;
       }
   }
-  display:inline;
+  padding: 1px;
+  font-size: 17px;
+  display: inline;
   float: right;
   font-weight:600;
-  margin: -5px;
+  margin-bottom: -6px;
+  margin-left: -11px;
   border-style: solid;
   border-width: 1px;
   `;
@@ -48,11 +51,10 @@ class AuthorizedNavBar extends React.Component {
   float: right;
   display: inline;
   text-align: center;
-  padding: 16px;
-  padding-top: 20px;
+  padding-top: 12px;
+  padding-right: 10px;
   font-size: 20px;
   color: white;
-  margin: -10px;
   `;
   NavBarList = styled.ul`
   list-style-type: none;
@@ -83,12 +85,7 @@ class AuthorizedNavBar extends React.Component {
 
   sendGetAvatarRequest = () => {
     let userId = this.props.token.id;
-    axiosSetUp().get(`http://localhost:5002/userInfo/getAvatar?userId=${userId}`, {
-      // headers: {
-      //   'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
-      //   'Authorization': `Bearer ${localStorage.getItem('Token')}`
-      // }
-    })
+    axiosSetUp().get(`http://localhost:5002/userInfo/getAvatar?userId=${userId}`)
       .then(response => {
         this.props.setAvatar(response.data)
       })
@@ -98,7 +95,7 @@ class AuthorizedNavBar extends React.Component {
   }
 
   adminElement = () => {
-    if (this.props.token.scope === "Admin") {
+    if (this.props.token.scope === 'Admin') {
       return (
         <this.NavBarListElement>
           <NavBarButton linkInfo={{
@@ -113,8 +110,8 @@ class AuthorizedNavBar extends React.Component {
   render() {
     return (
       <nav>
-        <this.NavBarList>
-          <this.NavBarListElement>
+        <this.NavBarList style={{backgroundColor: this.props.theme.palette.primary.main}}>
+          <this.NavBarListElement style={{fontWeight: "600"}}>
             <NavBarButton linkInfo={{
               link: "/",
               text: "LongStory"
@@ -130,15 +127,15 @@ class AuthorizedNavBar extends React.Component {
 
           <this.NavBarListElement>
             <NavBarButton linkInfo={{
-              link: "/makeBook",
-              text: "Make a book"
+              link: "IntializeStory",
+              text: "Start a story"
             }} />
           </this.NavBarListElement>
 
           <this.NavBarListElement>
             <NavBarButton linkInfo={{
-              link: "IntializeStory",
-              text: "Start a story"
+              link: "/makeBook",
+              text: "Order a book"
             }} />
           </this.NavBarListElement>
 
@@ -148,7 +145,7 @@ class AuthorizedNavBar extends React.Component {
             <Logout />
           </this.LogoutElement>
 
-          <this.Avatar src={`data:image/jpeg;base64,${this.props.avatar}`} width="40px" height="40px" />
+          <this.Avatar src={`data:image/jpeg;base64,${this.props.avatar}`} width="50px"  />
           <this.CurrentUser> Welcome {this.props.token.login}! </this.CurrentUser>
         </this.NavBarList>
       </nav>
@@ -169,4 +166,4 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(AuthorizedNavBar)
+export default withTheme(connect(mapStateToProps, mapDispatchToProps)(AuthorizedNavBar))

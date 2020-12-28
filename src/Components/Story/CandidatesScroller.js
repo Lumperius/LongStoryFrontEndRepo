@@ -56,7 +56,7 @@ class CandidatesScroller extends React.Component {
 
     sendGetCandidatesRequest = () => {
         let userId = this.props.token.id;
-        axiosSetUp().get(`http://localhost:5002/storyPartCandidate/getAll?storyId=${this.props.storyId}&userId=${userId}`)
+        axiosSetUp().get(`http://localhost:5002/storyPart/getAllCandidates?storyId=${this.props.storyId}&userId=${userId}`)
             .then(response => {
                 if (typeof response.data === 'string') throw response
                 this.setState({
@@ -78,7 +78,7 @@ class CandidatesScroller extends React.Component {
     sendVoteCandidateRequsest = (candidate) => {
         if (candidate.isRated) return this.setState({ 
             message:{
-            body:  'You can not vote twice on same candidate' ,
+            body:  'You can not vote twice on same candidate',
             type: 'error'
             }
         });
@@ -87,7 +87,7 @@ class CandidatesScroller extends React.Component {
             storyPartCandidateId: candidate.id,
             userId: userId
         }
-        axiosSetUp().post(`http://localhost:5002/storyPartCandidate/vote`, body)
+        axiosSetUp().post(`http://localhost:5002/storyPart/vote`, body)
             .then(response => {
                 this.setState({
                     message: {

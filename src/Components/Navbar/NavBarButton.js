@@ -9,7 +9,7 @@ class TopBarButton extends React.Component
     display: block;
     color: white;
     text-align: center;
-    padding: 14px 16px;
+    padding: 18px 16px;
     `;
 
     render() {

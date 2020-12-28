@@ -52,7 +52,7 @@ class Logout extends React.Component {
                 <this.NavBarButton onClick={this.handleClick}>
                     Logout
                 </this.NavBarButton>
-                <Dialog open={this.state.open}>
+                <Dialog open={this.state.open} >
                     <Typography style={{margin: "30px"}} gutterBottom>
                         Are you sure?
                     </Typography>
@@ -65,21 +65,6 @@ class Logout extends React.Component {
                         </Button>
                     </MuiDialogActions>
                 </Dialog>
-
-                {/* <Snackbar
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    }}
-                    open={this.state.open}
-                    autoHideDuration={6000}
-                    message="Note archived"
-                    action={
-                        <React.Fragment>
-                                UNDO
-                        </React.Fragment>
-                    }
-                /> */}
             </>
         );
     }

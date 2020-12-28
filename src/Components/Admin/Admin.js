@@ -144,19 +144,49 @@ class Admin extends React.Component {
     }
 
     
-    doNothing = (id) => {
-
+    sendBanUserRequest = (userId, isUnbanRequest) => {
+        debugger
+        let body = {
+            userId: userId,
+            isUnbanRequest: isUnbanRequest
+        }
+        axiosSetUp().post(`http://localhost:5002/user/ban`, body)
+        .then(response => {
+            this.setState({
+                message: {
+                    body: response.data,
+                    type: 'success'
+                }
+            })
+        })
+        .catch(error => {
+            this.setState({
+                message: {
+                    body: error.data,
+                    type: 'error'
+                }
+            })
+        })
     }
     
 
     renderUserRow = (user) => {
+        let bannedUntil;
+        if(user.bannedUntil){
+            bannedUntil = 'Until ' + new Date(user.bannedUntil).toLocaleDateString() + ' ' + new Date(user.bannedUntil).toLocaleTimeString();
+        }
+        else{
+            bannedUntil = 'Not banned';
+        }
+        
         return <TableRow>
             <TableCell >{user.login}</TableCell> <TableCell>{user.email}</TableCell>
             <TableCell >{user.roleName}</TableCell>
+            <TableCell >{bannedUntil}</TableCell>
             <TableCell style={{ width: "20%"}}>
-                <Button variant="outlined" style={{ backgroundColor: "red" }} key={user.login} onClick={() => this.sendDeleteRequest(user.id)}>Delete</Button>
-                <Button variant="outlined" style={{ backgroundColor: "orange", margin: "10px" }} key={user.login} onClick={() => this.doNothing(user.id)}>Ban</Button>
-                <Button variant="outlined" style={{ backgroundColor: "green" }} key={user.login} onClick={() => this.doNothing(user.id)}>Unban</Button>
+                <Button variant="outlined" style={{ backgroundColor: "red" }}                    key={user.login} onClick={() => this.sendDeleteRequest(user.id)}>Delete</Button>
+                <Button variant="outlined" style={{ backgroundColor: "orange", margin: "10px" }} key={user.login} onClick={() => this.sendBanUserRequest(user.id, false)}>Ban</Button>
+                <Button variant="outlined" style={{ backgroundColor: "green" }}                  key={user.login} onClick={() => this.sendBanUserRequest(user.id, true)}>Unban</Button>
             </TableCell>
         </TableRow>
     }
@@ -168,7 +198,7 @@ class Admin extends React.Component {
                 <Table style={{ width: "100%" }}>
                     <TableHead style={{ backgroundColor: "grey" }}>
                         <TableRow >
-                            <TableCell>Login</TableCell> <TableCell>Email</TableCell> <TableCell>Role</TableCell>
+                            <TableCell>Login</TableCell> <TableCell>Email</TableCell> <TableCell>Role</TableCell><TableCell>Banned</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

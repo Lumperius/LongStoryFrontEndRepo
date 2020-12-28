@@ -10,13 +10,13 @@ class Office extends React.Component {
   constructor() {
     super()
     this.state = {
-      activeComponent: <Info/>
+      activeComponent: <Info />
     }
   }
 
   componentDidMount = () => {
-    if (this.props.token === undefined) 
-     this.props.history.push('authentication');
+    if (this.props.token === undefined)
+      this.props.history.push('authentication');
   }
 
   button(text, Component) {
@@ -39,6 +39,9 @@ class Office extends React.Component {
     `;
 
   ListButton = styled.a`
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-right-color: white;
     text-decoration: none;
     display: block;
     color: white;
@@ -57,6 +60,9 @@ class Office extends React.Component {
     padding: 0;
   `;
   List = styled.ul`
+  border-width: 1px;
+  border-style: solid;
+  border-color: white;
     list-style-type: none;
     margin: 0;
     padding: 0px;
@@ -67,7 +73,7 @@ class Office extends React.Component {
 
   render() {
     return (
-    <>
+      <>
         <this.List>
           <this.ListElement>
             {this.button('Info', <Info />)}
@@ -79,17 +85,17 @@ class Office extends React.Component {
             {this.button('Settings', <Settings />)}
           </this.ListElement>
         </this.List>
-      <this.Wraper>
-         { this.state.activeComponent}
-      </this.Wraper>
-    </>
+        <this.Wraper>
+          {this.state.activeComponent}
+        </this.Wraper>
+      </>
     )
   }
 }
 
 const mapStateToProps = function (state) {
   return {
-      token: state.token.tokenObj,
+    token: state.token.tokenObj,
   };
 }
 

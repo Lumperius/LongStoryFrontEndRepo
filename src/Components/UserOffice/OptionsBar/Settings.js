@@ -10,12 +10,16 @@ class Settings extends React.Component{
     constructor(){
         super()
         this.state = {   
+            message:{
+                body: '',
+                type: ''
+            }
       }
     }
 
     componentDidMount = () => {
-        if (this.props.token === undefined) 
-        this.props.history.push('authentication');   
+        // if (this.props.token === undefined) 
+        // this.props.history.push('authentication');   
     }
 
 

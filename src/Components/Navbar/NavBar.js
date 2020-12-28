@@ -1,22 +1,23 @@
 import React from 'react';
 import NavBarButton from './NavBarButton';
 import styled from 'styled-components';
-import AppBar from '@material-ui/core/AppBar';
+import { withTheme } from '@material-ui/core/styles';
 
 class NavBar extends React.Component {
 
   NavBarListElement = styled.li`
-  background-color: #3f51b5;
   & a {
     &:hover {
         background-color: lightblue;
       }
   }
+  font-size: 17px;
   display:inline;
   float: right;
-  border-style: solid;
-  border-width: 1px;
+  border-right-style: solid;
+  border-right-width: 1px;
   margin: -5px;
+  padding: 3px;
   `;
   NavBarList = styled.ul`
   list-style-type: none;
@@ -33,8 +34,8 @@ class NavBar extends React.Component {
 
   render() {
     return (
-      <this.NavBarList>
-        <this.NavBarListElement style={{float: "left"}}>
+      <this.NavBarList style={{backgroundColor: this.props.theme.palette.primary.main}}>
+        <this.NavBarListElement style={{float: "left", fontWeight: "600"}}>
           <NavBarButton linkInfo={{
             link: "/",
             text: "LongStory"
@@ -42,7 +43,7 @@ class NavBar extends React.Component {
         </this.NavBarListElement>
 
         <this.NavBarListElement>
-          <NavBarButton linkInfo={{
+          <NavBarButton linkInfo={{ 
             link: "Registration",
             text: "Register"
           }} />
@@ -59,4 +60,4 @@ class NavBar extends React.Component {
   }
 }
 
-export default NavBar;
+export default withTheme(NavBar);

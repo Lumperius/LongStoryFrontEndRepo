@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import renderMessage from '../../message';
+import Comments from './Comments';
 
 class Story extends React.Component {
 
@@ -76,6 +77,23 @@ class Story extends React.Component {
         this.sendGetStoryRequest();
     }
 
+    sendGetStoryPartsRequest = () => {
+        let storyId = this.props.match.params.id;
+        axiosSetUp().get(`http://localhost:5002/storyPart/getAllParts?storyId=${storyId}`)
+            .then(response => {
+                this.setState({
+                    StoryParts: response.data || []
+                })
+            })
+            .catch(error => {
+                this.setState({
+                    message: {
+                        body: 'Unable to load story text. Try again later or contact administrator.',
+                        type: 'error'
+                    }
+                })
+            })
+    }
 
     sendGetStoryRequest() {
         let storyId = this.props.match.params.id;
@@ -98,9 +116,8 @@ class Story extends React.Component {
                         state: response.data.state,
                         isVoted: response.data.isVoted,
                     },
-                    StoryParts: response.data.storyParts || [],
-                    StoryPartCandidates: response.data.storyPartCandidates || []
                 })
+                this.sendGetStoryPartsRequest();
             })
             .catch(error => {
                 console.log(error);
@@ -113,7 +130,8 @@ class Story extends React.Component {
             })
     }
 
-    sendVoteRequest = (storyId, voteType) => {
+    sendVoteRequest = (voteType) => {
+        let storyId = this.props.match.params.id;
         let userId = this.props.token.id;
         let body = {
             storyId: storyId,
@@ -141,30 +159,31 @@ class Story extends React.Component {
             })
     };
 
-    sendFinishStoryRequest = () =>{
+    sendFinishStoryRequest = () => {
         let storyId = this.props.match.params.id;
-        let body={
+        let body = {
             storyId: storyId,
             userId: this.props.token.id
         }
         axiosSetUp().post(`http://localhost:5002/story/finish`, body)
-        .then(response => {
-            this.setState({
-                message:{
-                    body: response.data,
-                    type: 'info'
-                }
+            .then(response => {
+                this.setState({
+                    message: {
+                        body: response.data,
+                        type: 'info'
+                    }
+                })
             })
-        })
-        .catch(error =>{
-            this.setState({
-                message:{
-                    body: error.data,
-                    type: 'error'
-                }
-            })
-        });
+            .catch(error => {
+                this.setState({
+                    message: {
+                        body: error.data,
+                        type: 'error'
+                    }
+                })
+            });
     };
+
 
     handleStopRenderingEditor = () => {
         this.setState({
@@ -178,7 +197,7 @@ class Story extends React.Component {
                 case 'Alive':
                     if (this.state.showEditor) {
                         let storyId = this.props.match.params.id;
-                        return <AddStoryPart storyId={storyId} stopRenderEditor={this.handleStopRenderingEditor}/>
+                        return <AddStoryPart storyId={storyId} stopRenderEditor={this.handleStopRenderingEditor} />
                     }
                     else return <>
                         <Button variant="contained" color="primary" onClick={
@@ -192,7 +211,7 @@ class Story extends React.Component {
                     return <Typography>This story is finished</Typography>
                 case 'Rated':
                     return <>
-                        <Typography>This story is being rated right now, you need to wait a wee bit before you can submit new parts</Typography>
+                        <Typography>This story is being rated right now, you need to wait a little before you can submit new parts</Typography>
                         <CandidatesScroller storyId={this.state.story.id} /><br />
                     </>
 
@@ -206,8 +225,8 @@ class Story extends React.Component {
     renderStoryPart = (storyPart) => {
         if (storyPart.body) {
             return <>
-                <Typography variant="body" style={{wordWrap: "break-word", textIndent: "15px"}}>{storyPart.body}</Typography>
-                <this.Signature>{storyPart.author} at {storyPart.dateAdded} with {storyPart.finalRating} votes</this.Signature>
+                <Typography variant="body" style={{ wordWrap: "break-word", textIndent: "15px" }}>{storyPart.body}</Typography>
+                <this.Signature>{storyPart.author} at {storyPart.dateAdded} with {storyPart.rating} votes</this.Signature>
                 <hr />
             </>
         }
@@ -218,21 +237,21 @@ class Story extends React.Component {
             return <Typography variant="subtitle1">You voted this story</Typography>
         }
         if (!this.props.token)
-             return /*<Typography variant="subtitle1">You voted this story</Typography>*/
+            return /*<Typography variant="subtitle1">You voted this story</Typography>*/
         else {
             return <div>
-                <Button variant="contained" style={{ backgroundColor: "LimeGreen", margin: "10px" }} onClick={() => this.sendVoteRequest(this.state.story.id, true)}>Vote up</Button>
-                <Button variant="contained" style={{ backgroundColor: "FireBrick" }} onClick={() => this.sendVoteRequest(this.state.story.id, false)}>Vote down</Button>
+                <Button variant="contained" style={{ backgroundColor: "LimeGreen", margin: "10px" }} onClick={() => this.sendVoteRequest(true)}>Vote up</Button>
+                <Button variant="contained" style={{ backgroundColor: "FireBrick" }} onClick={() => this.sendVoteRequest(false)}>Vote down</Button>
             </div>
         }
     }
 
-    renderFinishStoryButton = () =>{
-        if(this.props.token)
-        if(this.props.token.id === this.state.story.authorId)
-        return<>
-            <Button variant="outlined" onClick={this.sendFinishStoryRequest} style={{color: "red"}}>Finish this story</Button>
-        </>
+    renderFinishStoryButton = () => {
+        if (this.props.token)
+            if (this.props.token.id === this.state.story.authorId)
+                return <>
+                    <Button variant="outlined" onClick={this.sendFinishStoryRequest} style={{ color: "red" }}>Finish this story</Button>
+                </>
     }
 
 
@@ -249,10 +268,11 @@ class Story extends React.Component {
             <hr /><hr />
             {this.state.StoryParts.map((storyPart) => {
                 return <>{this.renderStoryPart(storyPart)}</>
-            })}    
+            })}
             {renderMessage(this.state.message.body, this.state.message.type)}
             {this.renderEditor()}<br /><br />
-            {this.renderFinishStoryButton()}
+            {this.renderFinishStoryButton()}<br/><br />
+            <Comments storyId={this.props.match.params.id} />
         </this.Wraper>
     }
 }

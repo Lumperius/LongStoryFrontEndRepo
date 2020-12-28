@@ -57,14 +57,15 @@ class InitializeStory extends React.Component {
     `;
     Wraper = styled.div`
     text-align:left;
+    margin-top: 1500px;
     margin:10px;
     padding: 30px;
     font-size: 28px;
     border-style: solid;
-    border-width: 1px;
+    border-width:1px;
     border-radius: 10px;
     border-color: dark;
-    background-color: white:
+    background-color: white
     `;
     InputLabel = styled.h3`
     font-size: 30px;
@@ -143,8 +144,10 @@ class InitializeStory extends React.Component {
             <this.Wraper >
                 <Typography variant='h4' align='left' style={{ margin: "30px" }} gutterBottom >Start a story</Typography >
                 < br />
-                <this.TitleInput name="title" maxLength="80" placeholder="Enter title. It must be at least 5 symbols long" onChange={this.handleChange}></this.TitleInput><br />
+                <this.TitleInput name="title" maxLength="80" placeholder="Enter title. It must be at least 5 symbols long" onChange={this.handleChange}></this.TitleInput><br/>
+                <Typography variant="subtitle2">{this.state.title.length}/80</Typography><br />
                 <this.BodyInput name="body" maxLength="4000" placeholder="Enter story here. It must be at least 20 symbols long" onChange={this.handleChange}></this.BodyInput><br />
+                <Typography variant="subtitle2">{this.state.body.length}/4000</Typography><br />
                 {renderMessage(this.state.message.body, this.state.message.type)}
                 <Button variant="contained" color="primary" onClick={this.sendRequest}>Submit</Button>
             </this.Wraper >

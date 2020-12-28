@@ -27,11 +27,11 @@ class Authentication extends React.Component {
 
     LoginSchema = Yup.object().shape({
         loginOrEmail: Yup.string()
-        .min(8, 'This login is too short, 8 symbols is minimum')
+        .min(5, 'This login is too short, 5 symbols is minimum')
         .max(16, 'This login is too long, 16 symbols maximum')
         .required('Required'),
         password: Yup.string()
-        .min(8, 'This login is too short, 8 symbols is minimum')
+        .min(6, 'This login is too short, 6 symbols is minimum')
         .max(16, 'This login is too long, 16 symbols maximum')
         .required('Required'),
     });
@@ -138,7 +138,6 @@ class Authentication extends React.Component {
                     }}
                     validationSchema={this.LoginSchema}
                     onSubmit= {values => {
-                        debugger
                         delete values.repeat_password;
                         this.sendAuthenticationRequest(values)
                     }}

@@ -15,7 +15,8 @@ import InitializeStory from './Components/Story/InitializeStory';
 import Story from './Components/Story/Story';
 import history from './history.js'
 import 'typeface-roboto'
-
+import { withTheme } from '@material-ui/core/styles';
+import ChatHub from './Components/ChatHub/ChatHub';
 
 
 class App extends React.Component {
@@ -42,7 +43,7 @@ class App extends React.Component {
     if (isAuthenticated) { NavBarOption = <AuthorizedNavBar />; }
     else { NavBarOption = <NavBar />; }
     return (
-      <div className="App">
+      <div className="App" style={{backgroundColor: this.props.theme.palette.primary.light}} >
         {NavBarOption}
         <Router history={history}>
           <Route exact path="/" component={Welcome} />
@@ -51,6 +52,7 @@ class App extends React.Component {
           <Route exact path="/admin" component={Admin} />
           <Route exact path="/office" component={Office} />
           <Route exact path="/logout" component={Logout} />
+          <Route exact path="/chat" component={ChatHub} />
           <Route exact path="/intializeStory" component={InitializeStory} />
           <Route exact path="/story:id" component={Story} />
         </Router>
@@ -71,4 +73,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(App)
+export default withTheme(connect(mapStateToProps, mapDispatchToProps)(App))
