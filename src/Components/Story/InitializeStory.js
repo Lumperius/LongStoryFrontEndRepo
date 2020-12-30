@@ -73,7 +73,7 @@ class InitializeStory extends React.Component {
     `;
 
     componentDidMount() {
-        if (this.props.token === undefined)
+        if (!this.props.token)
             this.props.history.push('authentication');
     }
 

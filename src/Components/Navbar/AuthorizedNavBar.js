@@ -6,6 +6,8 @@ import { connect } from 'react-redux';
 import axiosSetUp from '../../axiosConfig';
 import setAvatar from '../../Actions/setAvatar';
 import { withTheme } from '@material-ui/core/styles';
+import history from '../../history.js'
+import logo from './Logo.png'
 
 class AuthorizedNavBar extends React.Component {
 
@@ -74,13 +76,21 @@ class AuthorizedNavBar extends React.Component {
   margin: 0px;
   margin-right: 10px;
   `;
+  NavBarLogo = styled.img`
+  height: 38px;
+  margin: 10px;
+  display: block;
+  &:hover {
+    cursor: pointer;
+  }
+  `;
 
   componentDidMount() {
     this.sendGetAvatarRequest();
   }
 
-  static getDerivedStateFromProps(){
-    return null;
+  handleLogoClick = () => {
+    history.push('/');
   }
 
   sendGetAvatarRequest = () => {
@@ -110,12 +120,12 @@ class AuthorizedNavBar extends React.Component {
   render() {
     return (
       <nav>
-        <this.NavBarList style={{backgroundColor: this.props.theme.palette.primary.main}}>
-          <this.NavBarListElement style={{fontWeight: "600"}}>
-            <NavBarButton linkInfo={{
-              link: "/",
-              text: "LongStory"
-            }} />
+        <this.NavBarList style={{ backgroundColor: this.props.theme.palette.primary.main }}>
+          <this.NavBarListElement style={{ fontWeight: "600" }}>
+            <this.NavBarLogo
+             src={logo}
+             width="auto"
+             onClick={this.handleLogoClick}/>
           </this.NavBarListElement>
 
           <this.NavBarListElement>
@@ -139,13 +149,20 @@ class AuthorizedNavBar extends React.Component {
             }} />
           </this.NavBarListElement>
 
+          <this.NavBarListElement>
+            <NavBarButton linkInfo={{
+              link: "/chat",
+              text: "Chat room"
+            }} />
+          </this.NavBarListElement>
+
           {this.adminElement()}
 
           <this.LogoutElement>
             <Logout />
           </this.LogoutElement>
 
-          <this.Avatar src={`data:image/jpeg;base64,${this.props.avatar}`} width="50px"  />
+          <this.Avatar src={`data:image/jpeg;base64,${this.props.avatar}`} width="50px" />
           <this.CurrentUser> Welcome {this.props.token.login}! </this.CurrentUser>
         </this.NavBarList>
       </nav>

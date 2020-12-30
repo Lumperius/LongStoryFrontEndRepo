@@ -3,10 +3,11 @@ import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
-import renderMessage from '../../message';
+import renderMessage from '../message';
 
 class Template extends React.Component {
     constructor(){
+        super()
         this.state = {
             message: {
                 body: '',

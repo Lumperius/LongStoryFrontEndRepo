@@ -108,7 +108,7 @@ class Info extends React.Component {
 
     sendGetUserInfoRequest = () => {
         let userId = this.props.token.id;
-        axiosSetUp().get(`http://localhost:5002/userInfo/getInfo?userId=${userId}`)
+        axiosSetUp().get(`http://localhost:5002/userInfo/get?userId=${userId}`)
             .then(response => {
                 this.setState({
                     info: response.data,

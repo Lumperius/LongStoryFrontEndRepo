@@ -36,7 +36,8 @@ class ChatHub extends React.Component {
     `;
     MessageWrapper = styled.div`
     text-align:left;
-    padding: 20px;
+    width: 60vw;
+    padding: 10px;
     margin: 5px;
     border-style: solid;
     border-width: 1px;
@@ -48,21 +49,22 @@ class ChatHub extends React.Component {
     hubConnection = new signalR.HubConnectionBuilder()
         .withUrl('http://localhost:5002/messenger/chat', {
             skipNegotiation: true,
-            transport: signalR.HttpTransportType.WebSockets
+            transport: signalR.HttpTransportType.WebSockets,
         })
         .build();
 
     componentDidMount() {
+        if (!this.props.token)
+        this.props.history.push('authentication');
+
         this.hubConnection.start();
-        this.hubConnection.on("ReceiveMessage", messageText => {
-            let message = {};
-            message.text = messageText;
-            message.user = this.props.token.login;
-            message.timePosted = new Date(Date.now()).toLocaleTimeString()
+        this.hubConnection.on('Message', recievedMessage => {
+            let message = JSON.parse(recievedMessage);
             let state = this.state;
             state.MessageList.unshift(message);
             this.setState(state)
-        })
+        })                 
+        console.log(this.hubConnection.connectionId)    
     }
 
     handleChange = (event) => {
@@ -72,8 +74,15 @@ class ChatHub extends React.Component {
     }
 
     handleClick = (event) => {
-        if (this.state.messageText !== '')
-            this.hubConnection.invoke('SendMessage', this.state.messageText)
+        if (this.state.messageText !== '' &&
+        this.state.messageText.length <= 300 ) {
+            let messageObject = {
+                text: this.state.messageText,
+                user: this.props.token.login,
+                timePosted: new Date(Date.now()).toLocaleTimeString()
+            };
+            JSON.stringify()
+            this.hubConnection.invoke('PublishMessage', JSON.stringify(messageObject))
                 .then(message => {
                     this.setState({
                         messageText: ''
@@ -82,23 +91,47 @@ class ChatHub extends React.Component {
                 .catch(error => {
                     console.log(error.toString())
                 })
+        }
+        else{
+            this.setState({
+                message:{
+                    body: 'Incorrect message. Must be text 1-300 symbols long.',
+                    type: 'error'
+                }
+            })
+        }
     }
 
 
-
-
+    renderMessage = (message) => {
+        if (message.user === this.props.token.login)
+            return <div style={{display: "flex"}}><this.MessageWrapper style={{ backgroundColor: "OldLace"}}>
+                <Typography variant="subtitle" style={{ wordWrap: "break-word"}}>{message.text} </Typography><hr/>
+                <Typography variant="caption" style={{ float: "left" }}> {message.user} at {message.timePosted}</Typography>
+            </this.MessageWrapper><br/></div>
+        else
+            return <div style={{display: "flex"}}><this.MessageWrapper>
+                <Typography variant="subtitle" style={{ wordWrap: "break-word" }}>{message.text} </Typography><hr/>
+                <Typography variant="caption" style={{ float: "left" }}> {message.user} at {message.timePosted}</Typography>
+            </this.MessageWrapper><br/></div>
+    }
 
     render() {
-        return (<this.Wraper style={{ width: "600px" }}>
+        return (<this.Wraper style={{ height: "90vh", overflowY: "auto" }} >
             {this.state.MessageList.map(message => {
-                return <this.MessageWrapper>
-                <div style={{ width: "400px" }}><Typography variant="subtitle" style={{ wordWrap: "break-word" }}>{message.text} </Typography></div>
-                    <Typography variant="caption" style={{ float: "right" }}>by {message.user}-{message.timePosted}</Typography>
-                    </this.MessageWrapper>
-            })}<br/>
-            <TextField name="messageText" value={this.state.messageText} onChange={this.handleChange} />
+                return <>
+                    {this.renderMessage(message)}
+                </>
+            })}
+            <br />
+            <Input name="messageText" 
+            multiline={true}
+            inputProps={{ maxLength: 300 }} 
+            value={this.state.messageText} 
+            onChange={this.handleChange}
+            style={{width: "20vw"}} />
+            {renderMessage(this.state.message.body, this.state.message.type)}<br/>
             <Button type="submit" onClick={this.handleClick} id="button"> Send </Button>
-            {renderMessage(this.state.message.body, this.state.message.type)}
         </this.Wraper>)
     }
 }

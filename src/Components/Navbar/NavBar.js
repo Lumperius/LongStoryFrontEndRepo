@@ -2,6 +2,8 @@ import React from 'react';
 import NavBarButton from './NavBarButton';
 import styled from 'styled-components';
 import { withTheme } from '@material-ui/core/styles';
+import history from  '../../history.js';
+import logo from './Logo.png';
 
 class NavBar extends React.Component {
 
@@ -29,17 +31,29 @@ class NavBar extends React.Component {
   border-width: 0px;
   border-bottom-width: 3px;
   `;
+  NavBarLogo = styled.img`
+  height: 38px;
+  margin: 10px;
+  display: block;
+  &:hover {
+    cursor: pointer;
+  }
+  `;
 
   _service;
+
+  handleLogoClick = () => {
+    history.push('/');
+  }
 
   render() {
     return (
       <this.NavBarList style={{backgroundColor: this.props.theme.palette.primary.main}}>
-        <this.NavBarListElement style={{float: "left", fontWeight: "600"}}>
-          <NavBarButton linkInfo={{
-            link: "/",
-            text: "LongStory"
-          }} />
+        <this.NavBarListElement style={{float: "left", borderStyle: "none"}}>
+        <this.NavBarLogo
+             src={logo}
+             width="auto"
+             onClick={this.handleLogoClick}/>
         </this.NavBarListElement>
 
         <this.NavBarListElement>

@@ -106,7 +106,7 @@ class AddStoryPart extends React.Component {
              style={{ fontSize: "20px", width: "90%" }} onChange={this.handleChange} ></TextareaAutosize> <br />
             <Typography variant="subtitle2">{this.state.body.length}/4000</Typography>
             {renderMessage(this.state.message.body, this.state.message.type)}
-            <Button onClick={this.sendNewStoryPartRequest}>submit</Button>
+            <Button variant="contained" color="primary" onClick={this.sendNewStoryPartRequest}>submit</Button>
         </>
     }
 }

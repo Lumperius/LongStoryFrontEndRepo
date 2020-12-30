@@ -132,6 +132,8 @@ class CandidatesScroller extends React.Component {
         return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
             case 'info':
         return <Typography variant="subtitle1">{this.state.message.body}</Typography>
+            default:
+        return;
         }
     }
 

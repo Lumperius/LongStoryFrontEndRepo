@@ -4,21 +4,26 @@ import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig'
 import { connect } from 'react-redux'
 import Typography from '@material-ui/core/Typography';
-import Menu from '@material-ui/core/Menu';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import MenuItem from '@material-ui/core/MenuItem';
 import Popper from '@material-ui/core/Popper';
 import Button from '@material-ui/core/Button';
 import renderMessage from '../../message';
 import Select from '@material-ui/core/Select';
+import UserInfoWindow from '../UserInfoWindow/UserInfoWindow';
 
 class IndexPage extends React.Component {
-    service;
     constructor() {
         super();
         this.state = {
             message: {
                 body: '',
                 type: ''
+            },
+            popper: {
+                open: false,
+                userId: '',
+                anchorEl: undefined
             },
             StoriesList: [],
             UserInfoList: [],
@@ -37,6 +42,7 @@ class IndexPage extends React.Component {
     border-width:1px;
     &:hover {
         background-color: lightgrey;
+        cursor: pointer;
     }
     `;
     Wraper = styled.div`
@@ -85,6 +91,12 @@ class IndexPage extends React.Component {
     float: left;
     margin: 0px;
     margin-right: 10px;
+    `;
+    Login = styled.span`
+    &:hover {
+        cursor: pointer;
+        text-decoration: underline;
+    }
     `;
 
     componentDidMount() {
@@ -147,30 +159,47 @@ class IndexPage extends React.Component {
         this.props.history.push(`Story${id}`)
     }
 
+    handleAuthorClick = (event) => {
+        this.setState({
+            popper: {
+                userId: event.currentTarget.id || '',
+                anchorEL: event.currentTarget || undefined,
+                open: true
+            }
+        })
+    };
+
     handleSortButtonClick = () => {
         this.setState({
             openSortMenu: true
         })
     }
 
+    handleClosePopper = () => {
+        this.setState({
+            popper: {
+                open: false
+            }
+        })
+    };
 
     handleMenuChange = (event) => {
         this.setState({
             sortBy: event.target.value
         })
-        this.sendRequestAndSetNewPage( undefined, event.target.value);
+        this.sendRequestAndSetNewPage(undefined, event.target.value);
     }
 
 
     renderAStory = (story) => {
         let info = this.state.UserInfoList.find(ui => ui.userId == story.userId) || ''
         story.body = this.cutStoryBody(story.firstPartBody);
-        return <this.StoryBlock onClick={() => this.handleClick(story.id)}>
+        return <this.StoryBlock id={story.userId} onClick={() => this.handleClick(story.id)}>
             <Typography variant='h5'>{story.title}</Typography><br />
             <Typography variant='subtitle1' style={{ wordWrap: "break-word", textIndent: "15px" }}>{story.firstPartBody}</Typography><this.Line />
             <this.Signature>
                 <this.Avatar src={`data:image/jpeg;base64,${info.avatarBase64}`} width="40px" height="40px" />
-                <Typography variant="subtitle2">By {info.userLogin || 'Unknown'} {story.dateSubmitted}</Typography> <this.Rating >{story.rating}</this.Rating>
+                <Typography variant="subtitle2">By <this.Login id={story.userId} onClick={this.handleAuthorClick}>{info.userLogin || 'Unknown'}</this.Login> {story.dateSubmitted}</Typography> <this.Rating >{story.rating}</this.Rating>
             </this.Signature>
         </this.StoryBlock>
     }
@@ -178,12 +207,16 @@ class IndexPage extends React.Component {
 
     render() {
         return (
-            <this.Wraper >
+            <this.Wraper>
+                    <Popper open={this.state.popper.open} anchorEl={this.state.popper.anchorEL}>
+                        <UserInfoWindow userId={this.state.popper.userId} />
+                        <Button variant="contained" color="white" onClick={this.handleClosePopper} style={{padding: "0px"}}>Close</Button>
+                    </Popper>
                 <Typography variant="button">Sort by: </Typography>
                 <Select
-                    style={{width: "4%"}}
-                    labelId="demo-simple-select-placeholder-label-label"
-                    id="demo-simple-select-placeholder-label"
+                    style={{ width: "5%" }}
+                    labelId="select"
+                    id="select"
                     value={this.state.sortBy}
                     onChange={this.handleMenuChange}
                 >

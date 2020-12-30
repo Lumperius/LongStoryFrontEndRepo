@@ -200,8 +200,8 @@ class Story extends React.Component {
                         return <AddStoryPart storyId={storyId} stopRenderEditor={this.handleStopRenderingEditor} />
                     }
                     else return <>
-                        <Button variant="contained" color="primary" onClick={
-                            () => this.setState({ showEditor: true })}>
+                        <Button variant="contained" color="primary" style={{padding: "20px"}}
+                         onClick={() => this.setState({ showEditor: true })}>
                             Suggest next story part
                         </Button>
 
@@ -248,7 +248,7 @@ class Story extends React.Component {
 
     renderFinishStoryButton = () => {
         if (this.props.token)
-            if (this.props.token.id === this.state.story.authorId)
+            if (this.props.token.id === this.state.story.authorId && this.state.story.state !== 'Finished')
                 return <>
                     <Button variant="outlined" onClick={this.sendFinishStoryRequest} style={{ color: "red" }}>Finish this story</Button>
                 </>
@@ -270,9 +270,9 @@ class Story extends React.Component {
                 return <>{this.renderStoryPart(storyPart)}</>
             })}
             {renderMessage(this.state.message.body, this.state.message.type)}
-            {this.renderEditor()}<br /><br />
-            {this.renderFinishStoryButton()}<br/><br />
+            {this.renderEditor()}
             <Comments storyId={this.props.match.params.id} />
+            {this.renderFinishStoryButton()}<br/><br />
         </this.Wraper>
     }
 }

@@ -31,10 +31,11 @@ class Comments extends React.Component {
     border-width:1px;
     border-radius: 5px;
     border-color: lightgrey;
+    background-color: grey;
     `;
     CommentWrapper = styled.div`
     margin: 10px;
-    padding: 30px;
+    padding: 20px;
     padding-bottom: 40px;
     background-color: WhiteSmoke;
     `;

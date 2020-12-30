@@ -77,7 +77,6 @@ class Registration extends React.Component {
     `;
 
     sendRequest = (values) => {
-        debugger
         axiosSetUp().post('http://localhost:5002/user/register', values)
             .then(response => {
                 if (response.status === 201)
@@ -120,7 +119,6 @@ class Registration extends React.Component {
                     }}
                     validationSchema={this.SignupSchema}
                     onSubmit= {values => {
-                        debugger
                         delete values.repeat_password;
                         this.sendRequest(values)}}
                 >
@@ -131,7 +129,7 @@ class Registration extends React.Component {
                             <FormikTextField label="Password" name="password" type="password" style={{width: "20%"}}/><br/>
                             <FormikTextField label="Repeat password" name="repeat_password" type="password" style={{width: "20%"}}/><br/>
 
-                            {renderMessage(this.state.message.body, this.state.message.type)}
+                            {renderMessage(this.state.message.body, this.state.message.type)}<br/>
                             <Button variant="contained" color="primary" type="submit">Submit</Button>
                         </Form>
                     )}
