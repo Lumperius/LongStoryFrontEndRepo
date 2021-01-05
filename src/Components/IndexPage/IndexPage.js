@@ -1,10 +1,8 @@
 import React from 'react';
-import { Redirect, useHistory } from 'react-router';
 import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig'
 import { connect } from 'react-redux'
 import Typography from '@material-ui/core/Typography';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import MenuItem from '@material-ui/core/MenuItem';
 import Popper from '@material-ui/core/Popper';
 import Button from '@material-ui/core/Button';
@@ -70,7 +68,7 @@ class IndexPage extends React.Component {
     font-size: 12px;
     font-family: TimesNewRoman;
     `;
-    Line = styled.hr`
+    HrLine = styled.hr`
     border: 1px solid darkgrey;
     margin: -5px;
     `;
@@ -150,8 +148,8 @@ class IndexPage extends React.Component {
 
 
     cutStoryBody = (body) => {
-        if (body)
-            return body.substring(0, 10) + '...'
+        if (body && body.length > 110)
+            return body.substring(0, 100) + '...'
     }
 
 
@@ -193,10 +191,10 @@ class IndexPage extends React.Component {
 
     renderAStory = (story) => {
         let info = this.state.UserInfoList.find(ui => ui.userId == story.userId) || ''
-        story.body = this.cutStoryBody(story.firstPartBody);
+        story.firstPartBody = this.cutStoryBody(story.firstPartBody) || story.firstPartBody;
         return <this.StoryBlock id={story.userId} onClick={() => this.handleClick(story.id)}>
             <Typography variant='h5'>{story.title}</Typography><br />
-            <Typography variant='subtitle1' style={{ wordWrap: "break-word", textIndent: "15px" }}>{story.firstPartBody}</Typography><this.Line />
+            <Typography variant='subtitle1' style={{ wordWrap: "break-word", textIndent: "15px" }}>{story.firstPartBody}</Typography><this.HrLine />
             <this.Signature>
                 <this.Avatar src={`data:image/jpeg;base64,${info.avatarBase64}`} width="40px" height="40px" />
                 <Typography variant="subtitle2">By <this.Login id={story.userId} onClick={this.handleAuthorClick}>{info.userLogin || 'Unknown'}</this.Login> {story.dateSubmitted}</Typography> <this.Rating >{story.rating}</this.Rating>

@@ -36,14 +36,18 @@ class ChatHub extends React.Component {
     `;
     MessageWrapper = styled.div`
     text-align:left;
-    width: 60vw;
-    padding: 10px;
+    width: 100%;
+    padding: 5px;
     margin: 5px;
     border-style: solid;
     border-width: 1px;
     border-radius: 10px;
     border-color: grey;
     background-color: WhiteSmoke;
+    `;
+    HrLine = styled.hr`
+    border-top: 1px solid lightgrey;
+    margin: 0px;
     `;
 
     hubConnection = new signalR.HubConnectionBuilder()
@@ -60,6 +64,8 @@ class ChatHub extends React.Component {
         this.hubConnection.start();
         this.hubConnection.on('Message', recievedMessage => {
             let message = JSON.parse(recievedMessage);
+            message.timePosted = new Date(message.timePosted).toLocaleDateString() + ' '
+                + new Date(message.timePosted).toLocaleTimeString();
             let state = this.state;
             state.MessageList.unshift(message);
             this.setState(state)
@@ -75,11 +81,11 @@ class ChatHub extends React.Component {
 
     handleClick = (event) => {
         if (this.state.messageText !== '' &&
-        this.state.messageText.length <= 300 ) {
+        this.state.messageText.length <= 1000 ) {
             let messageObject = {
                 text: this.state.messageText,
                 user: this.props.token.login,
-                timePosted: new Date(Date.now()).toLocaleTimeString()
+                timePosted: Date.now()
             };
             JSON.stringify()
             this.hubConnection.invoke('PublishMessage', JSON.stringify(messageObject))
@@ -95,7 +101,7 @@ class ChatHub extends React.Component {
         else{
             this.setState({
                 message:{
-                    body: 'Incorrect message. Must be text 1-300 symbols long.',
+                    body: 'Incorrect message. Must be text 1-1000 symbols long.',
                     type: 'error'
                 }
             })
@@ -106,13 +112,13 @@ class ChatHub extends React.Component {
     renderMessage = (message) => {
         if (message.user === this.props.token.login)
             return <div style={{display: "flex"}}><this.MessageWrapper style={{ backgroundColor: "OldLace"}}>
-                <Typography variant="subtitle" style={{ wordWrap: "break-word"}}>{message.text} </Typography><hr/>
-                <Typography variant="caption" style={{ float: "left" }}> {message.user} at {message.timePosted}</Typography>
+                <Typography variant="subtitle1" style={{ wordWrap: "break-word"}}>{message.text} </Typography><this.HrLine/>
+                <Typography variant="caption" style={{ float: "right" }}> {message.user} at {message.timePosted}</Typography>
             </this.MessageWrapper><br/></div>
         else
             return <div style={{display: "flex"}}><this.MessageWrapper>
-                <Typography variant="subtitle" style={{ wordWrap: "break-word" }}>{message.text} </Typography><hr/>
-                <Typography variant="caption" style={{ float: "left" }}> {message.user} at {message.timePosted}</Typography>
+                <Typography variant="subtitle1" style={{ wordWrap: "break-word" }}>{message.text} </Typography><this.HrLine/>
+                <Typography variant="caption" style={{ float: "right" }}> {message.user} at {message.timePosted}</Typography>
             </this.MessageWrapper><br/></div>
     }
 
@@ -126,7 +132,7 @@ class ChatHub extends React.Component {
             <br />
             <Input name="messageText" 
             multiline={true}
-            inputProps={{ maxLength: 300 }} 
+            inputProps={{ maxLength: 1000 }} 
             value={this.state.messageText} 
             onChange={this.handleChange}
             style={{width: "20vw"}} />

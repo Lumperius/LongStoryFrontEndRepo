@@ -173,7 +173,7 @@ class Info extends React.Component {
             return <form onSubmit={this.handleSubmit}>
                 <img src={this.state.avatarPath} width="40px" height="40px" /><br />
                 <TextField id="image" type="file" label="Change avatar" accept="image/png, image/jpeg" onChange={this.handleImageChange} /><br />
-                <Button variant="outlined" type="submit" on>Change avatar</Button>
+                <Button variant="contained" color="primary" type="submit" style={{margin: "10px"}} on>Change avatar</Button>
             </form>
         }
         if (this.props.avatar) {
@@ -215,7 +215,7 @@ class Info extends React.Component {
                             <FormikTextField name="birthday" type="date" style={{ width: "10%" }} /><br />
                             <Typography variant="subtitle1">REGISTERED: {this.state.info.dateRegistered}</Typography>
                             {renderMessage(this.state.message.body, this.state.message.type)}
-                            <Button variant="outlined" type="submit">Edit</Button><hr />
+                            <Button variant="contained" color="primary" type="submit" style={{margin: "10px"}}>Edit</Button><hr />
                         </Form>
                     )}
                 </Formik>

@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import renderMessage from '../message';
 
 class Template extends React.Component {
-    constructor(){
+    constructor() {
         super()
         this.state = {
             message: {
@@ -30,15 +30,15 @@ class Template extends React.Component {
     `;
 
 
-    componentDidMount(){
+    componentDidMount() {
 
     }
 
 
-    render(){
-        return(<this.Wraper>
+    render() {
+        return (<this.Wraper>
             {renderMessage(this.state.message.body, this.state.message.type)}
-        Template
+            Template
         </this.Wraper>)
     }
 }
