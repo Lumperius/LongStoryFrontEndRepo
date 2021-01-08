@@ -29,7 +29,6 @@ class Comments extends React.Component {
     font-size: 28px;
     border-style: solid;
     border-width:1px;
-    border-radius: 5px;
     border-color: lightgrey;
     background-color: grey;
     `;

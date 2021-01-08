@@ -45,7 +45,6 @@ class AddStoryPart extends React.Component {
     font-size: 28px;
     border-style: solid;
     border-width:1px;
-    border-radius: 10px;
     border-color: dark;
     background-color: white:
     `;
@@ -102,7 +101,7 @@ class AddStoryPart extends React.Component {
 
     render() {
         return <>
-            <TextareaAutosize rowsMin={6}  maxLength="4000" name="body" placeholder="Min length is 20 symbols, max - 4000 symbols"
+            <TextareaAutosize  maxLength="4000" name="body" placeholder="Min length is 20 symbols, max - 4000 symbols"
              style={{ fontSize: "20px", width: "90%" }} onChange={this.handleChange} ></TextareaAutosize> <br />
             <Typography variant="subtitle2">{this.state.body.length}/4000</Typography>
             {renderMessage(this.state.message.body, this.state.message.type)}

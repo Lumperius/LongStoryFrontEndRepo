@@ -12,6 +12,7 @@ class UserInfoWindow extends React.Component {
         super()
         this.state = {
             userInfo: {},
+            userId: '',
             message: {
                 body: '',
                 type: ''
@@ -21,27 +22,32 @@ class UserInfoWindow extends React.Component {
 
     Wraper = styled.div`
     text-align:left;
-    margin-top: 1500px;
-    margin:10px;
-    padding: 10px;
+    margin: 30px;
+    padding: 20px;
     font-size: 28px;
     border-style: solid;
-    border-width: 1px;
-    border-color: dark;
-    border-radius: 5px;
+    border-width:1px;
+    border-color: black;
     background-color: white;
     `;
-
 
     componentDidMount() {
         this.sendGetUserInfoRequest();
     }
 
+    componentDidUpdate() {
+        if(this.state.userId === this.props.userId) {return;}
+        this.sendGetUserInfoRequest();
+    }
+
     sendGetUserInfoRequest = () => {
+        this.setState({
+            userId: this.props.userId
+        })
         axiosSetUp().get(`http://localhost:5002/userInfo/get?userId=${this.props.userId}`)
             .then(response => {
                 this.setState({
-                    userInfo: response.data
+                    userInfo: response.data,
                 })
             })
             .catch(error => {
@@ -54,17 +60,31 @@ class UserInfoWindow extends React.Component {
             })
     }
 
+    renderUserInfo = () => {
+        if (this.props.userId && this.state.userInfo.login !== undefined) {
+            return <>
+                {renderMessage(this.state.message.body, this.state.message.type)}
+                <Typography variant="subtitle1">
+                    {this.state.userInfo.role || null} {this.state.userInfo.login || null}<br />
+                Name: {this.state.userInfo.firstName || null} {this.state.userInfo.secondName || 'unknown'}<br />
+                Birthday: {this.state.userInfo.birtDay || null}<br />
+                Registered: {this.state.userInfo.dateRegistered || ''}
+                </Typography>
+            </>
+        }
+        else {
+            return <>
+                {renderMessage(this.state.message.body, this.state.message.type)}
+                <Typography variant="subtitle1">User could not be found</Typography>
+            </>
+        }
+    }
+
 
     render() {
         return (
             <this.Wraper>
-                {renderMessage(this.state.message.body, this.state.message.type)}
-                <Typography variant="subtitle1">
-                    {this.state.userInfo.role} {this.state.userInfo.login}<br />
-                    Name: {this.state.userInfo.firstName || 'unknown'} {this.state.userInfo.secondName || 'unknown'}<br />
-                    Birthday: {this.state.userInfo.birtDay || 'unknown'}<br />
-                    Registered: {this.state.userInfo.dateRegistered}
-                </Typography>
+                {this.renderUserInfo()}
             </this.Wraper>
         )
     }

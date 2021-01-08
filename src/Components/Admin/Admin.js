@@ -53,7 +53,6 @@ class Admin extends React.Component {
     font-size: 28px;
     border-style: solid;
     border-width:1px;
-    border-radius: 10px;
     border-color: dark;
     background-color: white
     `;

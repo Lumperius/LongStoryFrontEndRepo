@@ -17,6 +17,7 @@ import history from './history.js'
 import 'typeface-roboto'
 import { withTheme } from '@material-ui/core/styles';
 import ChatHub from './Components/ChatHub/ChatHub';
+import PrivateChat from './Components/PrivateChat/PrivateChat';
 
 
 class App extends React.Component {
@@ -34,17 +35,24 @@ class App extends React.Component {
     this.props.setToken(token);
   }
 
-  render() {
-    let isAuthenticated = false;
-    if (this.props.tokenObj){
-            isAuthenticated = true;
+  renderNavBar = () => {
+    if (this.props.tokenObj) {
+      return <AuthorizedNavBar />;
     }
-    let NavBarOption;
-    if (isAuthenticated) { NavBarOption = <AuthorizedNavBar />; }
-    else { NavBarOption = <NavBar />; }
+    else {  return <NavBar />; }
+  }
+
+  renderMessenger = () => {
+    if (this.props.tokenObj) {
+      return <PrivateChat />;
+    }
+    else {  return; }
+  }
+
+  render() {
     return (
-      <div className="App" style={{backgroundColor: this.props.theme.palette.primary.light}} >
-        {NavBarOption}
+      <div className="App" style={{ backgroundColor: this.props.theme.palette.primary.light }} >
+        {this.renderNavBar()}
         <Router history={history}>
           <Route exact path="/" component={Welcome} />
           <Route exact path="/authentication" component={Authentication} />
@@ -56,6 +64,7 @@ class App extends React.Component {
           <Route exact path="/intializeStory" component={InitializeStory} />
           <Route exact path="/story:id" component={Story} />
         </Router>
+        {this.renderMessenger()}
       </div>
     );
   }
