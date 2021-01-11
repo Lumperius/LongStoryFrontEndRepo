@@ -17,7 +17,7 @@ import history from './history.js'
 import 'typeface-roboto'
 import { withTheme } from '@material-ui/core/styles';
 import ChatHub from './Components/ChatHub/ChatHub';
-import PrivateChat from './Components/PrivateChat/PrivateChat';
+import PrivateDialog from './Components/PrivateChat/PrivateDialog';
 
 
 class App extends React.Component {
@@ -44,9 +44,8 @@ class App extends React.Component {
 
   renderMessenger = () => {
     if (this.props.tokenObj) {
-      return <PrivateChat />;
+      return <PrivateDialog />;
     }
-    else {  return; }
   }
 
   render() {

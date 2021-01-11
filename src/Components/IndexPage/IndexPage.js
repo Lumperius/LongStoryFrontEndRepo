@@ -156,7 +156,6 @@ class IndexPage extends React.Component {
             })
     };
 
-
     cutStoryBody = (body) => {
         if (body && body.length > 1010)
             return body.substring(0, 1000) + '...'
@@ -209,7 +208,7 @@ class IndexPage extends React.Component {
             {pages.map(page => {
                 if (page === this.state.page) {
                     return <>
-                        <this.SubPage onClick={() => this.sendGetRequestAndSetNewPage(page)} style={{ fontSize: "30px" }}>{page}</this.SubPage>
+                        <this.SubPage onClick={() => this.sendGetRequestAndSetNewPage(page)} style={{ fontSize: "30px", border: "solid 1px", padding: "5px" }}>{page}</this.SubPage>
                     </>
                 }
                 else {

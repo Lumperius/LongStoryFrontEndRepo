@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import Popper from '@material-ui/core/Popper';
 import renderMessage from '../../message';
 import axiosSetUp from '../../axiosConfig';
+import setDialog from '../../Actions/setDialog'
 
 class UserInfoWindow extends React.Component {
     constructor() {
@@ -21,12 +22,12 @@ class UserInfoWindow extends React.Component {
     }
 
     Wraper = styled.div`
-    text-align:left;
+    text-align: left;
     margin: 30px;
     padding: 20px;
     font-size: 28px;
     border-style: solid;
-    border-width:1px;
+    border-width: 1px;
     border-color: black;
     background-color: white;
     `;
@@ -36,7 +37,7 @@ class UserInfoWindow extends React.Component {
     }
 
     componentDidUpdate() {
-        if(this.state.userId === this.props.userId) {return;}
+        if (this.state.userId === this.props.userId) { return; }
         this.sendGetUserInfoRequest();
     }
 
@@ -60,6 +61,14 @@ class UserInfoWindow extends React.Component {
             })
     }
 
+    handleWhisper = () => {
+        let dialog = {
+            open: true,
+            targetUser: this.state.userInfo.login
+        }
+        this.props.setDialog(dialog)
+    }
+
     renderUserInfo = () => {
         if (this.props.userId && this.state.userInfo.login !== undefined) {
             return <>
@@ -69,6 +78,7 @@ class UserInfoWindow extends React.Component {
                 Name: {this.state.userInfo.firstName || null} {this.state.userInfo.secondName || 'unknown'}<br />
                 Birthday: {this.state.userInfo.birtDay || null}<br />
                 Registered: {this.state.userInfo.dateRegistered || ''}
+                    <Typography variant="subtitle1" onClick={this.handleWhisper}>Whisper</Typography>
                 </Typography>
             </>
         }
@@ -96,4 +106,11 @@ const mapStateToProps = function (state) {
     };
 }
 
-export default connect(mapStateToProps)(UserInfoWindow)
+const mapDispatchToProps = dispatch => {
+    return {
+        setDialog: dialog => dispatch(setDialog(dialog)),
+    };
+};
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserInfoWindow)
