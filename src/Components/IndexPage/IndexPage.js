@@ -94,6 +94,7 @@ class IndexPage extends React.Component {
     text-align: right;
     `;
     Avatar = styled.img`
+    background-color: white;
     display:inline;
     float: left;
     margin: 0px;

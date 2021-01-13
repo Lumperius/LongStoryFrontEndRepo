@@ -38,7 +38,7 @@ class Story extends React.Component {
     Wraper = styled.div`
     text-align:left;
     margin-top: 1500px;
-    margin:10px;
+    margin: 10px;
     padding: 30px;
     font-size: 28px;
     border-style: solid;

@@ -30,6 +30,7 @@ class AuthorizedNavBar extends React.Component {
   border-right-style: solid;
   border-right-width: 1px;
   margin-bottom: -5px;
+  overflow: hidden;
   `;
   LogoutElement = styled.li`
   & div {
@@ -47,6 +48,7 @@ class AuthorizedNavBar extends React.Component {
   margin-left: -11px;
   border-style: solid;
   border-width: 1px;
+  overflow: hidden;
   `;
   CurrentUser = styled.li`
   display:inline;
@@ -57,6 +59,7 @@ class AuthorizedNavBar extends React.Component {
   padding-right: 10px;
   font-size: 20px;
   color: white;
+  overflow: hidden;
   `;
   NavBarList = styled.ul`
   list-style-type: none;
@@ -86,7 +89,9 @@ class AuthorizedNavBar extends React.Component {
   `;
 
   componentDidMount() {
-    this.sendGetAvatarRequest();
+    debugger
+    if(!this.props.avatar && this.props.token)
+      this.sendGetAvatarRequest();
   }
 
   handleLogoClick = () => {
@@ -178,7 +183,7 @@ const mapDispatchToProps = dispatch => {
 
 const mapStateToProps = state => {
   return {
-    avatar: state.avatar.avatar || '',
+    avatar: state.avatar.avatar || null,
     token: state.token.tokenObj
   }
 }

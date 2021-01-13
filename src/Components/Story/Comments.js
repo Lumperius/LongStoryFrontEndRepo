@@ -30,7 +30,7 @@ class Comments extends React.Component {
     border-style: solid;
     border-width:1px;
     border-color: lightgrey;
-    background-color: grey;
+    background-color: lightgrey;
     `;
     CommentWrapper = styled.div`
     margin: 10px;
@@ -45,7 +45,7 @@ class Comments extends React.Component {
     }
 
     sendPostCommentRequest = () => {
-        if (this.state.commentBody.length > 300 || !this.state.commentBody.length) {
+        if (this.state.commentBody.length > 1000 || !this.state.commentBody.length) {
             this.setState({
                 message: {
                     body: 'Incorrect text',
@@ -67,6 +67,7 @@ class Comments extends React.Component {
                         type: 'success'
                     }
                 })
+                this.sendGetCommentsRequest();
             })
             .catch(error => {
                 this.setState({
@@ -133,7 +134,7 @@ class Comments extends React.Component {
                 let userInfo = this.state.UserInfoList.find(ui => ui.userId == comment.userId) || []
                 return <>
                     <this.CommentWrapper>
-                        <Typography variant="text" style={{ wordWrap: "break-word", padding: "10px" }}>{comment.body}</Typography><br />
+                        <Typography variant="subtitle1" style={{ wordWrap: "break-word", padding: "10px" }}>{comment.body}</Typography><br />
                         <img src={`data:image/jpeg;base64,${userInfo.avatarBase64}`}
                             style={{ float: 'right', marginTop: "0px", marginLeft: "10px" }} width="30px" aling="bottom" vspace="10px" />
                         <Typography variant="subtitle1" style={{ float: 'right' }}>
@@ -151,9 +152,9 @@ class Comments extends React.Component {
             <Typography variant="h4">Commentaries</Typography>
             <a href="#addComment"><Typography variant="caption" id="Comments">Add a comment</Typography></a>
             {this.renderComments()}
-            <TextareaAutosize rowsMin={6} maxLength="300" name="commentBody" placeholder="Add your comment(300 symbols max)"
-                style={{ fontSize: "20px", width: "100%", height: "70px" }} onChange={this.handleChange}></TextareaAutosize>
-            <Typography variant="subtitle2" id="addComment">{this.state.commentBody.length}/300</Typography>
+            <TextareaAutosize maxLength="1000" name="commentBody" placeholder="Add your comment(1000 symbols max)"
+                style={{ fontSize: "20px", width: "96%", height: "15vh", marginTop: "50px" }} onChange={this.handleChange}></TextareaAutosize>
+            <Typography variant="subtitle2" id="addComment">{this.state.commentBody.length}/1000</Typography>
             {renderMessage(this.state.message.body, this.state.message.type)}
             <Button color="primary" variant="contained" onClick={this.sendPostCommentRequest}>submit</Button><br />
         </this.Wraper>)

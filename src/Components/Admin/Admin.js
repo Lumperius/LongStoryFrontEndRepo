@@ -91,8 +91,8 @@ class Admin extends React.Component {
 
 
     componentDidMount() {
-        // if (this.props.token === undefined || this.props.token.scope !== 'Admin') 
-        //     this.props.history.push('authentication');
+         if (this.props.token === undefined || this.props.token.scope !== 'Admin') 
+             this.props.history.push('authentication');
         this.sendRequestAndSetNewPage();
     }
 

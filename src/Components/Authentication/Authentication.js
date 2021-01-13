@@ -112,6 +112,7 @@ class Authentication extends React.Component {
                 let tokenData = jwt_decode(response.data);
                 localStorage.setItem('Token', response.data);
                 this.props.setToken(tokenData);
+                this.sendGetAvatarRequest();
                 this.props.history.push('/');
             })
             .catch(error => {
@@ -124,6 +125,17 @@ class Authentication extends React.Component {
                 })
             })
     };
+
+    sendGetAvatarRequest = () => {
+        let userId = this.props.token.id;
+        axiosSetUp().get(`http://localhost:5002/userInfo/getAvatar?userId=${userId}`)
+          .then(response => {
+            this.props.setAvatar(response.data)
+          })
+          .catch(error => {
+            console.log(error.data)
+          })
+      }    
 
 
     render() {

@@ -32,12 +32,13 @@ class UserInfoWindow extends React.Component {
     background-color: white;
     `;
 
+
     componentDidMount() {
         this.sendGetUserInfoRequest();
     }
 
     componentDidUpdate() {
-        if (this.state.userId === this.props.userId) { return; }
+        if (this.state.userId === this.props.userId) { return true; }
         this.sendGetUserInfoRequest();
     }
 
@@ -48,11 +49,12 @@ class UserInfoWindow extends React.Component {
         axiosSetUp().get(`http://localhost:5002/userInfo/get?userId=${this.props.userId}`)
             .then(response => {
                 this.setState({
-                    userInfo: response.data,
+                    userInfo: response.data || null,
                 })
             })
             .catch(error => {
                 this.setState({
+                    userInfo:  null,
                     message: {
                         body: error.data.title,
                         type: 'error'
@@ -62,24 +64,35 @@ class UserInfoWindow extends React.Component {
     }
 
     handleWhisper = () => {
-        let dialog = {
-            open: true,
-            targetUser: this.state.userInfo.login
+        debugger
+        if (this.state.userInfo) {
+            let dialog = {
+                open: true,
+                targetUser: this.state.userInfo.login
+            }
+            this.props.setDialog(dialog)
         }
-        this.props.setDialog(dialog)
+    }
+
+    renderStartChatLink = () => {
+        if (this.props.token && this.props.userId !== this.props.token.id) {
+            return <>
+                <Typography variant="text" onClick={this.handleWhisper} style={{ cursor: "pointer", textDecoration: "underline", fontSize: "20px" }}>Start chat</Typography>
+            </>
+        }
     }
 
     renderUserInfo = () => {
-        if (this.props.userId && this.state.userInfo.login !== undefined) {
+        if (this.props.userId && this.state.userInfo && this.state.userInfo !== 'User not found') {
             return <>
                 {renderMessage(this.state.message.body, this.state.message.type)}
                 <Typography variant="subtitle1">
                     {this.state.userInfo.role || null} {this.state.userInfo.login || null}<br />
                 Name: {this.state.userInfo.firstName || null} {this.state.userInfo.secondName || 'unknown'}<br />
                 Birthday: {this.state.userInfo.birtDay || null}<br />
-                Registered: {this.state.userInfo.dateRegistered || ''}
-                    <Typography variant="subtitle1" onClick={this.handleWhisper}>Whisper</Typography>
+                Registered: {this.state.userInfo.dateRegistered || ''}<br />
                 </Typography>
+                {this.renderStartChatLink()}
             </>
         }
         else {
@@ -106,9 +119,10 @@ const mapStateToProps = function (state) {
     };
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = dispatch => {   
     return {
-        setDialog: dialog => dispatch(setDialog(dialog)),
+        setDialog: dialog =>{debugger 
+            dispatch(setDialog(dialog))},
     };
 };
 
