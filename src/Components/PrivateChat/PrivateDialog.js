@@ -1,20 +1,26 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
-import Typography from '@material-ui/core/Typography';
-import Popper from '@material-ui/core/Popper';
-import Input from '@material-ui/core/Input';
 import renderMessage from '../../message';
 import * as signalR from "@microsoft/signalr";
 import connectToHub from '../../hubConnection';
 import setDialog from '../../Actions/setDialog';
 import setDialogHistory from '../../Actions/setDialogHistory';
 
+import CloseIcon from '@material-ui/icons/Close';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import Popper from '@material-ui/core/Popper';
+import Input from '@material-ui/core/Input';
+import addUnreadMessage from '../../Actions/addUnreadMessage';
+import removeUnreadMessage from '../../Actions/removeUnreadMessage';
+
+
 class PrivateDialog extends React.Component {
     constructor() {
         super()
         this.state = {
+            //hidden: false,
             open: false,
             message: {
                 body: '',
@@ -24,6 +30,7 @@ class PrivateDialog extends React.Component {
             MessageList: [],
         }
     }
+    //Connection to web socket
     hubConnection;
 
     MessageBlock = styled.div`
@@ -34,7 +41,6 @@ class PrivateDialog extends React.Component {
     overflow-y: scroll;
     `;
     Wraper = styled.div`
-    border-radius: 25px;
     text-align: left;
     max-width: 15vw;
     max-height: 80vh;
@@ -43,6 +49,17 @@ class PrivateDialog extends React.Component {
     font-size: 28px;
     border-style: solid;
     border-width: 3px;
+    border-color: dark;
+    background-color: white;
+    `;
+    HiddenWraper = styled.div`
+    max-width: 15vw;
+    max-height: 80vh;
+    margin: 10px;
+    padding: 5px;
+    font-size: 18px;
+    border-style: solid;
+    border-width: 1px;
     border-color: dark;
     background-color: white;
     `;
@@ -74,25 +91,22 @@ class PrivateDialog extends React.Component {
                 if (recievedMessage === 'User is not active') {
                     this.setState({
                         message: {
-                            body: 'This user is unavailable right now',
+                            body: 'This user is currently unavailable',
                             type: 'error'
                         }
                     })
                 }
                 else {
-                    this.setState({
-                        message: {
-                            body: '',
-                            type: ''
-                        },
-                        messageText: ''
-                    })
                     let message = JSON.parse(recievedMessage);
-                    message.timePosted = new Date(message.timePosted).toLocaleDateString() + ' '
-                        + new Date(message.timePosted).toLocaleTimeString();
-                    let state = this.state;
-                    state.MessageList.unshift(message);
-                    this.setState(state);
+                    if (message.user == this.props.dialog.dialogInfo.targetUser) {
+                        let state = this.state;
+                        state.MessageList.unshift(message);
+                        this.setState(state);
+                    }
+                    this.addMessageToStore(message, message.user);
+                    if (message.user !== this.props.dialog.dialogInfo.targetUser && message.user !== this.props.token.login) {
+                        this.props.addUnreadMessage(message.user)
+                    }
                 }
             })
         });
@@ -100,10 +114,10 @@ class PrivateDialog extends React.Component {
 
     shouldComponentUpdate(nextProps) {
         if (this.props.dialog.dialogInfo.targetUser !== nextProps.dialog.dialogInfo.targetUser) {
-            this.saveDialogIntoState();
+            this.props.removeUnreadMessage(nextProps.dialog.dialogInfo.targetUser);
             let refList = this.props.dialog.UserDialogs
                 .find(dialog => dialog.user === nextProps.dialog.dialogInfo.targetUser) || [];
-            let nextDialog = {}; 
+            let nextDialog = {};
             Object.assign(nextDialog, refList);
             this.setState({
                 MessageList: [...nextDialog.MessageList || []],
@@ -114,18 +128,20 @@ class PrivateDialog extends React.Component {
     }
 
     componentDidUpdate() {
-        if(!this.props.token){
+        if (!this.props.token) {
             this.hubConnection.invoke('DisconnectFromHub', this.props.token.login);
             this.hubConnection.stop();
         }
     }
 
-    saveDialogIntoState = () => {
+    addMessageToStore = (message, user) => {
+        let MessageList = [...this.props.dialog.UserDialogs.find(ml => ml.user == user)?.MessageList || []];
+        MessageList.unshift(message);
         let dialogHistory = {
-            user: this.props.dialog.dialogInfo.targetUser?.valueOf() || null,
-            MessageList: [...this.state.MessageList],
+            user: user,
+            MessageList: MessageList
         }
-         this.props.setDialogHistory(dialogHistory)
+        this.props.setDialogHistory(dialogHistory);
     }
 
     handleChange = (event) => {
@@ -134,17 +150,43 @@ class PrivateDialog extends React.Component {
         })
     }
 
+    handleOpen = () => {
+        this.setState({
+            hidden: false
+        })
+    }
+
+    handleClose = () => {
+        let dialog = {
+            targetUser: null,
+            open: false
+        }
+        this.props.setDialog(dialog)
+    }
+
     handleSubmit = (event) => {
         if (this.state.messageText !== '' &&
             this.state.messageText.length <= 1000) {
             let messageObject = {
                 text: this.state.messageText,
                 user: this.props.token.login,
-                timePosted: Date.now()
+                timePosted: new Date(Date.now()).toLocaleDateString() + ' '
+                    + new Date(Date.now()).toLocaleTimeString()
             };
             let msg = JSON.stringify(messageObject)
             if (this.hubConnection.state === 'Connected') {
                 this.hubConnection.invoke('SendPrivateMessage', msg, this.props.dialog.dialogInfo.targetUser)
+                    .then(response => {
+                        this.addMessageToStore(messageObject, this.props.dialog.dialogInfo.targetUser)
+                        let state = this.state;
+                        state.messageText = '';
+                        state.body = {
+                            body: '',
+                            type: ''
+                        }
+                        state.MessageList.unshift(messageObject);
+                        this.setState({ state })
+                    })
                     .catch(error => {
                         console.log(error.toString())
                     })
@@ -186,27 +228,32 @@ class PrivateDialog extends React.Component {
     }
 
     render() {
-        return (<Popper open={this.props.dialog.dialogInfo.open}
-            style={{ position: "fixed", top: "0%", left: "80%" }}>
-            <this.Wraper>
-                <Typography variant="h5">Chat with {this.props.dialog.dialogInfo.targetUser || "Unknown"}</Typography><br />
-                <Input name="messageText"
-                    multiline={true}
-                    inputProps={{ maxLength: 1000 }}
-                    value={this.state.messageText}
-                    onChange={this.handleChange}
-                    style={{ width: "15vw" }} />
-                <Button type="submit" onClick={this.handleSubmit} id="button"> Send </Button>
-                <this.MessageBlock>
-                    {this.state.MessageList.map(message => {
-                        return <>
-                            {this.renderMessageBlock(message)}
-                        </>
-                    })}
-                </this.MessageBlock>
-                {renderMessage(this.state.message.body, this.state.message.type)}<br />
-            </this.Wraper>
-        </Popper>)
+        return (<>
+            <Popper open={this.props.dialog.dialogInfo.open}
+                style={{ position: "fixed", top: "10%", left: "80%" }}>
+                <this.Wraper>
+                    <CloseIcon style={{ float: "right", color: "darkred" }} onClick={this.handleClose} />
+                    <Typography variant="h5">Chat with {this.props.dialog.dialogInfo.targetUser || "Unknown"}</Typography><br />
+                    <Input name="messageText"
+                        rowsMax="4"
+                        multiline={true}
+                        inputProps={{ maxLength: 1000 }}
+                        value={this.state.messageText}
+                        onChange={this.handleChange}
+                        style={{ width: "15vw" }} />
+                    <Button type="submit" onClick={this.handleSubmit} id="button"> Send </Button>
+                    <this.MessageBlock>
+                        {this.state.MessageList.map(message => {
+                            return <>
+                                {this.renderMessageBlock(message)}
+                            </>
+                        })}
+                    </this.MessageBlock>
+                    {renderMessage(this.state.message.body, this.state.message.type)}<br />
+                </this.Wraper>
+            </Popper>
+        </>
+        )
     }
 }
 
@@ -219,10 +266,20 @@ const mapStateToProps = function (state) {
 
 const mapDispatchToProps = dispatch => {
     return {
-        setDialogHistory: dialogHistory => { 
-            dispatch(setDialogHistory(dialogHistory))},
+        setDialogHistory: dialogHistory => {
+            dispatch(setDialogHistory(dialogHistory))
+        },
+        setDialog: dialog => {
+            dispatch(setDialog(dialog))
+        },
+        addUnreadMessage: fromUser => {
+            dispatch(addUnreadMessage(fromUser))
+        },
+        removeUnreadMessage: fromUser => {
+            dispatch(removeUnreadMessage(fromUser))
+        }
     };
-};
+}
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(PrivateDialog)

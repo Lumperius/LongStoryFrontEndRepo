@@ -64,7 +64,6 @@ class UserInfoWindow extends React.Component {
     }
 
     handleWhisper = () => {
-        debugger
         if (this.state.userInfo) {
             let dialog = {
                 open: true,
@@ -121,7 +120,7 @@ const mapStateToProps = function (state) {
 
 const mapDispatchToProps = dispatch => {   
     return {
-        setDialog: dialog =>{debugger 
+        setDialog: dialog =>{
             dispatch(setDialog(dialog))},
     };
 };

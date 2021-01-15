@@ -72,6 +72,7 @@ class App extends React.Component {
 const mapStateToProps = function (state) {
   return {
     tokenObj: state.token.tokenObj,
+    dialog: state.dialog,
   };
 }
 

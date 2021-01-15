@@ -168,13 +168,13 @@ class IndexPage extends React.Component {
     }
 
     handleAuthorClick = (event) => {
-        this.setState({
-            popper: {
-                userId: event.currentTarget.id || '',
-                anchorEL: event.currentTarget || null,
-                open: true
-            }
-        })
+            this.setState({
+                popper: {
+                    userId: event.currentTarget.id || '',
+                    anchorEL: event.currentTarget || null,
+                    open: true
+                }
+            })
     };
 
     handleSortButtonClick = () => {
@@ -226,7 +226,7 @@ class IndexPage extends React.Component {
         story.firstPartBody = this.cutStoryBody(story.firstPartBody) || story.firstPartBody;
         return <>
             <this.Signature>
-                <this.Avatar src={`data:image/jpeg;base64,${info.avatarBase64}`} width="40px" height="40px" />
+                <this.Avatar src={`data:image/jpeg;base64,${info.avatarBase64}`} width="40px" height="40px" onClick={this.handleAuthorClick} />
                 <Typography variant="subtitle2">By <this.Login id={story.userId} onClick={this.handleAuthorClick}>{info.userLogin || 'Unknown'}</this.Login> {story.dateSubmitted}</Typography>
             </this.Signature>
             <this.StoryBlock id={story.userId} onClick={() => this.handleStoryClick(story.id)}>
@@ -242,6 +242,7 @@ class IndexPage extends React.Component {
     render() {
         return (
             <this.Wraper>
+                {renderMessage(this.state.message.body, this.state.message.type)}
                 <Popper open={this.state.popper.open} anchorEl={this.state.popper.anchorEL}>
                     <UserInfoWindow userId={this.state.popper.userId} />
                     <Button variant="contained" color="primary" onClick={this.handleClosePopper} style={{ padding: "5px", marginTop: "-20px", float: "right" }}>Close</Button>
@@ -261,7 +262,6 @@ class IndexPage extends React.Component {
                 {this.state.StoriesList.map((story) => {
                     return <> {this.renderAStory(story)} </>
                 })}
-                {renderMessage(this.state.message.body, this.state.message.type)}
                 {<Button variant="contained" color="primary" onClick={() => this.sendGetRequestAndSetNewPage(this.state.page - 1)}>Prev</Button>}
                 {this.renderPageSelection()}
                 {<Button variant="contained" color="primary" onClick={() => this.sendGetRequestAndSetNewPage(this.state.page + 1)}>Next</Button>}

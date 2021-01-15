@@ -8,6 +8,9 @@ import setAvatar from '../../Actions/setAvatar';
 import { withTheme } from '@material-ui/core/styles';
 import history from '../../history.js'
 import logo from './Logo.png'
+import ChatIcon from '@material-ui/icons/Chat';
+import Tooltip from '@material-ui/core/Tooltip';
+import setDialog from '../../Actions/setDialog';
 
 class AuthorizedNavBar extends React.Component {
 
@@ -89,13 +92,21 @@ class AuthorizedNavBar extends React.Component {
   `;
 
   componentDidMount() {
-    debugger
     if(!this.props.avatar && this.props.token)
       this.sendGetAvatarRequest();
   }
 
   handleLogoClick = () => {
     history.push('/');
+  }
+
+  handleIconClick = () => {
+    if(this.props.dialog.UnreadMessages.some(x=> x));
+    let dialog = {
+      targetUser: this.props.dialog.UnreadMessages[0],
+      open: true
+    }
+    this.props.setDialog(dialog)
   }
 
   sendGetAvatarRequest = () => {
@@ -120,6 +131,21 @@ class AuthorizedNavBar extends React.Component {
         </this.NavBarListElement>
       )
     }
+  }
+
+  renderUnreadNotification = () => {
+       if(this.props.dialog.UnreadMessages.some(x => x))
+       return <Tooltip title={
+       <div style={{fontSize: "14px", fontWeight: "300"}}>
+       You have {this.props.dialog.UnreadMessages.length} unread message(s).<br />
+       Click to see next.
+       </div>}>
+       <ChatIcon 
+       style={{color: "orange", float: "right", margin: "9px", marginRight: "20px"}}
+       fontSize="large"
+       onClick={this.handleIconClick}
+       />
+       </Tooltip>
   }
 
   render() {
@@ -169,6 +195,8 @@ class AuthorizedNavBar extends React.Component {
 
           <this.Avatar src={`data:image/jpeg;base64,${this.props.avatar}`} width="50px" />
           <this.CurrentUser> Welcome {this.props.token.login}! </this.CurrentUser>
+          
+          {this.renderUnreadNotification()}
         </this.NavBarList>
       </nav>
     )
@@ -177,12 +205,14 @@ class AuthorizedNavBar extends React.Component {
 
 const mapDispatchToProps = dispatch => {
   return {
-    setAvatar: avatar => dispatch(setAvatar(avatar))
+    setAvatar: avatar => dispatch(setAvatar(avatar)),
+    setDialog: dialog => dispatch(setDialog(dialog))
   };
 };
 
 const mapStateToProps = state => {
   return {
+    dialog: state.dialog,
     avatar: state.avatar.avatar || null,
     token: state.token.tokenObj
   }

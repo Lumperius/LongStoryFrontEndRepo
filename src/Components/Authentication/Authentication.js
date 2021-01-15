@@ -27,12 +27,8 @@ class Authentication extends React.Component {
 
     LoginSchema = Yup.object().shape({
         loginOrEmail: Yup.string()
-        .min(5, 'This login is too short, 5 symbols is minimum')
-        .max(16, 'This login is too long, 16 symbols maximum')
         .required('Required'),
         password: Yup.string()
-        .min(6, 'This login is too short, 6 symbols is minimum')
-        .max(16, 'This login is too long, 16 symbols maximum')
         .required('Required'),
     });
 
@@ -80,7 +76,7 @@ class Authentication extends React.Component {
         if (body.loginOrEmail.toString().length < 1 || body.loginOrEmail.toString().length > 30) {
             this.setState({
                 message: {
-                    body: 'Invalid login or email',
+                    body: 'Wrong login/email',
                     type: 'error'
                 }
             })
@@ -89,7 +85,7 @@ class Authentication extends React.Component {
         if (body.password.toString().length < 1 || body.password.toString().length > 30) {
             this.setState({
                 message: {
-                    body: 'Invalid password',
+                    body: 'Wrong password',
                     type: 'error'
                 }
             })
