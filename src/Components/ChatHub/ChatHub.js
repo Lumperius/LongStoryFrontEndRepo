@@ -58,17 +58,25 @@ class ChatHub extends React.Component {
 
     componentDidMount() {
         if (!this.props.token)
-        this.props.history.push('authentication');
+            this.props.history.push('authentication');
+        this.connectToHub();
+    }
 
-        this.hubConnection.start();
-        this.hubConnection.on('Message', recievedMessage => {
-            let message = JSON.parse(recievedMessage);
-            message.timePosted = new Date(message.timePosted).toLocaleDateString() + ' '
-                + new Date(message.timePosted).toLocaleTimeString();
-            let state = this.state;
-            state.MessageList.unshift(message);
-            this.setState(state)
-        })  
+    connectToHub = () => {
+        if (this.hubConnection.state === signalR.HubConnectionState.Connected) {
+            this.hubConnection.start();
+            this.hubConnection.on('Message', recievedMessage => {
+                let message = JSON.parse(recievedMessage);
+                message.timePosted = new Date(message.timePosted).toLocaleTimeString() + ' ' +
+                    new Date(message.timePosted).toLocaleDateString();
+                let state = this.state;
+                state.MessageList.unshift(message);
+                this.setState(state)
+            })
+        }
+        else {
+            setTimeout(() => this.connectMessageRecievedHandler, 10000)
+        }
     }
 
     handleChange = (event) => {
@@ -79,7 +87,7 @@ class ChatHub extends React.Component {
 
     handleSubmit = (event) => {
         if (this.state.messageText !== '' &&
-        this.state.messageText.length <= 1000 ) {
+            this.state.messageText.length <= 1000) {
             let messageObject = {
                 text: this.state.messageText,
                 user: this.props.token.login,
@@ -96,9 +104,9 @@ class ChatHub extends React.Component {
                     console.log(error.toString())
                 })
         }
-        else{
+        else {
             this.setState({
-                message:{
+                message: {
                     body: 'Incorrect message. Must be text 1-1000 symbols long.',
                     type: 'error'
                 }
@@ -109,15 +117,15 @@ class ChatHub extends React.Component {
 
     renderMessage = (message) => {
         if (message.user === this.props.token.login)
-            return <div style={{display: "flex"}}><this.MessageWrapper style={{ backgroundColor: "OldLace"}}>
-                <Typography variant="subtitle1" style={{ wordWrap: "break-word"}}>{message.text} </Typography><this.HrLine/>
+            return <div style={{ display: "flex" }}><this.MessageWrapper style={{ backgroundColor: "OldLace" }}>
+                <Typography variant="subtitle1" style={{ wordBreak: "break-all" }}>{message.text} </Typography><this.HrLine />
                 <Typography variant="caption" style={{ float: "right" }}> {message.user} at {message.timePosted}</Typography>
-            </this.MessageWrapper><br/></div>
+            </this.MessageWrapper><br /></div>
         else
-            return <div style={{display: "flex"}}><this.MessageWrapper>
-                <Typography variant="subtitle1" style={{ wordWrap: "break-word" }}>{message.text} </Typography><this.HrLine/>
+            return <div style={{ display: "flex" }}><this.MessageWrapper>
+                <Typography variant="subtitle1" style={{ wordBreak: "break-all" }}>{message.text} </Typography><this.HrLine />
                 <Typography variant="caption" style={{ float: "right" }}> {message.user} at {message.timePosted}</Typography>
-            </this.MessageWrapper><br/></div>
+            </this.MessageWrapper><br /></div>
     }
 
     render() {
@@ -128,13 +136,13 @@ class ChatHub extends React.Component {
                 </>
             })}
             <br />
-            <Input name="messageText" 
-            multiline={true}
-            inputProps={{ maxLength: 1000 }} 
-            value={this.state.messageText} 
-            onChange={this.handleChange}
-            style={{width: "20vw"}} />
-            {renderMessage(this.state.message.body, this.state.message.type)}<br/>
+            <Input name="messageText"
+                multiline={true}
+                inputProps={{ maxLength: 1000 }}
+                value={this.state.messageText}
+                onChange={this.handleChange}
+                style={{ width: "20vw" }} />
+            {renderMessage(this.state.message.body, this.state.message.type)}<br />
             <Button type="submit" onClick={this.handleSubmit} id="button"> Send </Button>
         </this.Wraper>)
     }

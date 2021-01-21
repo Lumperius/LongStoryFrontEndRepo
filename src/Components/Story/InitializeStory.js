@@ -83,7 +83,7 @@ class InitializeStory extends React.Component {
     }
 
     validateRequestParametrs = () => {
-        if (!this.state.title || this.state.title.length < 1 || this.state.title.length >= 50) {
+        if (!this.state.title || this.state.title.length < 1 || this.state.title.length > 50) {
             this.setState({
                 message: {
                     body: 'Incorrect title. It must more than 1 and less than 50 symbols.',
@@ -143,8 +143,8 @@ class InitializeStory extends React.Component {
             <this.Wraper >
                 <Typography variant='h4' align='left' style={{ margin: "30px" }} gutterBottom >Start a story</Typography >
                 <br />
-                <this.TitleInput name="title" maxLength="80" placeholder="Incorrect title" onChange={this.handleChange}></this.TitleInput><br/>
-                <Typography variant="subtitle2">{this.state.title.length}/80</Typography><br />
+                <this.TitleInput name="title" maxLength="50" placeholder="Incorrect title" onChange={this.handleChange}></this.TitleInput><br/>
+                <Typography variant="subtitle2">{this.state.title.length}/50</Typography><br />
                 <this.BodyInput name="body" maxLength="4000" placeholder="Enter story here. It must be at least 20 symbols long" onChange={this.handleChange}></this.BodyInput><br />
                 <Typography variant="subtitle2">{this.state.body.length}/4000</Typography><br />
                 {renderMessage(this.state.message.body, this.state.message.type)}

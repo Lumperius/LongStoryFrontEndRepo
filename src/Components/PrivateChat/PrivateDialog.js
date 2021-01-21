@@ -91,13 +91,15 @@ class PrivateDialog extends React.Component {
                 if (recievedMessage === 'User is not active') {
                     this.setState({
                         message: {
-                            body: 'This user is currently unavailable',
+                            body: 'This user is currently unavailable. Message is not sent',
                             type: 'error'
                         }
                     })
                 }
                 else {
                     let message = JSON.parse(recievedMessage);
+                    message.timePosted = new Date(message.timePosted).toLocaleTimeString() +
+                        + ' ' + new Date(message.timePosted).toLocaleDateString()
                     if (message.user == this.props.dialog.dialogInfo.targetUser) {
                         let state = this.state;
                         state.MessageList.unshift(message);
@@ -115,12 +117,16 @@ class PrivateDialog extends React.Component {
     shouldComponentUpdate(nextProps) {
         if (this.props.dialog.dialogInfo.targetUser !== nextProps.dialog.dialogInfo.targetUser) {
             this.props.removeUnreadMessage(nextProps.dialog.dialogInfo.targetUser);
-            let refList = this.props.dialog.UserDialogs
-                .find(dialog => dialog.user === nextProps.dialog.dialogInfo.targetUser) || [];
+            let refList = this.props.dialog?.UserDialogs?.find(dialog =>
+                dialog.user === nextProps.dialog.dialogInfo.targetUser) || [];
             let nextDialog = {};
             Object.assign(nextDialog, refList);
             this.setState({
-                MessageList: [...nextDialog.MessageList || []],
+                message: {
+                    body: '',
+                    type: ''
+                },
+                MessageList: [...nextDialog?.MessageList || []],
                 messageText: ''
             })
         }
@@ -135,7 +141,7 @@ class PrivateDialog extends React.Component {
     }
 
     addMessageToStore = (message, user) => {
-        let MessageList = [...this.props.dialog.UserDialogs.find(ml => ml.user == user)?.MessageList || []];
+        let MessageList = [...this.props.dialog?.UserDialogs?.find(ml => ml.user == user)?.MessageList || []];
         MessageList.unshift(message);
         let dialogHistory = {
             user: user,
@@ -170,20 +176,23 @@ class PrivateDialog extends React.Component {
             let messageObject = {
                 text: this.state.messageText,
                 user: this.props.token.login,
-                timePosted: new Date(Date.now()).toLocaleDateString() + ' '
-                    + new Date(Date.now()).toLocaleTimeString()
+                timePosted: Date.now()
             };
             let msg = JSON.stringify(messageObject)
             if (this.hubConnection.state === 'Connected') {
+                this.setState({
+                    message: {
+                        body: '',
+                        type: ''
+                    }
+                })
                 this.hubConnection.invoke('SendPrivateMessage', msg, this.props.dialog.dialogInfo.targetUser)
                     .then(response => {
+                        messageObject.timePosted = new Date(messageObject.timePosted).toLocaleTimeString()
+                        + ' ' + new Date(messageObject.timePosted).toLocaleDateString()
                         this.addMessageToStore(messageObject, this.props.dialog.dialogInfo.targetUser)
                         let state = this.state;
                         state.messageText = '';
-                        state.body = {
-                            body: '',
-                            type: ''
-                        }
                         state.MessageList.unshift(messageObject);
                         this.setState({ state })
                     })
@@ -217,13 +226,13 @@ class PrivateDialog extends React.Component {
     renderMessageBlock = (message) => {
         if (message.user === this.props.token.login)
             return <div style={{ display: "flex" }}><this.MessageWrapper style={{ backgroundColor: "OldLace" }}>
-                <Typography variant="subtitle1" style={{ wordWrap: "break-word" }}>{message.text} </Typography>
-                <Typography variant="caption" style={{ float: "right" }}> {message.user} at {message.timePosted}</Typography>
+                <Typography variant="subtitle1" style={{ wordBreak: "break-all" }}>{message.text} </Typography>
+                <Typography variant="caption" style={{ float: "right", wordBreak: "break-all" }}> {message.user} at {message.timePosted}</Typography>
             </this.MessageWrapper><br /></div>
         else
             return <div style={{ display: "flex" }}><this.MessageWrapper>
-                <Typography variant="subtitle1" style={{ wordWrap: "break-word" }}>{message.text} </Typography>
-                <Typography variant="caption" style={{ float: "right" }}> {message.user} at {message.timePosted}</Typography>
+                <Typography variant="subtitle1" style={{ wordBreak: "break-all" }}>{message.text} </Typography>
+                <Typography variant="caption" style={{ float: "right", wordBreak: "break-all" }}> {message.user} at {message.timePosted}</Typography>
             </this.MessageWrapper><br /></div>
     }
 

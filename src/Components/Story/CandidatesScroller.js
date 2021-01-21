@@ -47,6 +47,7 @@ class CandidatesScroller extends React.Component {
     Signature = styled.p`
     font-size: 14px;
     text-align: right;
+    word-break: break-all
     `;
 
 
@@ -76,10 +77,10 @@ class CandidatesScroller extends React.Component {
     }
 
     sendVoteCandidateRequsest = (candidate) => {
-        if (candidate.isRated) return this.setState({ 
-            message:{
-            body:  'You can not vote twice on same candidate',
-            type: 'error'
+        if (candidate.isRated) return this.setState({
+            message: {
+                body: 'You can not vote twice on same candidate',
+                type: 'error'
             }
         });
         let userId = this.props.token.id;
@@ -119,23 +120,13 @@ class CandidatesScroller extends React.Component {
         return <this.CandidateBlock onClick={() => {
             this.sendVoteCandidateRequsest(candidate);
         }}>
-            <Typography variant="body" style={{wordWrap: "break-word", textIndent: "15px"}}>
+            <Typography variant="body" style={{ wordBreak: "break-all", textIndent: "15px" }}>
                 {candidate.body}
             </Typography>
             <this.Signature><b>{candidate.rating} {voteMessage}</b> {candidate.author} {candidate.dateSubmitted}</this.Signature>
         </this.CandidateBlock>
     }
 
-    renderMessage = () =>{
-        switch(this.state.message.type){
-            case 'error':
-        return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
-            case 'info':
-        return <Typography variant="subtitle1">{this.state.message.body}</Typography>
-            default:
-        return;
-        }
-    }
 
     render() {
         return <this.Scroller>

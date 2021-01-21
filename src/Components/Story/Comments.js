@@ -134,10 +134,10 @@ class Comments extends React.Component {
                 let userInfo = this.state.UserInfoList.find(ui => ui.userId == comment.userId) || []
                 return <>
                     <this.CommentWrapper>
-                        <Typography variant="subtitle1" style={{ wordWrap: "break-word", padding: "10px" }}>{comment.body}</Typography><br />
+                        <Typography variant="subtitle1" style={{ wordBreak: "break-all", padding: "10px" }}>{comment.body}</Typography><br />
                         <img src={`data:image/jpeg;base64,${userInfo.avatarBase64}`}
                             style={{ float: 'right', marginTop: "0px", marginLeft: "10px" }} width="30px" aling="bottom" vspace="10px" />
-                        <Typography variant="subtitle1" style={{ float: 'right' }}>
+                        <Typography variant="subtitle1" style={{ float: 'right', wordBreak: "break-all" }}>
                             {userInfo.userLogin || 'Undefined'} at {comment.datePosted}
                         </Typography>
                     </this.CommentWrapper>

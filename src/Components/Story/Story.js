@@ -50,6 +50,7 @@ class Story extends React.Component {
     font-size: 14px;
     text-align: right;
     dipaly: inline;
+    word-break: break-all
     `;
     Vote = styled.button`
     display: inline-block; 
@@ -69,6 +70,7 @@ class Story extends React.Component {
     padding: 0;
     font-size: 40px;
     color: darkred;
+    word-break: break-all
     `;
 
 
@@ -108,7 +110,6 @@ class Story extends React.Component {
                         id: response.data.id,
                         authorId: response.data.authorId,
                         title: response.data.title,
-                        firstElementBody: response.data.firstElementBody,
                         dateSubmitted: response.data.dateSubmitted,
                         author: response.data.author,
                         rating: response.data.rating,
@@ -224,7 +225,7 @@ class Story extends React.Component {
     renderStoryPart = (storyPart) => {
         if (storyPart.body) {
             return <>
-                <Typography variant="body" style={{ wordWrap: "break-word", textIndent: "15px" }}>{storyPart.body}</Typography>
+                <Typography variant="body" style={{ wordBreak: "break-all", textIndent: "15px" }}>{storyPart.body}</Typography>
                 <this.Signature>{storyPart.author} at {storyPart.dateAdded} with {storyPart.rating} votes</this.Signature>
                 <hr />
             </>
@@ -256,7 +257,7 @@ class Story extends React.Component {
 
     render() {
         return <this.Wraper>
-            <Typography variant="h3">{this.state.story.title}</Typography>
+            <Typography variant="h3" style={{wordBreak: "break-all"}}>{this.state.story.title}</Typography>
             <this.Signature>
                 <this.Rating>{this.state.story.rating}</this.Rating>
                 {this.state.story.author}_

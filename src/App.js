@@ -18,10 +18,10 @@ import 'typeface-roboto'
 import { withTheme } from '@material-ui/core/styles';
 import ChatHub from './Components/ChatHub/ChatHub';
 import PrivateDialog from './Components/PrivateChat/PrivateDialog';
+import ComposeBook from './Components/ComposeBook/ComposeBook';
 
 
 class App extends React.Component {
-
 
   componentDidMount() {
     let token = getParsedToken();
@@ -50,17 +50,18 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="App" style={{ backgroundColor: this.props.theme.palette.primary.light }} >
+      <div className="App" style={{ backgroundColor: this.props.theme.palette.primary.light, paddingBottom: "20px"}} >
         {this.renderNavBar()}
         <Router history={history}>
           <Route exact path="/" component={Welcome} />
-          <Route exact path="/authentication" component={Authentication} />
-          <Route exact path="/registration" component={Registration} />
           <Route exact path="/admin" component={Admin} />
-          <Route exact path="/office" component={Office} />
-          <Route exact path="/logout" component={Logout} />
+          <Route exact path="/authentication" component={Authentication} />
           <Route exact path="/chat" component={ChatHub} />
+          <Route exact path="/composeBook" component={ComposeBook} />
           <Route exact path="/intializeStory" component={InitializeStory} />
+          <Route exact path="/logout" component={Logout} />
+          <Route exact path="/registration" component={Registration} />
+          <Route exact path="/office" component={Office} />
           <Route exact path="/story:id" component={Story} />
         </Router>
         {this.renderMessenger()}

@@ -2,7 +2,6 @@ import React from 'react'
 import styled from 'styled-components';
 import Info from './OptionsBar/Info';
 import UserStories from './OptionsBar/UserStrories';
-import Settings from './OptionsBar/Settings';
 import { connect } from 'react-redux';
 
 class Office extends React.Component {
@@ -79,9 +78,6 @@ class Office extends React.Component {
           </this.ListElement>
           <this.ListElement>
             {this.button('Your stories', <UserStories />)}
-          </this.ListElement>
-          <this.ListElement>
-            {this.button('Settings', <Settings />)}
           </this.ListElement>
         </this.List>
         <this.Wraper>

@@ -164,7 +164,7 @@ class IndexPage extends React.Component {
 
 
     handleStoryClick = (id) => {
-        this.props.history.push(`Story${id}`)
+        this.props.history.push(`story${id}`)
     }
 
     handleAuthorClick = (event) => {
@@ -230,8 +230,8 @@ class IndexPage extends React.Component {
                 <Typography variant="subtitle2">By <this.Login id={story.userId} onClick={this.handleAuthorClick}>{info.userLogin || 'Unknown'}</this.Login> {story.dateSubmitted}</Typography>
             </this.Signature>
             <this.StoryBlock id={story.userId} onClick={() => this.handleStoryClick(story.id)}>
-                <Typography variant='h5'>{story.title}</Typography>
-                <Typography variant='subtitle1' style={{ wordWrap: "break-word", textIndent: "15px", marginBottom: "10px" }}>{story.firstPartBody}</Typography>
+                <Typography variant='h5' style={{ wordBreak: "break-all"}}>{story.title}</Typography>
+                <Typography variant='subtitle1' style={{  wordBreak: "break-all", textIndent: "15px", marginBottom: "10px" }}>{story.firstPartBody}</Typography>
             </this.StoryBlock>
             <this.Rating >{story.rating}</this.Rating>
             <br />

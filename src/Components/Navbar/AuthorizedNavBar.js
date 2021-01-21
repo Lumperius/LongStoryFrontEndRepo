@@ -151,7 +151,7 @@ class AuthorizedNavBar extends React.Component {
   render() {
     return (
       <nav>
-        <this.NavBarList style={{ backgroundColor: this.props.theme.palette.primary.main }}>
+        <this.NavBarList style={{ backgroundColor: this.props.theme.palette.primary.dark }}>
           <this.NavBarListElement style={{ fontWeight: "600" }}>
             <this.NavBarLogo
              src={logo}
@@ -175,7 +175,7 @@ class AuthorizedNavBar extends React.Component {
 
           <this.NavBarListElement>
             <NavBarButton linkInfo={{
-              link: "/makeBook",
+              link: "/composeBook",
               text: "Order a book"
             }} />
           </this.NavBarListElement>

@@ -1,4 +1,4 @@
-import React  from 'react'
+import React from 'react'
 import styled from 'styled-components';
 import axiosSetUp from '../../../axiosConfig';
 import { connect } from 'react-redux';
@@ -8,11 +8,11 @@ import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../../message';
 
 
-class UserStories extends React.Component{
+class UserStories extends React.Component {
 
-    constructor(){
+    constructor() {
         super()
-        this.state = {   
+        this.state = {
             message: {
                 body: '',
                 type: ''
@@ -20,7 +20,7 @@ class UserStories extends React.Component{
             render: 'stories',
             storiesList: [],
             storyPartsList: []
-      }
+        }
     }
 
     Wraper = styled.div`
@@ -35,9 +35,9 @@ class UserStories extends React.Component{
     `;
 
 
-    componentDidMount(){
-        if (this.props.token === undefined) 
-        this.props.history.push('authentication');   
+    componentDidMount() {
+        if (this.props.token === undefined)
+            this.props.history.push('authentication');
         this.sendGetStoriesRequest();
     }
 
@@ -45,64 +45,87 @@ class UserStories extends React.Component{
     sendGetStoriesRequest = () => {
         let userId = this.props.token.id;
         axiosSetUp().get(`http://localhost:5002/story/getForUser?userId=${userId}`)
-        .then(response => {
-            this.setState({
-                storiesList: response.data.storiesList,
-                storyPartsList: response.data.storyPartsList
+            .then(response => {
+                this.setState({
+                    storiesList: response.data.storiesList,
+                    storyPartsList: response.data.storyPartsList
+                })
             })
-        })
-        .catch(error => {
-            this.setState({
-                message: {
-                    body: error.data,
-                    type: 'error'
-                }
+            .catch(error => {
+                this.setState({
+                    message: {
+                        body: error.data,
+                        type: 'error'
+                    }
+                })
             })
-        })
     }
 
-    handleClick = (render) =>{
-       this.setState({render: render})
+    handleClick = (render) => {
+        this.setState({ render: render })
     }
 
     renderList = () => {
-        switch(this.state.render){
+        switch (this.state.render) {
             case 'stories':
                 return <>
-                {this.state.storiesList.map((story) => {return  <>
-                    {this.renderStory(story)}
-                    </>})}</>
+                    {this.state.storiesList.map((story) => {
+                        return <>
+                            {this.renderStory(story)}
+                        </>
+                    })}</>
             case 'storyParts':
                 return <>
-                {this.state.storyPartsList.map((storyPart) => {return  <>
-                    {this.renderStoryPart(storyPart)}
-                    </>})}</>   
-            }
+                    {this.state.storyPartsList.map((storyPart) => {
+                        return <>
+                            {this.renderStoryPart(storyPart)}
+                        </>
+                    })}</>
+        }
     }
 
-    renderStory = (story) =>{
-        return<>
-        <Typography variant="h5">{story.title}</Typography><br />
-        <Typography variant="body1" style={{ textIndent: "15px"}}>{story.body}</Typography><br/>
-        <Typography variant="subtitle1">{story.dateSubmitted}</Typography><hr />
+    renderStory = (story) => {
+        return <>
+            <Typography variant="h5">{story.title}</Typography><br />
+            <Typography variant="body1" style={{ textIndent: "15px", wordBreak: "break-all" }}>{story.body}</Typography><br />
+            <Typography variant="subtitle1">{story.dateSubmitted}</Typography><hr />
         </>
-     };
- 
-     renderStoryPart = (storyPart) =>{
-        return<>
-         <Typography variant="caption" style={{textAlign: "right"}}>From: {storyPart.titleOfStory}</Typography><br />
-         {storyPart.body}<hr />
-         </>
-      }
- 
+    };
 
-    render(){
-        return(
+    renderStoryPart = (storyPart) => {
+        return <>
+            <Typography variant="caption" style={{ textAlign: "right", wordBreak: "break-all" }}>From: {storyPart.titleOfStory}</Typography><br />
+            {storyPart.body}<hr />
+        </>
+    }
+
+    renderButtons = () => {
+        switch (this.state.render) {
+            case 'stories':
+                return <>
+                    <Button variant="outlined" onClick={() => this.handleClick('stories')}>Stories</Button>
+                    <Button variant="contained" onClick={() => this.handleClick('storyParts')}>Story parts</Button><br /><br />
+                </>
+            case 'storyParts':
+                return <>
+                    <Button variant="contained" onClick={() => this.handleClick('stories')}>Stories</Button>
+                    <Button variant="outlined" onClick={() => this.handleClick('storyParts')}>Story parts</Button><br /><br />
+                </>
+            default:
+                return <>
+                    <Button variant="contained" onClick={() => this.handleClick('stories')}>Stories</Button>
+                    <Button variant="contained" onClick={() => this.handleClick('storyParts')}>Story parts</Button><br /><br />
+                </>
+
+        }
+    }
+
+
+    render() {
+        return (
             <>
-                <Typography variant="title1">Your stories</Typography><br /><br />
                 {renderMessage(this.state.message.body, this.state.message.type)}
-                <Button variant="outlined" onClick={() => this.handleClick('stories')}>Stories</Button>
-                <Button variant="outlined" onClick={() => this.handleClick('storyParts')}>Story parts</Button><br/><br/>
+                {this.renderButtons()}
                 {this.renderList()}
             </>
         )
