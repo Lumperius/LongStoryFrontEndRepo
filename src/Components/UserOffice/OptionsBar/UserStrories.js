@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import axiosSetUp from '../../../axiosConfig';
 import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../../message';
+import ReactHtmlParser from 'react-html-parser';
 
 
 class UserStories extends React.Component {
@@ -87,15 +87,15 @@ class UserStories extends React.Component {
     renderStory = (story) => {
         return <>
             <Typography variant="h5">{story.title}</Typography><br />
-            <Typography variant="body1" style={{ textIndent: "15px", wordBreak: "break-all" }}>{story.body}</Typography><br />
+            <Typography variant="body1" style={{ textIndent: "15px", wordBreak: "break-all" }}>{ReactHtmlParser(story.body)}</Typography><br />
             <Typography variant="subtitle1">{story.dateSubmitted}</Typography><hr />
         </>
     };
 
     renderStoryPart = (storyPart) => {
         return <>
-            <Typography variant="caption" style={{ textAlign: "right", wordBreak: "break-all" }}>From: {storyPart.titleOfStory}</Typography><br />
-            {storyPart.body}<hr />
+            <Typography variant="caption" style={{ textAlign: "right", wordBreak: "break-all" }}>From: {ReactHtmlParser(storyPart.body)}</Typography><br />
+            {ReactHtmlParser(storyPart.body)}<hr />
         </>
     }
 

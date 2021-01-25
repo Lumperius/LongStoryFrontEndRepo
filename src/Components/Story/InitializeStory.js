@@ -5,6 +5,10 @@ import { connect } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import renderMessage from '../../message';
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { EditorState, convertToRaw } from 'draft-js';
+import { stateToHTML } from 'draft-js-export-html';
 
 class InitializeStory extends React.Component {
 
@@ -12,7 +16,7 @@ class InitializeStory extends React.Component {
         super()
         this.state = {
             title: '',
-            body: '',
+            editorState: EditorState.createEmpty(),
             message: {
                 body: '',
                 type: ''
@@ -82,6 +86,12 @@ class InitializeStory extends React.Component {
         })
     }
 
+    onEditorStateChange = (editorState) => {
+        this.setState({
+            editorState: editorState
+        })
+    }
+
     validateRequestParametrs = () => {
         if (!this.state.title || this.state.title.length < 1 || this.state.title.length > 50) {
             this.setState({
@@ -93,7 +103,8 @@ class InitializeStory extends React.Component {
             return false;
         }
 
-        if (!this.state.body || this.state.body.length < 20 || this.state.body.length >= 4000) {
+        if (!this.state.editorState?.getCurrentContent() || this.state.editorState?.getCurrentContent().getPlainText().length < 20 ||
+            this.state.editorState?.getCurrentContent().getPlainText().length >= 4000) {
             this.setState({
                 message: {
                     body: 'Incorrect text. It must more than 20 and less than 4000 symbols.',
@@ -110,7 +121,7 @@ class InitializeStory extends React.Component {
         let body = {
             userId: this.props.token.id,
             title: this.state.title,
-            body: this.state.body,
+            body: stateToHTML(this.state.editorState.getCurrentContent()),
             author: this.props.token.login,
             authorId: this.props.token.id,
             dateSubmitted: new Date().toISOString()
@@ -123,17 +134,17 @@ class InitializeStory extends React.Component {
                         type: 'success'
                     },
                     title: '',
-                    body: ''
+                    editorState: EditorState.createEmpty(),
                 })
-                this.props.history.push('/');
             })
             .catch(error => {
+                debugger
                 console.log(error)
                 this.setState({
                     message: {
-                        body: error.data,
+                        body: error,
                         type: 'error'
-                    }
+                    },
                 })
             })
     }
@@ -143,10 +154,10 @@ class InitializeStory extends React.Component {
             <this.Wraper >
                 <Typography variant='h4' align='left' style={{ margin: "30px" }} gutterBottom >Start a story</Typography >
                 <br />
-                <this.TitleInput name="title" maxLength="50" placeholder="Incorrect title" onChange={this.handleChange}></this.TitleInput><br/>
+                <this.TitleInput name="title" maxLength="50" placeholder="Enter a title" onChange={this.handleChange}></this.TitleInput><br />
                 <Typography variant="subtitle2">{this.state.title.length}/50</Typography><br />
-                <this.BodyInput name="body" maxLength="4000" placeholder="Enter story here. It must be at least 20 symbols long" onChange={this.handleChange}></this.BodyInput><br />
-                <Typography variant="subtitle2">{this.state.body.length}/4000</Typography><br />
+                <Editor name="body" placeholder="Type the beginning of story here" onEditorStateChange={this.onEditorStateChange} />
+                <Typography variant="subtitle2">{this.state.editorState.getCurrentContent().getPlainText().length}/4000</Typography><br />
                 {renderMessage(this.state.message.body, this.state.message.type)}
                 <Button variant="contained" color="primary" onClick={this.sendRequest}>Submit</Button>
             </this.Wraper >

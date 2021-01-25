@@ -7,13 +7,18 @@ import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import renderMessage from '../../message';
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { EditorState, convertToRaw } from 'draft-js';
+import { stateToHTML } from 'draft-js-export-html';
+
 
 class AddStoryPart extends React.Component {
 
     constructor() {
         super();
         this.state = {
-            body: '',
+            editorState: EditorState.createEmpty(),
             message: {
                 body: '',
                 type: ''
@@ -50,14 +55,16 @@ class AddStoryPart extends React.Component {
     `;
 
 
-    handleChange = (event) => {
+    onEditorStateChange = (editorState) => {
         this.setState({
-            [event.target.name]: event.target.value
+            editorState: editorState
         })
     }
 
+
     validateRequestParametrs = () => {
-        if (!this.state.body || this.state.body.length < 20 || this.state.body >= 4000) {
+        if (!this.state.editorState || this.state.editorState.getCurrentContent().getPlainText().length < 20 || 
+        this.state.editorState.getCurrentContent().getPlainText().body >= 4000) {
             this.setState({ message:{
                 body: 'Incorrect text of the story part.',
                 type: 'error'
@@ -73,7 +80,7 @@ class AddStoryPart extends React.Component {
         let requestBody = {
             storyId: this.props.storyId,
             authorId: this.props.token.id,
-            body: this.state.body,
+            body: stateToHTML(this.state.editorState.getCurrentContent()),
             author: this.props.token.login,
             dateSubmitted: new Date().toISOString()
         }
@@ -84,7 +91,8 @@ class AddStoryPart extends React.Component {
                     message: {
                         body: response.data,
                         type: 'success'
-                    }
+                    },
+                    editorState: EditorState.createEmpty()
                 });
             })
             .catch(error => {
@@ -101,9 +109,8 @@ class AddStoryPart extends React.Component {
 
     render() {
         return <>
-            <TextareaAutosize  maxLength="4000" name="body" placeholder="Min length is 20 symbols, max - 4000 symbols"
-             style={{ fontSize: "20px", width: "90%" }} onChange={this.handleChange} ></TextareaAutosize> <br />
-            <Typography variant="subtitle2">{this.state.body.length}/4000</Typography>
+            <Editor name="body" onEditorStateChange={this.onEditorStateChange} />
+            <Typography variant="subtitle2">{this.state.editorState.getCurrentContent().getPlainText().length}/4000</Typography>
             {renderMessage(this.state.message.body, this.state.message.type)}
             <Button variant="contained" color="primary" onClick={this.sendNewStoryPartRequest}>submit</Button>
         </>

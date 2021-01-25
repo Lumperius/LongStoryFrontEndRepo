@@ -6,8 +6,11 @@ import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
 import Input from '@material-ui/core/Input';
 import renderMessage from '../../message';
+import OrderParameters from './OrderParameters';
+import ReactHtmlParser from 'react-html-parser';
 
-class ComposeBook extends React.Component {
+
+class StorySelection extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -15,10 +18,11 @@ class ComposeBook extends React.Component {
                 body: '',
                 type: ''
             },
-            StoriesList: [],
+            StoryList: [],
             page: 1,
             count: 30,
-            sortBy: 'date'
+            sortBy: 'date',
+            secondStage: false
         }
     }
 
@@ -52,7 +56,7 @@ class ComposeBook extends React.Component {
         axiosSetUp().get(`http://localhost:5002/story/getPage?page=${page - 1}&count=${this.state.count}&sortBy=${sortBy}`)
             .then((response) => {
                 this.setState({
-                    StoriesList: response.data || [],
+                    StoryList: response.data || [],
                     page: page
                 })
                 this.sendGetUserInfoRequest();
@@ -68,53 +72,9 @@ class ComposeBook extends React.Component {
             })
     };
 
-    sendComposeBookRequest = () => {
-        let MarkedStoryIdList = [];
-        this.state.StoriesList.map(story => {
-            if (story?.isMarked) {
-                MarkedStoryIdList.push(story.id);
-            }
-        })
-        if (MarkedStoryIdList.length <= 0) {
-            this.setState({
-                message: {
-                    body: 'You need to chose stories for the book first.',
-                    type: 'error'
-                }
-            })
-            return;
-        }
-        let body = {
-            StoryIdList: MarkedStoryIdList,
-            userId: this.props.token.id
-        }
-        axiosSetUp().post(`http://localhost:5002/story/collectStories`, body)
-            .then(response => {
-                let StoriesCopy = [...this.state.StoriesList];
-                StoriesCopy.forEach(story => {
-                    if (story?.isMarked)
-                        story.isMarked = false
-                })
-                this.setState({
-                    message: {
-                        body: 'Your request was successfully send',
-                        type: 'success'
-                    },
-                    StoriesList: StoriesCopy
-                })
-            })
-            .catch(error => {
-                this.setState({
-                    message: {
-                        body: 'Error occured while proccessing the request. Try again later or contact the administrator.',
-                        type: 'error'
-                    }
-                })
-            })
-    }
 
     markTheStory = (story) => {
-        let newStoriesList = [...this.state.StoriesList]
+        let newStoriesList = [...this.state.StoryList]
         if (story.isMarked) {
             newStoriesList.find(s => s.id === story.id).isMarked = false
             this.setState({
@@ -140,29 +100,36 @@ class ComposeBook extends React.Component {
             return <this.Story style={{ backgroundColor: "grey" }} onClick={() => this.markTheStory(story)}>
                 {story.isMarked || "nope"}
                 <Typography variant="h5" style={{ textIndent: "20px" }}>{story.title}</Typography>
-                <Typography style={{ textIndent: "10px" }}>{this.cutBody(story.firstPartBody)}</Typography>
+                <Typography style={{ textIndent: "10px" }}>{ReactHtmlParser(story.firstPartBody)}</Typography>
             </this.Story>
         }
         else {
             return <this.Story onClick={() => this.markTheStory(story)}>
                 <Typography variant="h5" style={{ textIndent: "20px" }}>{story.title}</Typography>
-                <Typography variant="subtitle1" style={{ textIndent: "10px" }}>{this.cutBody(story.firstPartBody)}</Typography>
+                <Typography variant="subtitle1" style={{ textIndent: "10px" }}>{ReactHtmlParser(story.firstPartBody)}</Typography>
             </this.Story>
         }
     }
 
     render() {
-        return (<this.Wraper>
-            <Typography variant="h4" style={{ textIndent: "20px" }}>Choose stories that you want to add to your book</Typography><br />
-            {this.state.StoriesList.map(story => {
-                return <>
-                    <Button size="small" style={{ float: "right" }} onClick={() => window.open(`story${story.id}`, "_blank")}>Inspect</Button>
-                    {this.renderStory(story)}<br />
-                </>
-            })}
-            {renderMessage(this.state.message.body, this.state.message.type)}
-            <Button variant="contained" color="primary" onClick={() => this.sendComposeBookRequest()}>Create order</Button>
-        </this.Wraper>)
+        if (!this.state.secondStage)
+            return (<this.Wraper>
+                <Typography variant="h4" style={{ textIndent: "20px" }}>Choose stories that you want to add to your book</Typography><br />
+                {this.state.StoryList.map(story => {
+                    return <>
+                        <Button size="small" style={{ float: "right" }} onClick={() => window.open(`story${story.id}`, "_blank")}>Inspect</Button>
+                        {this.renderStory(story)}<br />
+                    </>
+                })}
+                {renderMessage(this.state.message.body, this.state.message.type)}
+                <Button variant="contained" color="primary" onClick={() => this.setState({ secondStage: true })}>Create order</Button>
+            </this.Wraper>)
+        else {
+            return (<this.Wraper>
+                <OrderParameters StoryList={this.state.StoryList} /><br />
+                <Button variant="outlined" size="small" style={{ marginLeft: "-10px" }} onClick={() => this.setState({ secondStage: false })}>back</Button>
+            </this.Wraper>)
+        }
     }
 }
 
@@ -172,4 +139,4 @@ const mapStateToProps = function (state) {
     };
 }
 
-export default connect(mapStateToProps)(ComposeBook)
+export default connect(mapStateToProps)(StorySelection)

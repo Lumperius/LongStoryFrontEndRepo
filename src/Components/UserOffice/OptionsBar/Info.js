@@ -1,5 +1,4 @@
 import React from 'react'
-import styled from 'styled-components';
 import axiosSetUp from '../../../axiosConfig';
 import { connect } from 'react-redux'
 import Button from '@material-ui/core/Button';
@@ -10,6 +9,7 @@ import renderMessage from '../../../message';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { FormikTextField } from 'formik-material-fields';
+
 
 
 class Info extends React.Component {

@@ -6,6 +6,11 @@ import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../message';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import axiosSetUp from '../../axiosConfig';
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
+import { stateToHTML } from 'draft-js-export-html';
+import draftToHtml from 'draftjs-to-html';
 
 
 class Comments extends React.Component {
@@ -18,7 +23,7 @@ class Comments extends React.Component {
             },
             Comments: [],
             UserInfoList: [],
-            commentBody: ''
+            editorState: EditorState.createEmpty()
         }
     }
 
@@ -36,7 +41,10 @@ class Comments extends React.Component {
     margin: 10px;
     padding: 20px;
     padding-bottom: 40px;
-    background-color: WhiteSmoke;
+    word-break: break-all;
+    `;
+    EditorWraper = styled.div`
+    background-color: white;
     `;
 
 
@@ -45,7 +53,8 @@ class Comments extends React.Component {
     }
 
     sendPostCommentRequest = () => {
-        if (this.state.commentBody.length > 1000 || !this.state.commentBody.length) {
+        if (!this.state.editorState || this.state.editorState.getCurrentContent().getPlainText().length > 1000 ||
+            !this.state.editorState.getCurrentContent().getPlainText().length) {
             this.setState({
                 message: {
                     body: 'Incorrect text',
@@ -54,11 +63,13 @@ class Comments extends React.Component {
             })
             return;
         }
+
         let body = {
             userId: this.props.token.id,
             storyId: this.props.storyId,
-            body: this.state.commentBody
+            body: JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent()))
         }
+        debugger
         axiosSetUp().post(`http://localhost:5002/comment/post?storyId=${this.props.storyId}`, body)
             .then(response => {
                 this.setState({
@@ -122,26 +133,43 @@ class Comments extends React.Component {
             })
     }
 
-    handleChange = (event) => {
+    onEditorStateChange = (editorState) => {
         this.setState({
-            [event.target.name]: event.target.value
+            editorState: editorState
         })
     }
+
 
     renderComments = () => {
         return <>
             {this.state.Comments.map(comment => {
                 let userInfo = this.state.UserInfoList.find(ui => ui.userId == comment.userId) || []
-                return <>
-                    <this.CommentWrapper>
-                        <Typography variant="subtitle1" style={{ wordBreak: "break-all", padding: "10px" }}>{comment.body}</Typography><br />
+
+                try   { EditorState.createWithContent(convertFromRaw(JSON.parse(comment.body))) }
+                catch {
+                    return <div style={{ backgroundColor: "white", margin: "20px",  padding: "35px", paddingTop: "0px"}}>
+                        <this.CommentWrapper>{comment.body}</this.CommentWrapper>
                         <img src={`data:image/jpeg;base64,${userInfo.avatarBase64}`}
                             style={{ float: 'right', marginTop: "0px", marginLeft: "10px" }} width="30px" aling="bottom" vspace="10px" />
-                        <Typography variant="subtitle1" style={{ float: 'right', wordBreak: "break-all" }}>
-                            {userInfo.userLogin || 'Undefined'} at {comment.datePosted}
+                        <Typography variant="subtitle1" style={{ float: "right", wordBreak: "break-all" }}>
+                            {userInfo.userLogin || undefined} at {comment.datePosted || undefined}
                         </Typography>
-                    </this.CommentWrapper>
-                </>
+                    </div>
+                }
+
+                return <div style={{ backgroundColor: "white", margin: "20px", padding: "35px", paddingTop: "0px" }}>
+                    <Editor
+                        toolbarHidden={true}
+                        editorState={EditorState?.createWithContent(convertFromRaw(JSON.parse(comment.body) || null)) || null}
+                    />
+                    <span style={{ marginTop: "-20px" }}>
+                        <img src={`data:image/jpeg;base64,${userInfo.avatarBase64}`}
+                            style={{ float: 'right', marginTop: "0px", marginLeft: "10px" }} width="30px" aling="bottom" vspace="10px" />
+                        <Typography variant="subtitle1" style={{ float: "right", wordBreak: "break-all" }}>
+                            {userInfo.userLogin || undefined} at {comment.datePosted || undefined}
+                        </Typography>
+                    </span>
+                </div>
             })}
         </>
     }
@@ -152,9 +180,8 @@ class Comments extends React.Component {
             <Typography variant="h4">Commentaries</Typography>
             <a href="#addComment"><Typography variant="caption" id="Comments">Add a comment</Typography></a>
             {this.renderComments()}
-            <TextareaAutosize maxLength="1000" name="commentBody" placeholder="Add your comment(1000 symbols max)"
-                style={{ fontSize: "20px", width: "96%", height: "15vh", marginTop: "50px" }} onChange={this.handleChange}></TextareaAutosize>
-            <Typography variant="subtitle2" id="addComment">{this.state.commentBody.length}/1000</Typography>
+            <this.EditorWraper><Editor name="body" onEditorStateChange={this.onEditorStateChange} style={{ backgroundColor: "white" }} /></this.EditorWraper>
+            <Typography variant="subtitle2" id="addComment">{this.state.editorState.getCurrentContent().getPlainText().length}/1000</Typography>
             {renderMessage(this.state.message.body, this.state.message.type)}
             <Button color="primary" variant="contained" onClick={this.sendPostCommentRequest}>submit</Button><br />
         </this.Wraper>)

@@ -4,6 +4,7 @@ import axiosSetUp from '../../axiosConfig';
 import { connect } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../message';
+import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
 
 class CandidatesScroller extends React.Component {
     constructor() {
@@ -121,7 +122,7 @@ class CandidatesScroller extends React.Component {
             this.sendVoteCandidateRequsest(candidate);
         }}>
             <Typography variant="body" style={{ wordBreak: "break-all", textIndent: "15px" }}>
-                {candidate.body}
+               {ReactHtmlParser(candidate.body)}
             </Typography>
             <this.Signature><b>{candidate.rating} {voteMessage}</b> {candidate.author} {candidate.dateSubmitted}</this.Signature>
         </this.CandidateBlock>

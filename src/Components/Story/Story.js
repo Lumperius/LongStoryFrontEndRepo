@@ -8,6 +8,8 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import renderMessage from '../../message';
 import Comments from './Comments';
+import ReactHtmlParser from 'react-html-parser';
+
 
 class Story extends React.Component {
 
@@ -225,7 +227,7 @@ class Story extends React.Component {
     renderStoryPart = (storyPart) => {
         if (storyPart.body) {
             return <>
-                <Typography variant="body" style={{ wordBreak: "break-all", textIndent: "15px" }}>{storyPart.body}</Typography>
+                <Typography variant="body" style={{ wordBreak: "break-all", textIndent: "15px" }}>{ReactHtmlParser(storyPart.body)}</Typography>
                 <this.Signature>{storyPart.author} at {storyPart.dateAdded} with {storyPart.rating} votes</this.Signature>
                 <hr />
             </>

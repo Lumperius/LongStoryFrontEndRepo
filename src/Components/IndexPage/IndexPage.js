@@ -3,12 +3,14 @@ import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig'
 import { connect } from 'react-redux'
 import Typography from '@material-ui/core/Typography';
-import MenuItem from '@material-ui/core/MenuItem';
 import Popper from '@material-ui/core/Popper';
 import Button from '@material-ui/core/Button';
 import renderMessage from '../../message';
 import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import UserInfoWindow from '../UserInfoWindow/UserInfoWindow';
+import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
+
 
 class IndexPage extends React.Component {
     constructor() {
@@ -231,7 +233,7 @@ class IndexPage extends React.Component {
             </this.Signature>
             <this.StoryBlock id={story.userId} onClick={() => this.handleStoryClick(story.id)}>
                 <Typography variant='h5' style={{ wordBreak: "break-all"}}>{story.title}</Typography>
-                <Typography variant='subtitle1' style={{  wordBreak: "break-all", textIndent: "15px", marginBottom: "10px" }}>{story.firstPartBody}</Typography>
+                <Typography variant='subtitle1' style={{  wordBreak: "break-all", textIndent: "15px", marginBottom: "10px" }}>{ReactHtmlParser(story.firstPartBody)}</Typography>
             </this.StoryBlock>
             <this.Rating >{story.rating}</this.Rating>
             <br />
