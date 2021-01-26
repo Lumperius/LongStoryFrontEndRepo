@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
-import renderMessage from '../../message';
+import renderMessage from '../../../message';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { FormikTextField } from 'formik-material-fields';
-import axiosSetUp from '../../axiosConfig';
+import axiosSetUp from '../../../axiosConfig';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
@@ -71,6 +71,11 @@ class OrderParameters extends React.Component {
     width: 17cm;
     height: 24cm;
     `;
+
+    componentDidMount() {
+        if (!this.props.token)
+            this.props.history.push('authentication');
+    }
 
     sendComposeBookRequest = (values) => {
         let MarkedStoryIdList = [];

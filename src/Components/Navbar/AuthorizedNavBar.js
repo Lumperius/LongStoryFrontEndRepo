@@ -92,8 +92,11 @@ class AuthorizedNavBar extends React.Component {
   `;
 
   componentDidMount() {
-    if(!this.props.avatar && this.props.token)
-      this.sendGetAvatarRequest();
+    if (!this.props.token)
+    this.props.history.push('authentication');
+
+    if(!this.props.avatar)
+    this.sendGetAvatarRequest();
   }
 
   handleLogoClick = () => {
@@ -175,8 +178,8 @@ class AuthorizedNavBar extends React.Component {
 
           <this.NavBarListElement>
             <NavBarButton linkInfo={{
-              link: "/composeBook",
-              text: "Order a book"
+              link: "/Books",
+              text: "Books"
             }} />
           </this.NavBarListElement>
 

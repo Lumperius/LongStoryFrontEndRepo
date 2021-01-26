@@ -18,7 +18,8 @@ import 'typeface-roboto'
 import { withTheme } from '@material-ui/core/styles';
 import ChatHub from './Components/ChatHub/ChatHub';
 import PrivateDialog from './Components/PrivateChat/PrivateDialog';
-import StorySelection from './Components/ComposeBook/StorySelection';
+import StorySelection from './Components/Books/ComposeBook/StorySelection';
+import BookPage from './Components/Books/BookPage';
 
 
 class App extends React.Component {
@@ -52,7 +53,7 @@ class App extends React.Component {
           <Route exact path="/admin" component={Admin} />
           <Route exact path="/authentication" component={Authentication} />
           <Route exact path="/chat" component={ChatHub} />
-          <Route exact path="/composeBook" component={StorySelection} />
+          <Route exact path="/Books" component={BookPage} />
           <Route exact path="/intializeStory" component={InitializeStory} />
           <Route exact path="/logout" component={Logout} />
           <Route exact path="/registration" component={Registration} />

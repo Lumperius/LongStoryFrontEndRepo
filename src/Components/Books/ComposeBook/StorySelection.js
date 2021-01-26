@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import axiosSetUp from '../../axiosConfig';
+import axiosSetUp from '../../../axiosConfig';
 import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
 import Input from '@material-ui/core/Input';
-import renderMessage from '../../message';
+import renderMessage from '../../../message';
 import OrderParameters from './OrderParameters';
 import ReactHtmlParser from 'react-html-parser';
 
@@ -46,8 +46,8 @@ class StorySelection extends React.Component {
 
 
     componentDidMount() {
-        if (this.props.token === undefined)
-            this.props.history.push('authentication');
+      if (!this.props.token)
+      this.props.history.push('authentication');
         this.sendGetRequestAndSetNewPage();
     }
 
