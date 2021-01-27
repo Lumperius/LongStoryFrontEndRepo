@@ -40,15 +40,13 @@ class NavBar extends React.Component {
   }
   `;
 
-  _service;
-
   handleLogoClick = () => {
     history.push('/');
   }
 
   render() {
     return (
-      <this.NavBarList style={{backgroundColor: this.props.theme.palette.primary.main}}>
+      <this.NavBarList style={{backgroundColor: this.props.theme.palette.primary.dark}}>
         <this.NavBarListElement style={{float: "left", borderStyle: "none"}}>
         <this.NavBarLogo
              src={logo}

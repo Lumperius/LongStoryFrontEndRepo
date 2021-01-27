@@ -20,6 +20,7 @@ import ChatHub from './Components/ChatHub/ChatHub';
 import PrivateDialog from './Components/PrivateChat/PrivateDialog';
 import StorySelection from './Components/Books/ComposeBook/StorySelection';
 import BookPage from './Components/Books/BookPage';
+import Book from './Components/Books/Book';
 
 
 class App extends React.Component {
@@ -53,12 +54,14 @@ class App extends React.Component {
           <Route exact path="/admin" component={Admin} />
           <Route exact path="/authentication" component={Authentication} />
           <Route exact path="/chat" component={ChatHub} />
-          <Route exact path="/Books" component={BookPage} />
+          <Route exact path="/books" component={BookPage} />
+          <Route exact path="/books/composeBook" component={StorySelection} />
           <Route exact path="/intializeStory" component={InitializeStory} />
           <Route exact path="/logout" component={Logout} />
           <Route exact path="/registration" component={Registration} />
           <Route exact path="/office" component={Office} />
           <Route exact path="/story:id" component={Story} />
+          <Route exact path="/books/book:id" component={Book} />
         </Router>
         {this.renderMessenger()}
       </div>

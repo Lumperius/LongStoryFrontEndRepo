@@ -10,6 +10,7 @@ import { FormikTextField } from 'formik-material-fields';
 import axiosSetUp from '../../../axiosConfig';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import text from './ExampleOfText';
 
 
 class OrderParameters extends React.Component {
@@ -20,7 +21,7 @@ class OrderParameters extends React.Component {
                 body: '',
                 type: ''
             },
-            format: 'Small',
+            format: 'Large',
             fontSize: 12
         }
     }
@@ -51,7 +52,7 @@ class OrderParameters extends React.Component {
     border: solid 1px;
     word-break: break-all;
     padding: 30px;
-    font-size: 13px;
+    font-size: 11px;
     width: 12cm;
     height: 16.5cm;
     `;
@@ -126,18 +127,43 @@ class OrderParameters extends React.Component {
         })
     }
 
+    handleFontSizeChange = (event) => {
+        let changeValue = event.target.value;
+        if (event.target.value < 8)
+            changeValue = 8;
+        if (changeValue > 20)
+            changeValue = 20;
+        this.setState({
+            fontSize: changeValue
+        })
+    }
+
+
     handleChange = (event) => {
         this.setState({
             [event.target.name]: event.target.value
         })
     }
 
-    computeSymbolsForPageExample = (pageSize) => {
+    computeSymbolsForPageExample = () => {
+        let bookFormatKrit = 0;
+        switch (this.state.format) {
+            case 'Small':
+                bookFormatKrit = 0.13;
+                break;
+            case 'Medium':
+                bookFormatKrit = 0.19;
+                break;
+            case 'Large':
+                bookFormatKrit = 0.275;
+                break;
+        }
+        let pageSize = 1600000 * bookFormatKrit / this.state.fontSize ** 2;
         let randomText = '';
         for (let i = 0; i <= pageSize; i++) {
             randomText = randomText + 'a'
         }
-        return randomText;
+        return text.substring(0, pageSize);
     }
 
     renderPagePreview = () => {
@@ -178,7 +204,7 @@ class OrderParameters extends React.Component {
                 {({ errors, touched }) => (
                     <Form>
                         <FormikTextField label="Amount of books" name="amount" type="number" value={1} style={{ width: "10%" }} /><br />
-                        <FormikTextField label="Font size" name="fontSize" type="number" value={12} onChange={this.handleChange} style={{ width: "10%" }} /><br />
+                        <FormikTextField label="Font size" name="fontSize" type="number" value={12} onChange={this.handleFontSizeChange} style={{ width: "10%" }} /><br />
                         <FormikTextField label="Title of the book" name="title" type="text" onChange={this.handleChange} style={{ width: "15%" }} /><br /><br />
                         <Select
                             style={{ width: "10%" }}

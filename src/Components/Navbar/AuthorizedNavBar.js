@@ -178,7 +178,7 @@ class AuthorizedNavBar extends React.Component {
 
           <this.NavBarListElement>
             <NavBarButton linkInfo={{
-              link: "/Books",
+              link: "/books",
               text: "Books"
             }} />
           </this.NavBarListElement>

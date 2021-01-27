@@ -116,7 +116,7 @@ class InitializeStory extends React.Component {
         return true;
     }
 
-    sendRequest = () => {
+    sendCreateStoryRequest = () => {
         if (!this.validateRequestParametrs()) return;
         let body = {
             userId: this.props.token.id,
@@ -136,6 +136,7 @@ class InitializeStory extends React.Component {
                     title: '',
                     editorState: EditorState.createEmpty(),
                 })
+                this.props.history.push('/')
             })
             .catch(error => {
                 debugger
@@ -159,7 +160,7 @@ class InitializeStory extends React.Component {
                 <Editor name="body" placeholder="Type the beginning of story here" onEditorStateChange={this.onEditorStateChange} />
                 <Typography variant="subtitle2">{this.state.editorState.getCurrentContent().getPlainText().length}/4000</Typography><br />
                 {renderMessage(this.state.message.body, this.state.message.type)}
-                <Button variant="contained" color="primary" onClick={this.sendRequest}>Submit</Button>
+                <Button variant="contained" color="primary" onClick={this.sendCreateStoryRequest}>Submit</Button>
             </this.Wraper >
         )
     }

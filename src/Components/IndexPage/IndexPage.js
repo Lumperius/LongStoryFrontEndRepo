@@ -164,19 +164,14 @@ class IndexPage extends React.Component {
             return body.substring(0, 1000) + '...'
     }
 
-
-    handleStoryClick = (id) => {
-        this.props.history.push(`story${id}`)
-    }
-
     handleAuthorClick = (event) => {
-            this.setState({
-                popper: {
-                    userId: event.currentTarget.id || '',
-                    anchorEL: event.currentTarget || null,
-                    open: true
-                }
-            })
+        this.setState({
+            popper: {
+                userId: event.currentTarget.id || '',
+                anchorEL: event.currentTarget || null,
+                open: true
+            }
+        })
     };
 
     handleSortButtonClick = () => {
@@ -224,6 +219,15 @@ class IndexPage extends React.Component {
     }
 
     renderAStory = (story) => {
+        let color = 'black';
+        let rating = story.rating;
+        if (story.rating > 0) {
+            color = 'green';
+            rating = '+' + story.rating
+        }
+        if (story.rating < 0) 
+            color = 'red';
+
         let info = this.state.UserInfoList.find(ui => ui.userId == story.userId) || ''
         story.firstPartBody = this.cutStoryBody(story.firstPartBody) || story.firstPartBody;
         return <>
@@ -231,11 +235,11 @@ class IndexPage extends React.Component {
                 <this.Avatar src={`data:image/jpeg;base64,${info.avatarBase64}`} width="40px" height="40px" onClick={this.handleAuthorClick} />
                 <Typography variant="subtitle2">By <this.Login id={story.userId} onClick={this.handleAuthorClick}>{info.userLogin || 'Unknown'}</this.Login> {story.dateSubmitted}</Typography>
             </this.Signature>
-            <this.StoryBlock id={story.userId} onClick={() => this.handleStoryClick(story.id)}>
-                <Typography variant='h5' style={{ wordBreak: "break-all"}}>{story.title}</Typography>
-                <Typography variant='subtitle1' style={{  wordBreak: "break-all", textIndent: "15px", marginBottom: "10px" }}>{ReactHtmlParser(story.firstPartBody)}</Typography>
+            <this.StoryBlock id={story.userId} onClick={() => this.props.history.push(`story${story.id}`)}>
+                <Typography variant='h5' style={{ wordBreak: "break-all" }}>{story.title}</Typography>
+                <Typography variant='subtitle1' style={{ wordBreak: "break-all", textIndent: "15px", marginBottom: "10px" }}>{ReactHtmlParser(story.firstPartBody)}</Typography>
             </this.StoryBlock>
-            <this.Rating >{story.rating}</this.Rating>
+            <this.Rating style={{ color: color }}>{rating}</this.Rating>
             <br />
         </>
     }

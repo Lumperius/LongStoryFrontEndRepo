@@ -98,15 +98,14 @@ class StorySelection extends React.Component {
     renderStory = (story) => {
         if (story.isMarked) {
             return <this.Story style={{ backgroundColor: "grey" }} onClick={() => this.markTheStory(story)}>
-                {story.isMarked || "nope"}
-                <Typography variant="h5" style={{ textIndent: "20px" }}>{story.title}</Typography>
-                <Typography style={{ textIndent: "10px" }}>{ReactHtmlParser(story.firstPartBody)}</Typography>
+                <Typography variant="h5" style={{ textIndent: "20px", wordBreak: "break-all" }}>{story.title}</Typography>
+                <Typography style={{ textIndent: "10px", wordBreak: "break-all" }}>{ReactHtmlParser(story.firstPartBody)}</Typography>
             </this.Story>
         }
         else {
             return <this.Story onClick={() => this.markTheStory(story)}>
-                <Typography variant="h5" style={{ textIndent: "20px" }}>{story.title}</Typography>
-                <Typography variant="subtitle1" style={{ textIndent: "10px" }}>{ReactHtmlParser(story.firstPartBody)}</Typography>
+                <Typography variant="h5" style={{ textIndent: "20px", wordBreak: "break-all" }}>{story.title}</Typography>
+                <Typography variant="subtitle1" style={{ textIndent: "10px", wordBreak: "break-all" }}>{ReactHtmlParser(story.firstPartBody)}</Typography>
             </this.Story>
         }
     }
@@ -117,7 +116,7 @@ class StorySelection extends React.Component {
                 <Typography variant="h4" style={{ textIndent: "20px" }}>Choose stories that you want to add to your book</Typography><br />
                 {this.state.StoryList.map(story => {
                     return <>
-                        <Button size="small" style={{ float: "right" }} onClick={() => window.open(`story${story.id}`, "_blank")}>Inspect</Button>
+                        <Button size="small" style={{ float: "right" }} onClick={() => window.open(`../story${story.id}`, "_blank")}>Inspect</Button>
                         {this.renderStory(story)}<br />
                     </>
                 })}

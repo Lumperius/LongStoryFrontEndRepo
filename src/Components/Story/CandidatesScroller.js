@@ -39,7 +39,7 @@ class CandidatesScroller extends React.Component {
     width: 100%;
     overflow-y: scroll;
     overflow-x: hidden;
-    max-height: 200px;
+    max-height: 900px;
     `;
     InfoMessage = styled.p` 
     color: black;
@@ -109,7 +109,7 @@ class CandidatesScroller extends React.Component {
 
             })
         candidate.isRated = true;
-        candidate.rating = ++candidate.rating;
+        candidate.rating++;
 
     }
 
@@ -117,12 +117,12 @@ class CandidatesScroller extends React.Component {
     renderCandidate = (candidate) => {
         let voteMessage;
         if (candidate.isRated) voteMessage = 'Already rated'
-        else voteMessage = 'Click to rate'
+        else voteMessage = 'Click to vote'
         return <this.CandidateBlock onClick={() => {
             this.sendVoteCandidateRequsest(candidate);
         }}>
             <Typography variant="body" style={{ wordBreak: "break-all", textIndent: "15px" }}>
-               {ReactHtmlParser(candidate.body)}
+                {ReactHtmlParser(candidate.body)}
             </Typography>
             <this.Signature><b>{candidate.rating} {voteMessage}</b> {candidate.author} {candidate.dateSubmitted}</this.Signature>
         </this.CandidateBlock>
@@ -131,12 +131,12 @@ class CandidatesScroller extends React.Component {
 
     render() {
         return <this.Scroller>
-            {renderMessage(this.state.message.body, this.state.message.type)}
             {this.state.CandidatesList.map((candidate) => {
                 return <>
                     {this.renderCandidate(candidate)}
                 </>
             })}
+            {renderMessage(this.state.message.body, this.state.message.type)}
         </this.Scroller>
     }
 
