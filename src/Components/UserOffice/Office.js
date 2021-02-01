@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Info from './OptionsBar/Info';
 import UserStories from './OptionsBar/UserStrories';
 import { connect } from 'react-redux';
+import Wrapper from '../../objects';
 
 class Office extends React.Component {
 
@@ -25,16 +26,6 @@ class Office extends React.Component {
       </this.ListButton>
     )
   }
-  Wraper = styled.div`
-    text-align:left;
-    margin: 10px;
-    padding: 30px;
-    font-size: 28px;
-    border-style: solid;
-    border-width:1px;
-    border-color: dark;
-    background-color: white;
-    `;
 
   ListButton = styled.a`
   border-right-width: 1px;
@@ -80,9 +71,9 @@ class Office extends React.Component {
             {this.button('Your stories', <UserStories />)}
           </this.ListElement>
         </this.List>
-        <this.Wraper>
+        <Wrapper>
           {this.state.activeComponent}
-        </this.Wraper>
+        </Wrapper>
       </>
     )
   }

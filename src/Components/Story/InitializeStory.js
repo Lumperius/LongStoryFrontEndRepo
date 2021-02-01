@@ -7,8 +7,9 @@ import Button from '@material-ui/core/Button';
 import renderMessage from '../../message';
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState, convertToRaw } from 'draft-js';
+import { EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
+import Wrapper from '../../objects';
 
 class InitializeStory extends React.Component {
 
@@ -58,17 +59,6 @@ class InitializeStory extends React.Component {
     display: inline-block;
     font-size: 20px;
     margin: 20px;
-    `;
-    Wraper = styled.div`
-    text-align:left;
-    margin-top: 1500px;
-    margin:10px;
-    padding: 30px;
-    font-size: 28px;
-    border-style: solid;
-    border-width:1px;
-    border-color: dark;
-    background-color: white
     `;
     InputLabel = styled.h3`
     font-size: 30px;
@@ -143,7 +133,7 @@ class InitializeStory extends React.Component {
                 console.log(error)
                 this.setState({
                     message: {
-                        body: error,
+                        body: 'Error occured while creating the story',
                         type: 'error'
                     },
                 })
@@ -152,16 +142,14 @@ class InitializeStory extends React.Component {
 
     render() {
         return (
-            <this.Wraper >
-                <Typography variant='h4' align='left' style={{ margin: "30px" }} gutterBottom >Start a story</Typography >
-                <br />
+            <Wrapper>
                 <this.TitleInput name="title" maxLength="50" placeholder="Enter a title" onChange={this.handleChange}></this.TitleInput><br />
                 <Typography variant="subtitle2">{this.state.title.length}/50</Typography><br />
                 <Editor name="body" placeholder="Type the beginning of story here" onEditorStateChange={this.onEditorStateChange} />
                 <Typography variant="subtitle2">{this.state.editorState.getCurrentContent().getPlainText().length}/4000</Typography><br />
                 {renderMessage(this.state.message.body, this.state.message.type)}
                 <Button variant="contained" color="primary" onClick={this.sendCreateStoryRequest}>Submit</Button>
-            </this.Wraper >
+            </Wrapper>
         )
     }
 }

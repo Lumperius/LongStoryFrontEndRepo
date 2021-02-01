@@ -4,7 +4,7 @@ import axiosSetUp from '../../axiosConfig';
 import { connect } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../message';
-import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
+import ReactHtmlParser from 'react-html-parser';
 
 class CandidatesScroller extends React.Component {
     constructor() {
@@ -18,12 +18,6 @@ class CandidatesScroller extends React.Component {
         }
     }
 
-    NextCandidate = styled.div`
-    
-    `;
-    PreviousCandidate = styled.div`
-    
-    `;
     CandidateBlock = styled.div`
     width: 100%;
     background-color: lightgray;
@@ -69,7 +63,7 @@ class CandidatesScroller extends React.Component {
                 console.log(error);
                 this.setState({
                     message: {
-                        body: error.data,
+                        body: 'Error occured while downloading entries',
                         type: 'error'
                     }
                 })
@@ -102,7 +96,7 @@ class CandidatesScroller extends React.Component {
                 console.log(error);
                 this.setState({
                     message: {
-                        body: error.data,
+                        body: 'Error occured while sending the vote',
                         type: 'error'
                     }
                 })

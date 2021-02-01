@@ -1,26 +1,20 @@
 import * as signalR from "@microsoft/signalr";
 
-const hubConnection = new signalR.HubConnectionBuilder()
-    .withUrl('http://localhost:5002/messenger/chat', {
-        skipNegotiation: true,
-        transport: signalR.HttpTransportType.WebSockets,
-    })
-    .build();
-
-
- async function start(){
-    try {
-        if(hubConnection.state === signalR.HubConnectionState.Disconnected)
-        await hubConnection.start();
-    } catch (err) {
-        console.log(err);
-        setTimeout(start, 5000);
-    }
+async function start(connectionObject) {
+        if (connectionObject.state === signalR.HubConnectionState.Disconnected)
+        await connectionObject.start();
 };
 
 
 
-export default async function connectToHub() {
-    await start();
+export default async function connectToHub(hubUrl) {
+    const hubConnection = new signalR.HubConnectionBuilder()
+        .withUrl(hubUrl, {
+            skipNegotiation: true,
+            transport: signalR.HttpTransportType.WebSockets,
+        })
+        .build();
+
+    await start(hubConnection);
     return hubConnection;
 }

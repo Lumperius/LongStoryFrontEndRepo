@@ -9,7 +9,8 @@ import renderMessage from '../../message';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import UserInfoWindow from '../UserInfoWindow/UserInfoWindow';
-import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
+import ReactHtmlParser from 'react-html-parser';
+import Wrapper from '../../objects'
 
 
 class IndexPage extends React.Component {
@@ -29,10 +30,12 @@ class IndexPage extends React.Component {
             UserInfoList: [],
             page: 1,
             pageSize: 10,
-            sortBy: 'rating',
+            sortBy: 'date',
             openSortMenu: false,
         }
     }
+
+    emptyGuid = '00000000-0000-0000-0000-000000000000';
 
     StoryBlock = styled.div`
     margin: 20px;
@@ -44,17 +47,6 @@ class IndexPage extends React.Component {
         background-color: lightgrey;
         cursor: pointer;
     }
-    `;
-    Wraper = styled.div`
-    text-align:left;
-    margin-top: 1500px;
-    margin:10px;
-    padding: 30px;
-    font-size: 28px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: dark;
-    background-color: white;
     `;
     Title = styled.h2`
     font-family: TimesNewRoman;
@@ -102,6 +94,9 @@ class IndexPage extends React.Component {
     margin: 0px;
     margin-right: 10px;
     border: 1px solid black;
+    &:hover {
+        cursor: pointer;
+    }
     `;
     Login = styled.span`
     &:hover {
@@ -117,21 +112,23 @@ class IndexPage extends React.Component {
     sendGetUserInfoRequest = () => {
         let userIdList = [];
         this.state.StoriesList.forEach(story => {
-            if (!userIdList.find(id => id == story.userId))
+            if (!userIdList.find(id => id === story.userId))
                 userIdList.push(story.userId);
         })
-        let jsonIds = JSON.stringify(userIdList);
-        axiosSetUp().get(`http://localhost:5002/userInfo/getRange?userIdList=${jsonIds}`)
+        if (!this.state.StoriesList.includes(story => story.id === null) && !userIdList.find(id => id === null)) {
+            userIdList.push(this.emptyGuid);
+        }
+        let JSONids = JSON.stringify(userIdList);
+        axiosSetUp().get(`http://localhost:5002/userInfo/getRange?userIdList=${JSONids}`)
             .then(response => {
                 this.setState({
                     UserInfoList: response.data.userInfoList || []
                 })
             })
             .catch((error) => {
-                console.log('Failed', error)
                 this.setState({
                     message: {
-                        body: error.data || '',
+                        body: 'Error occured while downloading data',
                         type: 'error'
                     }
                 })
@@ -140,7 +137,7 @@ class IndexPage extends React.Component {
 
     sendGetRequestAndSetNewPage = (page = this.state.page, sortBy = this.state.sortBy) => {
         if (page < 1) return;
-        axiosSetUp().get(`http://localhost:5002/story/getPage?page=${page - 1}&count=${this.state.pageSize}&sortBy=${sortBy}`)
+        axiosSetUp().get(`http://localhost:5002/story/getPage?page=${page}&count=${this.state.pageSize}&sortBy=${sortBy}`)
             .then((response) => {
                 this.setState({
                     StoriesList: response.data || '',
@@ -152,7 +149,7 @@ class IndexPage extends React.Component {
                 console.log('Failed', error)
                 this.setState({
                     message: {
-                        body: error.data || '',
+                        body: 'Error occured while downloading entries',
                         type: 'error'
                     }
                 })
@@ -201,12 +198,12 @@ class IndexPage extends React.Component {
         for (let i = 2; i > -3; i--) {
             pages.push(this.state.page - i)
         }
-        pages = pages.filter(page => page > 0)
+        pages = pages.filter(page => page >= 1)
         return <>
             {pages.map(page => {
                 if (page === this.state.page) {
                     return <>
-                        <this.SubPage onClick={() => this.sendGetRequestAndSetNewPage(page)} style={{ fontSize: "30px", border: "solid 1px", padding: "5px" }}>{page}</this.SubPage>
+                        <this.SubPage style={{ fontSize: "30px", border: "solid 1px", padding: "5px" }}>{page}</this.SubPage>
                     </>
                 }
                 else {
@@ -225,15 +222,15 @@ class IndexPage extends React.Component {
             color = 'green';
             rating = '+' + story.rating
         }
-        if (story.rating < 0) 
+        if (story.rating < 0)
             color = 'red';
 
-        let info = this.state.UserInfoList.find(ui => ui.userId == story.userId) || ''
+        let info = this.state.UserInfoList.find(ui => ui.userId === story.userId) || this.state.UserInfoList.find(ui => ui.userId === this.emptyGuid) 
         story.firstPartBody = this.cutStoryBody(story.firstPartBody) || story.firstPartBody;
         return <>
             <this.Signature>
-                <this.Avatar src={`data:image/jpeg;base64,${info.avatarBase64}`} width="40px" height="40px" onClick={this.handleAuthorClick} />
-                <Typography variant="subtitle2">By <this.Login id={story.userId} onClick={this.handleAuthorClick}>{info.userLogin || 'Unknown'}</this.Login> {story.dateSubmitted}</Typography>
+                <this.Avatar src={`data:image/jpeg;base64,${info?.avatarBase64}`} width="40px" height="40px" onClick={this.handleAuthorClick} />
+                <Typography variant="subtitle2">By <this.Login id={story.userId} onClick={this.handleAuthorClick}>{info?.userLogin || 'Unknown'}</this.Login> {story.dateSubmitted}</Typography>
             </this.Signature>
             <this.StoryBlock id={story.userId} onClick={() => this.props.history.push(`story${story.id}`)}>
                 <Typography variant='h5' style={{ wordBreak: "break-all" }}>{story.title}</Typography>
@@ -247,7 +244,7 @@ class IndexPage extends React.Component {
 
     render() {
         return (
-            <this.Wraper>
+            <Wrapper>
                 {renderMessage(this.state.message.body, this.state.message.type)}
                 <Popper open={this.state.popper.open} anchorEl={this.state.popper.anchorEL}>
                     <UserInfoWindow userId={this.state.popper.userId} />
@@ -255,7 +252,7 @@ class IndexPage extends React.Component {
                 </Popper>
                 <Typography variant="button">Sort by: </Typography>
                 <Select
-                    style={{ width: "5%" }}
+                    style={{ width: "100px" }}
                     labelId="select"
                     id="select"
                     value={this.state.sortBy}
@@ -271,7 +268,7 @@ class IndexPage extends React.Component {
                 {<Button variant="contained" color="primary" onClick={() => this.sendGetRequestAndSetNewPage(this.state.page - 1)}>Prev</Button>}
                 {this.renderPageSelection()}
                 {<Button variant="contained" color="primary" onClick={() => this.sendGetRequestAndSetNewPage(this.state.page + 1)}>Next</Button>}
-            </this.Wraper>);
+            </Wrapper>);
     }
 }
 

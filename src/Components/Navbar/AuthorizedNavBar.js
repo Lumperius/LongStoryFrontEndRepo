@@ -77,7 +77,7 @@ class AuthorizedNavBar extends React.Component {
   Avatar = styled.img`
   border-style: solid;
   border-width: 2px;
-  display:inline;
+  display: inline;
   float: right;
   margin: 0px;
   margin-right: 10px;
@@ -88,8 +88,7 @@ class AuthorizedNavBar extends React.Component {
   display: block;
   &:hover {
     cursor: pointer;
-  }
-  `;
+  }`;
 
   componentDidMount() {
     if (!this.props.token)
@@ -154,7 +153,7 @@ class AuthorizedNavBar extends React.Component {
   render() {
     return (
       <nav>
-        <this.NavBarList style={{ backgroundColor: this.props.theme.palette.primary.dark }}>
+        <this.NavBarList style={{ backgroundColor: this.props.theme.palette.primary.main }}>
           <this.NavBarListElement style={{ fontWeight: "600" }}>
             <this.NavBarLogo
              src={logo}

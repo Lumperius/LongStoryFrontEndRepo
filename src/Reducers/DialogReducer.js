@@ -26,17 +26,18 @@ export default function dialogReducer(state = initialState, action) {
             }
         case 'ADD_UNREAD_MESSAGE':
             let newUnreadMessages = [...state.UnreadMessages];
-            if(!newUnreadMessages.find(messUser => messUser === action.payload))
+            if (!newUnreadMessages.find(messUser => messUser === action.payload))
                 newUnreadMessages.push(action.payload);
             return { ...state, UnreadMessages: newUnreadMessages }
         case 'REMOVE_UNREAD_MESSAGE':
             let PrevUnreadMessages = [...state.UnreadMessages];
             let index = PrevUnreadMessages.findIndex(messUser => messUser === action.payload);
-            if (typeof(index) === 'number' && index !== -1)
+            if (typeof (index) === 'number' && index !== -1)
                 PrevUnreadMessages.splice(index, 1);
             return { ...state, UnreadMessages: PrevUnreadMessages }
+        default:
+            return state;
     }
-    return state;
 }
 
 

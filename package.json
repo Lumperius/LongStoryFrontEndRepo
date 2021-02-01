@@ -6,7 +6,7 @@
     "@material-ui/icons": "^4.11.2",
     "@microsoft/signalr": "^5.0.1",
     "@reduxjs/toolkit": "^1.4.0",
-    "@stripe/react-stripe-js": "^1.1.2",
+    "@stripe/react-stripe-js": "^1.2.1",
     "@stripe/stripe-js": "^1.11.0",
     "@testing-library/jest-dom": "^5.11.5",
     "@testing-library/react": "^11.1.0",

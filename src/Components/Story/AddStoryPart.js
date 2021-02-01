@@ -1,15 +1,13 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig';
 import { connect } from 'react-redux';
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import renderMessage from '../../message';
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState, convertToRaw } from 'draft-js';
+import { EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 
 
@@ -41,17 +39,6 @@ class AddStoryPart extends React.Component {
     ErrorMessage = styled.p`
     color: red;
     font-size: 14px;
-    `;
-    Wraper = styled.div`
-    text-align:left;
-    margin-top: 1500px;
-    margin:10px;
-    padding: 30px;
-    font-size: 28px;
-    border-style: solid;
-    border-width:1px;
-    border-color: dark;
-    background-color: white:
     `;
 
 
@@ -99,7 +86,7 @@ class AddStoryPart extends React.Component {
                 console.log(error);
                 this.setState({
                     message: {
-                        body: error.data || [],
+                        body: 'Error ocured while submitting story part',
                         type: 'error'
                     }
                 })

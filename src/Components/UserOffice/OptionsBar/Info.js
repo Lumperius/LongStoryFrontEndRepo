@@ -33,10 +33,10 @@ class Info extends React.Component {
             .min(8, 'This login is too short, 8 symbols is minimum')
             .max(16, 'This login is too long, 16 symbols maximum'),
         firstName: Yup.string()
-            .min(1, 'Name must contain 1 syblom at least')
+            .min(1, 'Name must contain 1 symbol at least')
             .max(32, 'Name can\'t be longer than 32 symbols'),
         lastName: Yup.string()
-            .min(1, 'Name must contain 1 syblom at least')
+            .min(1, 'Name must contain 1 symbol at least')
             .max(32, 'Name can\'t be longer than 32 symbols'),
         birthday: Yup.date().transform((value, originalValue) => {
             value = originalValue.toISOString;
@@ -120,7 +120,7 @@ class Info extends React.Component {
             .catch(error => {
                 this.setState({
                     message: {
-                        body: error.data,
+                        body: 'Error occured while downloading user information',
                         type: 'error'
                     }
                 })
@@ -161,7 +161,7 @@ class Info extends React.Component {
             .catch(error => {
                 this.setState({
                     message: {
-                        body: error.data,
+                        body: 'Error occured while updating entries',
                         type: 'error'
                     }
                 })
@@ -171,15 +171,15 @@ class Info extends React.Component {
     renderAvatarSelection = () => {
         if (this.state.avatar) {
             return <form onSubmit={this.handleSubmit}>
-                <img src={this.state.avatarPath} width="40px" height="40px" /><br />
-                <TextField id="image" type="file" label="Change avatar" accept="image/png, image/jpeg" onChange={this.handleImageChange} /><br />
+                <img src={this.state.avatarPath} width="40px" height="40px"  alt="Not loaded" /><br />
+                <TextField id="image" type="file" label="Change avatar" accept="image/png, image/jpeg"onChange={this.handleImageChange} /><br />
                 <Button variant="contained" color="primary" type="submit" style={{margin: "10px"}} on>Change avatar</Button>
             </form>
         }
         if (this.props.avatar) {
             return <form onSubmit={this.handleSubmit}>
                 <Typography variant="subtitle1">CURRENT AVATAR</Typography>
-                <img src={`data:image/jpeg;base64,${this.props.avatar}`} width="40px" height="40px" /><br />
+                <img src={`data:image/jpeg;base64,${this.props.avatar}`} width="40px" height="40px" alt="Not loaded"/><br />
                 <TextField id="image" type="file" label="Change avatar" accept="image/png, image/jpeg" onChange={this.handleImageChange} /><br />
             </form>
         }
@@ -188,7 +188,6 @@ class Info extends React.Component {
     render() {
         return (
             <>
-                <Typography variant='h4' align='left' style={{ margin: "30px" }} gutterBottom >Registration</Typography >
                 <Formik
                     initialValues={{
                         login: '',
@@ -203,16 +202,15 @@ class Info extends React.Component {
                 >
                     {({ errors, touched }) => (
                         <Form>
-                            <Typography variant="title1">Your info</Typography><br /><br />
                             <Typography variant="subtitle1" >LOGIN: {this.state.info.login}</Typography>
-                            <FormikTextField name="login" type="text" label="Change login" style={{ width: "20%" }} /><br />
+                            <FormikTextField name="login" type="text" label="Change login" style={{ width: "20%" }} /><br /><br />
                             <Typography variant="subtitle1">EMAIL: {this.state.info.email}</Typography>
-                            <Typography variant="subtitle1">ROLE: {this.state.info.role}</Typography>
+                            <Typography variant="subtitle1">ROLE: {this.state.info.role}</Typography><br />
                             <Typography variant="subtitle1">FIRST AND SECOND NAME: {this.state.info.firstName} {this.state.info.lastName}</Typography>
                             <FormikTextField name="firstName" label="First name" type="text" style={{ width: "20%" }} /><br />
                             <FormikTextField name="lastName" label="Last name" type="text" style={{ width: "20%" }} /><br /><br />
                             <Typography variant="subtitle1">BIRTHDAY: {this.state.info.birthDay}</Typography>
-                            <FormikTextField name="birthday" type="date" style={{ width: "10%" }} /><br />
+                            <FormikTextField name="birthday" type="date" style={{ width: "10%" }} /><br /><br />
                             <Typography variant="subtitle1">REGISTERED: {this.state.info.dateRegistered}</Typography>
                             {renderMessage(this.state.message.body, this.state.message.type)}
                             <Button variant="contained" color="primary" type="submit" style={{margin: "10px"}}>Edit</Button><hr />

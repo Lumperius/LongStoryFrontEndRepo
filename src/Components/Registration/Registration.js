@@ -7,6 +7,8 @@ import renderMessage from '../../message';
 import { Formik, Form} from 'formik';
 import * as Yup from 'yup';
 import { FormikTextField } from 'formik-material-fields';
+import Wrapper from '../../objects';
+
 
 class Registration extends React.Component {
 
@@ -38,17 +40,6 @@ class Registration extends React.Component {
     });
 
 
-    Wraper = styled.div`
-    text-align:left;
-    margin-top: 1500px;
-    margin:10px;
-    padding: 30px;
-    font-size: 28px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: dark;
-    background-color: white;
-    `;
     SubmitButton = styled.button`
     background-color: #333; 
     border: none;
@@ -95,19 +86,10 @@ class Registration extends React.Component {
 
     };
 
-    renderMessage = () => {
-        switch (this.state.message.type) {
-            case 'error':
-                return <Typography variant="subtitle1" style={{ color: "red" }}>{this.state.message.body}</Typography>
-            case 'info':
-                return <Typography variant="subtitle1">{this.state.message.body}</Typography>
-        }
-    }
-
 
     render() {
         return (
-            <this.Wraper>
+            <Wrapper>
                 <Typography variant='h4' align='left' style={{ margin: "30px" }} gutterBottom >Registration</Typography >
                 <Formik
                     initialValues={{
@@ -134,7 +116,7 @@ class Registration extends React.Component {
                     )}
                 </Formik>
                 <this.RegistrationLink href="/authentication">Already have an account?</this.RegistrationLink>
-            </this.Wraper>
+            </Wrapper>
         );
     }
 }

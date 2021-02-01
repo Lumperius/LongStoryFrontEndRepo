@@ -4,10 +4,10 @@ import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../message';
-import axiosSetUp from '../../axiosConfig';
 import * as signalR from "@microsoft/signalr";
-import TextField from '@material-ui/core/TextField';
 import Input from '@material-ui/core/Input';
+import connectToHub from '../../hubConnection';
+import Wrapper from '../../objects';
 
 
 class ChatHub extends React.Component {
@@ -23,16 +23,9 @@ class ChatHub extends React.Component {
         }
     }
 
-    Wraper = styled.div`
-    text-align:left;
-    margin:10px;
-    padding: 30px;
-    font-size: 28px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: dark;
-    background-color: white;
-    `;
+    //Connection to web socket
+    hubConnection;
+
     MessageWrapper = styled.div`
     text-align:left;
     width: 100%;
@@ -49,22 +42,13 @@ class ChatHub extends React.Component {
     margin: 0px;
     `;
 
-    hubConnection = new signalR.HubConnectionBuilder()
-        .withUrl('http://localhost:5002/messenger/chatroom', {
-            skipNegotiation: true,
-            transport: signalR.HttpTransportType.WebSockets,
-        })
-        .build();
 
     componentDidMount() {
         if (!this.props.token)
             this.props.history.push('authentication');
-        this.connectToHub();
-    }
-
-    connectToHub = () => {
-        if (this.hubConnection.state === signalR.HubConnectionState.Connected) {
-            this.hubConnection.start();
+        (async () => {
+            this.hubConnection = await connectToHub('http://localhost:5002/messenger/chatroom')
+        })().then(() => {
             this.hubConnection.on('Message', recievedMessage => {
                 let message = JSON.parse(recievedMessage);
                 message.timePosted = new Date(message.timePosted).toLocaleTimeString() + ' ' +
@@ -73,11 +57,9 @@ class ChatHub extends React.Component {
                 state.MessageList.unshift(message);
                 this.setState(state)
             })
-        }
-        else {
-            setTimeout(() => this.connectMessageRecievedHandler, 10000)
-        }
+        })
     }
+
 
     handleChange = (event) => {
         this.setState({
@@ -94,15 +76,36 @@ class ChatHub extends React.Component {
                 timePosted: Date.now()
             };
             JSON.stringify()
-            this.hubConnection.invoke('PublishMessage', JSON.stringify(messageObject))
-                .then(message => {
-                    this.setState({
-                        messageText: ''
+            if (this.hubConnection.state === signalR.HubConnectionState.Connected) {
+                this.hubConnection.invoke('PublishMessage', JSON.stringify(messageObject))
+                    .then(message => {
+                        this.setState({
+                            messageText: ''
+                        })
                     })
+                    .catch(error => {
+                        (async () => {
+                            this.hubConnection = await connectToHub('http://localhost:5002/messenger/chatroom')
+                        })()
+                        this.setState({
+                            message: {
+                                body: 'There was an error while sending the message. Try again later.',
+                                type: 'error'
+                            }
+                        })
+                    })
+            }
+            else{
+                (async () => {
+                    this.hubConnection = await connectToHub('http://localhost:5002/messenger/chatroom')
+                })()
+                this.setState({
+                    message: {
+                        body: 'Error with connection occured. Try again later.',
+                        type: 'error'
+                    }
                 })
-                .catch(error => {
-                    console.log(error.toString())
-                })
+    }
         }
         else {
             this.setState({
@@ -129,7 +132,7 @@ class ChatHub extends React.Component {
     }
 
     render() {
-        return (<this.Wraper style={{ height: "90vh", overflowY: "auto" }} >
+        return (<Wrapper style={{ height: "90vh", overflowY: "auto" }} >
             {this.state.MessageList.map(message => {
                 return <>
                     {this.renderMessage(message)}
@@ -144,7 +147,7 @@ class ChatHub extends React.Component {
                 style={{ width: "20vw" }} />
             {renderMessage(this.state.message.body, this.state.message.type)}<br />
             <Button type="submit" onClick={this.handleSubmit} id="button"> Send </Button>
-        </this.Wraper>)
+        </Wrapper>)
     }
 }
 

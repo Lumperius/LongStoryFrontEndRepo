@@ -54,7 +54,7 @@ class UserStories extends React.Component {
             .catch(error => {
                 this.setState({
                     message: {
-                        body: error.data,
+                        body: 'Error occured while downloading data',
                         type: 'error'
                     }
                 })
@@ -74,7 +74,7 @@ class UserStories extends React.Component {
                             {this.renderStory(story)}
                         </>
                     })}</>
-            case 'storyParts':
+            default:
                 return <>
                     {this.state.storyPartsList.map((storyPart) => {
                         return <>

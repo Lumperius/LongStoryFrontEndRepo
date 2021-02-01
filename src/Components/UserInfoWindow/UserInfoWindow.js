@@ -1,12 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Button from '@material-ui/core/Button';
-import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
-import Popper from '@material-ui/core/Popper';
 import renderMessage from '../../message';
 import axiosSetUp from '../../axiosConfig';
 import setDialog from '../../Actions/setDialog'
+import Wrapper from '../../objects';
 
 class UserInfoWindow extends React.Component {
     constructor() {
@@ -20,17 +18,6 @@ class UserInfoWindow extends React.Component {
             }
         }
     }
-
-    Wraper = styled.div`
-    text-align: left;
-    margin: 30px;
-    padding: 20px;
-    font-size: 28px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: black;
-    background-color: white;
-    `;
 
 
     componentDidMount() {
@@ -56,7 +43,7 @@ class UserInfoWindow extends React.Component {
                 this.setState({
                     userInfo:  null,
                     message: {
-                        body: error.data.title,
+                        body: 'Error occured while downloading user information',
                         type: 'error'
                     }
                 })
@@ -105,9 +92,9 @@ class UserInfoWindow extends React.Component {
 
     render() {
         return (
-            <this.Wraper>
+            <Wrapper>
                 {this.renderUserInfo()}
-            </this.Wraper>
+            </Wrapper>
         )
     }
 }

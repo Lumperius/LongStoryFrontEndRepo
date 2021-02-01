@@ -2,8 +2,6 @@ import React from 'react'
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import setToken from '../../Actions/setToken';
-import setAvatar from '../../Actions/setToken';
-import setDialog from '../../Actions/setToken';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Dialog from '@material-ui/core/Dialog';
@@ -29,8 +27,6 @@ class Logout extends React.Component {
     handleConfirm = () => {
         localStorage.removeItem('Token');
         this.props.setToken(null);
-        // this.props.setAvatar(null);
-        // this.props.setDialog(null);
         history.push('/');
     }
 
@@ -77,8 +73,6 @@ class Logout extends React.Component {
 const mapDispatchToProps = dispatch => {
     return {
         setToken: token => dispatch(setToken(token)),
-        // setDialog: dialog => dispatch(setDialog(dialog)),
-        // setAvatar: avatar => dispatch(setAvatar(avatar))
     };
 };
 

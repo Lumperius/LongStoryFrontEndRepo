@@ -9,6 +9,8 @@ export default function renderMessage(message, type) {
             return <Typography variant="subtitle1" style={{ color: "black" }}>{message}</Typography>
         case 'success':
             return <Typography variant="subtitle1" style={{ color: "green" }}>{message}</Typography>
+        default:
+            return null
     }
 }
 

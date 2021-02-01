@@ -1,9 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Button from '@material-ui/core/Button';
-import styled from 'styled-components';
-import Typography from '@material-ui/core/Typography';
 import renderMessage from '../message';
+import Wrapper from '../objects';
 
 class Template extends React.Component {
     constructor() {
@@ -16,17 +14,6 @@ class Template extends React.Component {
         }
     }
 
-    Wraper = styled.div`
-    text-align: left;
-    margin: 10px;
-    padding: 30px;
-    font-size: 28px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: dark;
-    background-color: white;
-    `;
-
 
     componentDidMount() {
 
@@ -34,10 +21,10 @@ class Template extends React.Component {
 
 
     render() {
-        return (<this.Wraper>
+        return (<Wrapper>
             {renderMessage(this.state.message.body, this.state.message.type)}
             Template
-        </this.Wraper>)
+        </Wrapper>)
     }
 }
 

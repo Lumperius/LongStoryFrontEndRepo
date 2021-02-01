@@ -4,13 +4,11 @@ import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../message';
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import axiosSetUp from '../../axiosConfig';
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
-import { stateToHTML } from 'draft-js-export-html';
-import draftToHtml from 'draftjs-to-html';
+import Wrapper from '../../objects';
 
 
 class Comments extends React.Component {
@@ -27,16 +25,6 @@ class Comments extends React.Component {
         }
     }
 
-    Wraper = styled.div`
-    text-align:left;
-    margin: 30px;
-    padding: 20px;
-    font-size: 28px;
-    border-style: solid;
-    border-width:1px;
-    border-color: lightgrey;
-    background-color: lightgrey;
-    `;
     CommentWrapper = styled.div`
     margin: 10px;
     padding: 20px;
@@ -83,7 +71,7 @@ class Comments extends React.Component {
             .catch(error => {
                 this.setState({
                     message: {
-                        body: error.data,
+                        body: 'Error occured while sending the comment',
                         type: 'error'
                     }
                 })
@@ -94,7 +82,7 @@ class Comments extends React.Component {
     sendGetUserInfoRequest = () => {
         let userIdList = [];
         this.state.Comments.forEach(comment => {
-            if (!userIdList.find(id => id == comment.userId))
+            if (!userIdList.find(id => id === comment.userId))
                 userIdList.push(comment.userId);
         })
         let jsonIds = JSON.stringify(userIdList);
@@ -108,7 +96,7 @@ class Comments extends React.Component {
                 console.log('Failed', error)
                 this.setState({
                     message: {
-                        body: error.data || '',
+                        body: 'Error occured while downloading entries',
                         type: 'error'
                     }
                 })
@@ -126,7 +114,7 @@ class Comments extends React.Component {
             .catch(error => {
                 this.setState({
                     message: {
-                        body: error.data,
+                        body: 'Error occured while downloading entries',
                         type: 'error'
                     }
                 })
@@ -143,13 +131,13 @@ class Comments extends React.Component {
     renderComments = () => {
         return <>
             {this.state.Comments.map(comment => {
-                let userInfo = this.state.UserInfoList.find(ui => ui.userId == comment.userId) || []
+                let userInfo = this.state.UserInfoList.find(ui => ui.userId === comment.userId) || []
 
                 try   { EditorState.createWithContent(convertFromRaw(JSON.parse(comment.body))) }
                 catch {
                     return <div style={{ backgroundColor: "white", margin: "20px",  padding: "35px", paddingTop: "0px"}}>
                         <this.CommentWrapper>{comment.body}</this.CommentWrapper>
-                        <img src={`data:image/jpeg;base64,${userInfo.avatarBase64}`}
+                        <img src={`data:image/jpeg;base64,${userInfo.avatarBase64}`} alt="Not loaded"
                             style={{ float: 'right', marginTop: "0px", marginLeft: "10px" }} width="30px" aling="bottom" vspace="10px" />
                         <Typography variant="subtitle1" style={{ float: "right", wordBreak: "break-all" }}>
                             {userInfo.userLogin || undefined} at {comment.datePosted || undefined}
@@ -163,8 +151,8 @@ class Comments extends React.Component {
                         editorState={EditorState?.createWithContent(convertFromRaw(JSON.parse(comment.body) || null)) || null}
                     />
                     <span style={{ marginTop: "-20px" }}>
-                        <img src={`data:image/jpeg;base64,${userInfo.avatarBase64}`}
-                            style={{ float: 'right', marginTop: "0px", marginLeft: "10px" }} width="30px" aling="bottom" vspace="10px" />
+                        <img src={`data:image/jpeg;base64,${userInfo.avatarBase64}`} style={{ float: 'right', marginTop: "0px", marginLeft: "10px" }}
+                        width="30px" aling="bottom" vspace="10px"  alt="Not loaded"/>
                         <Typography variant="subtitle1" style={{ float: "right", wordBreak: "break-all" }}>
                             {userInfo.userLogin || undefined} at {comment.datePosted || undefined}
                         </Typography>
@@ -176,15 +164,22 @@ class Comments extends React.Component {
 
 
     render() {
-        return (<this.Wraper>
+        return (<Wrapper>
             <Typography variant="h4">Commentaries</Typography>
             <a href="#addComment"><Typography variant="caption" id="Comments">Add a comment</Typography></a>
             {this.renderComments()}
-            <this.EditorWraper><Editor name="body" onEditorStateChange={this.onEditorStateChange} style={{ backgroundColor: "white" }} /></this.EditorWraper>
+            <this.EditorWraper><Editor 
+            name="body"
+            onEditorStateChange={this.onEditorStateChange}
+            style={{ backgroundColor: "white" }}
+            toolbar={{
+                option: ['inline','link','list']
+            }} />
+            </this.EditorWraper>
             <Typography variant="subtitle2" id="addComment">{this.state.editorState.getCurrentContent().getPlainText().length}/1000</Typography>
             {renderMessage(this.state.message.body, this.state.message.type)}
             <Button color="primary" variant="contained" onClick={this.sendPostCommentRequest}>submit</Button><br />
-        </this.Wraper>)
+        </Wrapper>)
     }
 }
 

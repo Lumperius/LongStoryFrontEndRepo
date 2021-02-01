@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig';
 import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button'
-import Typography from '@material-ui/core/Typography'
 import {Table, TableRow, TableCell, TableHead, TableBody}from '@material-ui/core';
 import renderMessage from '../../message';
+import Wrapper from '../../objects';
 
 class Admin extends React.Component {
 
@@ -44,17 +44,6 @@ class Admin extends React.Component {
     `;
     Row = styled.tr`
     background-color: lightgrey;
-    `;
-    Wraper = styled.div`
-    text-align:left;
-    margin-top: 1500px;
-    margin:10px;
-    padding: 30px;
-    font-size: 28px;
-    border-style: solid;
-    border-width:1px;
-    border-color: dark;
-    background-color: white
     `;
     DeleteButton = styled.button`
     background-color: red;
@@ -98,20 +87,20 @@ class Admin extends React.Component {
 
     sendRequestAndSetNewPage = (page = this.state.page) => {
         if (page < 1) return;
-        axiosSetUp().get(`http://localhost:5002/user/getpage?page=${page - 1}&count=${this.state.pageSize}`)
+        axiosSetUp().get(`http://localhost:5002/user/getpage?page=${page}&count=${this.state.pageSize}`)
             .then((response) => {
                 this.setState({
                     List: [],
                 });
                 this.setState({
-                    List: response.data || [],
-                    page: page
+                    List: response.data.users || [],
+                    page: response.page || page
                 })
             })
             .catch((ex) => {
                 this.setState({
                     message: {
-                        body: ex.data || [],
+                        body: 'Error occured while downloading users',
                         type: 'error'
                     }
                 })
@@ -134,7 +123,7 @@ class Admin extends React.Component {
             .catch((ex) => {
                 this.setState({
                     message: {
-                        body: ex.data || [],
+                        body: 'Operation failed',
                         type: 'error'
                     }
                 })
@@ -160,7 +149,7 @@ class Admin extends React.Component {
         .catch(error => {
             this.setState({
                 message: {
-                    body: error.data,
+                    body: 'Operation failed',
                     type: 'error'
                 }
             })
@@ -192,7 +181,7 @@ class Admin extends React.Component {
 
     render() {
         return (
-            <this.Wraper>
+            <Wrapper>
                 <Table style={{ width: "100%" }}>
                     <TableHead style={{ backgroundColor: "grey" }}>
                         <TableRow >
@@ -210,7 +199,7 @@ class Admin extends React.Component {
                 <this.Page>{this.state.page}</this.Page>
                 {<Button variant="contained" color="primary" onClick={() => this.sendRequestAndSetNewPage(this.state.page + 1)}>Next</Button>}
                 {renderMessage(this.state.message.body, this.state.message.type)}
-            </this.Wraper>
+            </Wrapper>
         )
     }
 }

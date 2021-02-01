@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import NavBar from './Components/Navbar/NavBar';
 import AuthorizedNavBar from './Components/Navbar/AuthorizedNavBar';
 import Authentication from './Components/Authentication/Authentication';
@@ -21,6 +21,7 @@ import PrivateDialog from './Components/PrivateChat/PrivateDialog';
 import StorySelection from './Components/Books/ComposeBook/StorySelection';
 import BookPage from './Components/Books/BookPage';
 import Book from './Components/Books/Book';
+import OrderBook from './Components/Books/OrderBook';
 
 
 class App extends React.Component {
@@ -47,21 +48,22 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="App" style={{ backgroundColor: "#CCCCCC", paddingBottom: "20px"}} >
+      <div className="App">
         {this.renderNavBar()}
         <Router history={history}>
           <Route exact path="/" component={Welcome} />
           <Route exact path="/admin" component={Admin} />
           <Route exact path="/authentication" component={Authentication} />
           <Route exact path="/chat" component={ChatHub} />
-          <Route exact path="/books" component={BookPage} />
-          <Route exact path="/books/composeBook" component={StorySelection} />
           <Route exact path="/intializeStory" component={InitializeStory} />
           <Route exact path="/logout" component={Logout} />
           <Route exact path="/registration" component={Registration} />
           <Route exact path="/office" component={Office} />
           <Route exact path="/story:id" component={Story} />
           <Route exact path="/books/book:id" component={Book} />
+          <Route exact path="/books" component={BookPage} />
+          <Route exact path="/books/composeBook" component={StorySelection} />
+          <Route exact path="/books/orderBook:id" component={OrderBook} />
         </Router>
         {this.renderMessenger()}
       </div>

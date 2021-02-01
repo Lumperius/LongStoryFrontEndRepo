@@ -46,7 +46,7 @@ class NavBar extends React.Component {
 
   render() {
     return (
-      <this.NavBarList style={{backgroundColor: this.props.theme.palette.primary.dark}}>
+      <this.NavBarList style={{backgroundColor: this.props.theme.palette.primary.main}}>
         <this.NavBarListElement style={{float: "left", borderStyle: "none"}}>
         <this.NavBarLogo
              src={logo}

@@ -11,6 +11,7 @@ import setAvatar from '../../Actions/setAvatar';
 import renderMessage from '../../message';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
+import Wrapper from '../../objects';
 
 
 class Authentication extends React.Component {
@@ -32,16 +33,6 @@ class Authentication extends React.Component {
         .required('Required'),
     });
 
-    Wraper = styled.div`
-    text-align:left;
-    margin:10px;
-    padding: 30px;
-    font-size: 28px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: dark;
-    background-color: white;
-    `;
     SubmitButton = styled.button`
     background-color: #333; 
     border: none;
@@ -136,7 +127,7 @@ class Authentication extends React.Component {
 
     render() {
         return (
-            <this.Wraper>
+            <Wrapper>
                 <Typography variant='h4' align='left' style={{ margin: "30px" }} gutterBottom >Login</Typography >
                 <Formik
                     initialValues={{
@@ -161,7 +152,7 @@ class Authentication extends React.Component {
                     )}
                 </Formik>
                 <this.Link style={{ color: "blue" }} href="/registration">Not registered?</this.Link>
-            </this.Wraper>
+            </Wrapper>
         );
     }
 }

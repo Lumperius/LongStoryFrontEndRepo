@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../message';
 import axiosSetUp from '../../axiosConfig';
+import Wrapper from '../../objects';
 
 class Books extends React.Component {
     constructor() {
@@ -22,16 +23,6 @@ class Books extends React.Component {
         }
     }
 
-    Wraper = styled.div`
-    text-align: left;
-    margin: 10px;
-    padding: 30px;
-    font-size: 28px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: dark;
-    background-color: white;
-    `;
     StoryTitle = styled.span`
     display: inline;
     marginBottom: -10px;
@@ -60,8 +51,8 @@ class Books extends React.Component {
 
     sendGetBookPageRequest = (page = this.state.page, displayAll = this.state.displayAllBooks) => {
         let url = `http://localhost:5002/book/GetPageOfBooks?page=${page}&count=${this.state.count}`
-        if(!displayAll)
-        url += `&userId=${this.props.token.id}`
+        if (!displayAll)
+            url += `&userId=${this.props.token.id}`
         axiosSetUp().get(url)
             .then(response => {
                 this.setState({
@@ -73,7 +64,7 @@ class Books extends React.Component {
             .catch(error => {
                 this.setState({
                     message: {
-                        body: error.message,
+                        body: 'Error occured while downloading books',
                         type: 'error'
                     }
                 })
@@ -83,7 +74,7 @@ class Books extends React.Component {
     sendGetUserInfoRequest = () => {
         let authorIdList = [];
         this.state.BookList.forEach(book => {
-            if (!authorIdList.find(id => id == book.authorId))
+            if (!authorIdList.find(id => id === book.authorId))
                 authorIdList.push(book.authorId);
         })
         let jsonIds = JSON.stringify(authorIdList);
@@ -97,7 +88,7 @@ class Books extends React.Component {
                 console.log('Failed', error)
                 this.setState({
                     message: {
-                        body: error.data || '',
+                        body: 'Error occured while downloading entries',
                         type: 'error'
                     }
                 })
@@ -110,7 +101,7 @@ class Books extends React.Component {
         if (this.state.displayAllBooks) {
             displayAllBooks = false;
         }
-        else{
+        else {
             displayAllBooks = true;
         }
         this.setState({
@@ -146,33 +137,33 @@ class Books extends React.Component {
     renderModeButton = () => {
         if (this.state.displayAllBooks)
             return <Button variant="outlined" onClick={this.handleModeButtonClick}>
-                <span style={{fontWeight: "800"}}>All books</span>/<span style={{fontWeight: "300"}}>Your books</span></Button>
+                <span style={{ fontWeight: "800" }}>All books</span>/<span style={{ fontWeight: "300" }}>Your books</span></Button>
         else
             return <Button variant="outlined" onClick={this.handleModeButtonClick}>
-                <span style={{fontWeight: "300"}}>All books</span>/<span style={{fontWeight: "800"}}>Your books</span></Button>
+                <span style={{ fontWeight: "300" }}>All books</span>/<span style={{ fontWeight: "800" }}>Your books</span></Button>
     }
 
     renderABook = (book, index) => {
         let authorLogin = this.state.Authors?.find(author => author.userId === book.authorId)?.userLogin || 'Undefined'
         return <div style={{ padding: "5px" }}>
-            <this.StoryTitle onClick={() => this.props.history.push(`books/book${book.bookId}`)}>{index + 1 + (this.state.page-1)*this.state.count}: {book.title}</this.StoryTitle>
-            <Typography style={{ fontWeight: "300", fontSize: "14px", float: "right-bottom"}}>&nbsp;By {authorLogin}</Typography>
-            <Typography style={{ fontWeight: "300", fontSize: "14px", float: "right-bottom"}}> {book.dateCreated} </Typography><hr/>
+            <this.StoryTitle onClick={() => this.props.history.push(`books/book${book.bookId}`)}>{index + 1 + (this.state.page - 1) * this.state.count}: {book.title}</this.StoryTitle>
+            <Typography style={{ fontWeight: "300", fontSize: "14px", float: "right-bottom" }}>&nbsp;By {authorLogin}</Typography>
+            <Typography style={{ fontWeight: "300", fontSize: "14px", float: "right-bottom" }}> {book.dateCreated} </Typography><hr />
         </div>
     }
 
 
     render() {
-        return (<this.Wraper>
+        return (<Wrapper>
             <Button variant="contained" onClick={() => this.props.history.push('/books/composeBook')}
-             style={{float: "right"}} size="large">Compose new book</Button>
+                style={{ float: "right", marginLeft: "10px" }} size="large">Compose new book</Button>
             {this.renderModeButton()}<br />
             {this.state.BookList.map((book, index) => {
                 return <>{this.renderABook(book, index)}</>
             })}
             {renderMessage(this.state.message.body, this.state.message.type)}
             {this.renderPageSelection()}
-        </this.Wraper>)
+        </Wrapper>)
     }
 }
 

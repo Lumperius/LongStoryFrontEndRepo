@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import renderMessage from '../../message';
 import Comments from './Comments';
 import ReactHtmlParser from 'react-html-parser';
+import Wrapper from '../../objects';
 
 
 class Story extends React.Component {
@@ -37,17 +38,6 @@ class Story extends React.Component {
         }
     }
 
-    Wraper = styled.div`
-    text-align:left;
-    margin-top: 1500px;
-    margin: 10px;
-    padding: 30px;
-    font-size: 28px;
-    border-style: solid;
-    border-width:1px;
-    border-color: dark;
-    background-color: white;
-    `;
     Signature = styled.p`
     font-size: 14px;
     text-align: right;
@@ -91,7 +81,7 @@ class Story extends React.Component {
             .catch(error => {
                 this.setState({
                     message: {
-                        body: 'Unable to load story text. Try again later or contact administrator.',
+                        body: 'Error occured while downloading the story',
                         type: 'error'
                     }
                 })
@@ -125,7 +115,7 @@ class Story extends React.Component {
                 console.log(error);
                 this.setState({
                     message: {
-                        body: error.data,
+                        body: 'Error occured while downloading the story',
                         type: 'error'
                     }
                 })
@@ -154,7 +144,7 @@ class Story extends React.Component {
                 console.log('Failed', ex);
                 this.setState({
                     message: {
-                        body: ex.response.data,
+                        body: 'Error occured while sending the vote',
                         type: 'error'
                     }
                 })
@@ -179,7 +169,7 @@ class Story extends React.Component {
             .catch(error => {
                 this.setState({
                     message: {
-                        body: error.data,
+                        body: 'Unable to finish the story. Try again later or contact the administrator.',
                         type: 'error'
                     }
                 })
@@ -216,7 +206,7 @@ class Story extends React.Component {
                         <Typography>This story is being rated right now, you need to wait a little before you can submit new parts</Typography>
                         <CandidatesScroller storyId={this.state.story.id} /><br />
                     </>
-
+                default: <></>
             }
         }
         else {
@@ -239,7 +229,7 @@ class Story extends React.Component {
             return <Typography variant="subtitle1">You voted this story</Typography>
         }
         if (!this.props.token)
-            return /*<Typography variant="subtitle1">You voted this story</Typography>*/
+            return <Typography variant="subtitle1">Sign in to be able to vote stories</Typography>
         else {
             return <div>
                 <Button variant="contained" style={{ backgroundColor: "LimeGreen", margin: "10px" }} onClick={() => this.sendVoteRequest(true)}>Vote up</Button>
@@ -258,7 +248,7 @@ class Story extends React.Component {
 
 
     render() {
-        return <this.Wraper>
+        return <Wrapper>
             <Typography variant="h3" style={{wordBreak: "break-all"}}>{this.state.story.title}</Typography>
             <this.Signature>
                 <this.Rating>{this.state.story.rating}</this.Rating>
@@ -275,7 +265,7 @@ class Story extends React.Component {
             {this.renderEditor()}
             <Comments storyId={this.props.match.params.id} />
             {this.renderFinishStoryButton()}<br /><br />
-        </this.Wraper>
+        </Wrapper>
     }
 }
 
