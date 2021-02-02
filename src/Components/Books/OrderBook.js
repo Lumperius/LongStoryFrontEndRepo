@@ -122,25 +122,32 @@ class OrderBook extends React.Component {
         })
     }
 
-    handleClick = async (event) => {
+    handleSubmit = async (values) => {
         const body = {
             bookId: this.props.match.params.id,
             userId: this.props.token.id,
-            amount: 2,
+            amount: values.amount,
             bookFormat: this.state.format,
-            fontSize: this.state.fontSize,
+            fontSize: values.fontSize,
         }
 
         const stripe = await this.stripePromise;
-        const response = await axiosSetUp().post('http://localhost:5002/order/createOrder', body);
-        
-        const session = await response.data;
- debugger
-        const result = await stripe.redirectToCheckout({
-            sessionId: session.id,
-        });
-        debugger
-        console.log(result);
+        axiosSetUp().post('http://localhost:5002/order/createOrder', body)
+            .then(async response => {
+                const session = response.data;
+                const result = await stripe.redirectToCheckout({
+                    sessionId: session.id,
+                });
+                console.log(result);
+            })
+            .catch(error => {
+                this.setState({
+                    message: {
+                        body: 'Error while creating an order. Try again later.',
+                        type: 'error'
+                    }
+                })
+            });
     }
 
     computeSymbolsForPageExample = () => {
@@ -199,7 +206,7 @@ class OrderBook extends React.Component {
                 }}
                 validationSchema={this.ParametersSchema}
                 onSubmit={values => {
-                    this.sendOrderBookRequest(values)
+                    this.handleSubmit(values)
                 }}
             >
                 {({ errors, touched }) => (
@@ -217,9 +224,8 @@ class OrderBook extends React.Component {
                             <MenuItem value={'Medium'}>Medium format</MenuItem>
                             <MenuItem value={'Large'}>Large format</MenuItem>
                         </Select><br /><br />
-                        <Button variant="contained" color="primary" type="submit">Ыутв щквук</Button><br />
+                        <Button variant="contained" color="primary" type="submit">Create order</Button><br />
                         {renderMessage(this.state.message.body, this.state.message.type)}
-                        <Button variant="contained" color="primary" type="submit" onClick={() => this.handleClick()}>Check out</Button><br />
                     </Form>
                 )}
             </Formik><br />

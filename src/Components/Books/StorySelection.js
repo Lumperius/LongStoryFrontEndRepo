@@ -1,15 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import axiosSetUp from '../../../axiosConfig';
+import axiosSetUp from '../../axiosConfig';
 import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
-import renderMessage from '../../../message';
+import renderMessage from '../../message';
 import ReactHtmlParser from 'react-html-parser';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { FormikTextField } from 'formik-material-fields';
-import Wrapper from '../../../objects';
+import Wrapper from '../../objects.js';
 
 
 class StorySelection extends React.Component {
@@ -63,7 +63,7 @@ class StorySelection extends React.Component {
         }
 
         let MarkedStoryIdList = [];
-        this.state.StoryList.foreach(story => {
+        this.state.StoryList.map(story => {
             if (story?.isMarked) {
                 MarkedStoryIdList.push(story.id);
             }

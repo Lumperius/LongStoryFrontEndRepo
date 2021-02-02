@@ -18,10 +18,11 @@ import 'typeface-roboto'
 import { withTheme } from '@material-ui/core/styles';
 import ChatHub from './Components/ChatHub/ChatHub';
 import PrivateDialog from './Components/PrivateChat/PrivateDialog';
-import StorySelection from './Components/Books/ComposeBook/StorySelection';
+import StorySelection from './Components/Books//StorySelection';
 import BookPage from './Components/Books/BookPage';
 import Book from './Components/Books/Book';
 import OrderBook from './Components/Books/OrderBook';
+import SuccessOrder from './Components/Books/SuccessOrder';
 
 
 class App extends React.Component {
@@ -64,6 +65,7 @@ class App extends React.Component {
           <Route exact path="/books" component={BookPage} />
           <Route exact path="/books/composeBook" component={StorySelection} />
           <Route exact path="/books/orderBook:id" component={OrderBook} />
+          <Route exact path="/books/success" component={SuccessOrder} />
         </Router>
         {this.renderMessenger()}
       </div>
