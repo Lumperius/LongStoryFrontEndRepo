@@ -12,6 +12,7 @@ import ChatIcon from '@material-ui/icons/Chat';
 import Tooltip from '@material-ui/core/Tooltip';
 import setDialog from '../../Actions/setDialog';
 
+
 class AuthorizedNavBar extends React.Component {
 
   constructor() {
@@ -92,10 +93,10 @@ class AuthorizedNavBar extends React.Component {
 
   componentDidMount() {
     if (!this.props.token)
-    this.props.history.push('authentication');
+      this.props.history.push('authentication');
 
-    if(!this.props.avatar)
-    this.sendGetAvatarRequest();
+    if (!this.props.avatar)
+      this.sendGetAvatarRequest();
   }
 
   handleLogoClick = () => {
@@ -103,12 +104,16 @@ class AuthorizedNavBar extends React.Component {
   }
 
   handleIconClick = () => {
-    if(this.props.dialog.UnreadMessages.some(x=> x));
+    if (this.props.dialog.UnreadMessages.some(x => x));
     let dialog = {
       targetUser: this.props.dialog.UnreadMessages[0],
       open: true
     }
     this.props.setDialog(dialog)
+  }
+
+  handleButtonClick = (path) => {
+    history.push(path)
   }
 
   sendGetAvatarRequest = () => {
@@ -125,9 +130,9 @@ class AuthorizedNavBar extends React.Component {
   adminElement = () => {
     if (this.props.token.scope === 'Admin') {
       return (
-        <this.NavBarListElement>
+        <this.NavBarListElement
+          onClick={() => this.handleButtonClick("/admin")}>
           <NavBarButton linkInfo={{
-            link: "Admin",
             text: "Admin Page"
           }} />
         </this.NavBarListElement>
@@ -136,18 +141,18 @@ class AuthorizedNavBar extends React.Component {
   }
 
   renderUnreadNotification = () => {
-       if(this.props.dialog.UnreadMessages.some(x => x))
-       return <Tooltip title={
-       <div style={{fontSize: "14px", fontWeight: "300"}}>
-       You have {this.props.dialog.UnreadMessages.length} unread message(s).<br />
+    if (this.props.dialog.UnreadMessages.some(x => x))
+      return <Tooltip title={
+        <div style={{ fontSize: "14px", fontWeight: "300" }}>
+          You have {this.props.dialog.UnreadMessages.length} unread message(s).<br />
        Click to see next.
        </div>}>
-       <ChatIcon 
-       style={{color: "orange", float: "right", margin: "9px", marginRight: "20px"}}
-       fontSize="large"
-       onClick={this.handleIconClick}
-       />
-       </Tooltip>
+        <ChatIcon
+          style={{ color: "orange", float: "right", margin: "9px", marginRight: "20px" }}
+          fontSize="large"
+          onClick={this.handleIconClick}
+        />
+      </Tooltip>
   }
 
   render() {
@@ -156,35 +161,37 @@ class AuthorizedNavBar extends React.Component {
         <this.NavBarList style={{ backgroundColor: this.props.theme.palette.primary.main }}>
           <this.NavBarListElement style={{ fontWeight: "600" }}>
             <this.NavBarLogo
-             src={logo}
-             width="auto"
-             onClick={this.handleLogoClick}/>
+              src={logo}
+              width="auto"
+              onClick={this.handleLogoClick}
+            />
           </this.NavBarListElement>
 
-          <this.NavBarListElement>
+          <this.NavBarListElement
+            onClick={() => this.handleButtonClick("/office")}>
             <NavBarButton linkInfo={{
-              link: "Office",
-              text: "Your office"
-            }} />
+              text: "Your office",
+            }}
+            />
           </this.NavBarListElement>
 
-          <this.NavBarListElement>
+          <this.NavBarListElement
+            onClick={() => this.handleButtonClick("/storyInit")}>
             <NavBarButton linkInfo={{
-              link: "IntializeStory",
               text: "Start a story"
             }} />
           </this.NavBarListElement>
 
-          <this.NavBarListElement>
+          <this.NavBarListElement
+            onClick={() => this.handleButtonClick("/books")}>
             <NavBarButton linkInfo={{
-              link: "/books",
               text: "Books"
             }} />
           </this.NavBarListElement>
 
-          <this.NavBarListElement>
+          <this.NavBarListElement
+            onClick={() => this.handleButtonClick("/chat")}>
             <NavBarButton linkInfo={{
-              link: "/chat",
               text: "Chat room"
             }} />
           </this.NavBarListElement>
@@ -197,7 +204,7 @@ class AuthorizedNavBar extends React.Component {
 
           <this.Avatar src={`data:image/jpeg;base64,${this.props.avatar}`} width="50px" />
           <this.CurrentUser> Welcome {this.props.token.login}! </this.CurrentUser>
-          
+
           {this.renderUnreadNotification()}
         </this.NavBarList>
       </nav>

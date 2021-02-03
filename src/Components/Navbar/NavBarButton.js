@@ -14,7 +14,7 @@ class TopBarButton extends React.Component
 
     render() {
         return(
-            <this.NavBarButton href={this.props.linkInfo.link}>
+            <this.NavBarButton onClick={() => this.handleButtonClick}>
                 {this.props.linkInfo.text}
             </this.NavBarButton>
         );

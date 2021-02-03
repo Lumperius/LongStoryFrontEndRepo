@@ -100,6 +100,7 @@ class Authentication extends React.Component {
                 localStorage.setItem('Token', response.data);
                 this.props.setToken(tokenData);
                 this.sendGetAvatarRequest();
+                debugger
                 this.props.history.push('/');
             })
             .catch(error => {

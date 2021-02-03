@@ -56,13 +56,13 @@ class App extends React.Component {
           <Route exact path="/admin" component={Admin} />
           <Route exact path="/authentication" component={Authentication} />
           <Route exact path="/chat" component={ChatHub} />
-          <Route exact path="/intializeStory" component={InitializeStory} />
+          <Route exact path="/storyInit" component={InitializeStory} />
           <Route exact path="/logout" component={Logout} />
           <Route exact path="/registration" component={Registration} />
           <Route exact path="/office" component={Office} />
           <Route exact path="/story:id" component={Story} />
-          <Route exact path="/books/book:id" component={Book} />
           <Route exact path="/books" component={BookPage} />
+          <Route exact path="/books/book:id" component={Book} />
           <Route exact path="/books/composeBook" component={StorySelection} />
           <Route exact path="/books/orderBook:id" component={OrderBook} />
           <Route exact path="/books/success" component={SuccessOrder} />

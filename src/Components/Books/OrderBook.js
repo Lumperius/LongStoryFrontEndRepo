@@ -134,11 +134,9 @@ class OrderBook extends React.Component {
         const stripe = await this.stripePromise;
         axiosSetUp().post('http://localhost:5002/order/createOrder', body)
             .then(async response => {
-                const session = response.data;
                 const result = await stripe.redirectToCheckout({
-                    sessionId: session.id,
+                    sessionId: response.data.id,
                 });
-                console.log(result);
             })
             .catch(error => {
                 this.setState({

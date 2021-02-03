@@ -2,7 +2,7 @@ import React from 'react';
 import NavBarButton from './NavBarButton';
 import styled from 'styled-components';
 import { withTheme } from '@material-ui/core/styles';
-import history from  '../../history.js';
+import history from '../../history.js';
 import logo from './Logo.png';
 
 class NavBar extends React.Component {
@@ -44,26 +44,31 @@ class NavBar extends React.Component {
     history.push('/');
   }
 
+  handleButtonClick = (path) => {
+    history.push(path)
+  }
+
+
   render() {
     return (
-      <this.NavBarList style={{backgroundColor: this.props.theme.palette.primary.main}}>
-        <this.NavBarListElement style={{float: "left", borderStyle: "none"}}>
-        <this.NavBarLogo
-             src={logo}
-             width="auto"
-             onClick={this.handleLogoClick}/>
+      <this.NavBarList style={{ backgroundColor: this.props.theme.palette.primary.main }}>
+        <this.NavBarListElement style={{ float: "left", borderStyle: "none" }}>
+          <this.NavBarLogo
+            src={logo}
+            width="auto"
+            onClick={this.handleLogoClick} />
         </this.NavBarListElement>
 
-        <this.NavBarListElement>
-          <NavBarButton linkInfo={{ 
-            link: "Registration",
+        <this.NavBarListElement
+          onClick={() => this.handleButtonClick("/registration")}>
+          <NavBarButton linkInfo={{
             text: "Register"
           }} />
         </this.NavBarListElement>
 
-        <this.NavBarListElement>
+        <this.NavBarListElement
+          onClick={() => this.handleButtonClick("/authentication")}>
           <NavBarButton linkInfo={{
-            link: "Authentication",
             text: "Login"
           }} />
         </this.NavBarListElement>

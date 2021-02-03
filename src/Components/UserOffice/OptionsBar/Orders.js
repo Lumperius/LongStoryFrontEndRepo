@@ -4,7 +4,10 @@ import styled from 'styled-components';
 import axiosSetUp from '../../../axiosConfig';
 import renderMessage from '../../../message';
 import Typography from '@material-ui/core/Typography';
-import { domain } from '../../../objects';
+import { backendDomain } from '../../../objects';
+import Button from '@material-ui/core/Button';
+import { loadStripe } from "@stripe/stripe-js";
+
 
 class Orders extends React.Component {
     constructor() {
@@ -34,8 +37,16 @@ class Orders extends React.Component {
         this.sendGetOrdersRequest();
     }
 
+    handleButtonClick = async (sessionId) => {
+        const stripePromise = loadStripe("pk_test_51IFyntKGKkWeV1dSDPnoKRgzIynRZqV5mubF4AQ79ZwVqQL5heQbPnLLfjRhAfkDvpi82Yrq1KKEFOIwNAB2DoB700XJa7leJW");
+        const stripe = await stripePromise;
+        stripe.redirectToCheckout({
+            sessionId: sessionId,
+        });
+    }
+
     sendGetOrdersRequest = () => {
-        axiosSetUp().get(`${domain}/order/getSessions?userId=${this.props.token.id}`)
+        axiosSetUp().get(`${backendDomain}/order/getSessions?userId=${this.props.token.id}`)
             .then(response => {
                 this.setState({
                     Orders: response.data.sessions
@@ -54,13 +65,14 @@ class Orders extends React.Component {
 
     render() {
         return (<>
-        <Typography variant="body">List of your orders</Typography>
+            <Typography variant="body">List of your orders</Typography>
             {renderMessage(this.state.message.body, this.state.message.type)}
             {this.state.Orders.map(order => {
                 return <>
                     <this.OrderWrapper>
-                        <Typography variant="body" style={{fontSize: "25px"}}>{order.bookTitle}</Typography>
-                        <Typography variant="subtitle1" style={{float: "right", fontSize: "15px"}}>{order.dateCreated}</Typography>
+                        <Button variant="contained" size="large" color="primary" style={{ float: "right" }} onClick={() => this.handleButtonClick(order.sessionId)}>Commit the payment </Button>
+                        <Typography variant="body" style={{ fontSize: "25px" }}>{order.bookTitle}</Typography>
+                        <Typography variant="subtitle1" style={{ fontSize: "15px" }}>{order.dateCreated}</Typography>
                     </this.OrderWrapper>
                 </>
             })}
