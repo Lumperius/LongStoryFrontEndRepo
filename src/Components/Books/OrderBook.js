@@ -24,7 +24,9 @@ class OrderBook extends React.Component {
                 type: ''
             },
             format: 'Large',
-            fontSize: 12
+            fontSize: 12,
+            isOrderCreated: false,
+            orderId: ''
         }
     }
 
@@ -77,12 +79,14 @@ class OrderBook extends React.Component {
             bookId: this.props.match.params.id,
             userId: this.props.token.id,
             amount: values.amount,
-            bookFormat: this.state.format,
-            fontSize: this.state.fontSize,
+            fontSize: values.fontSize,
+            bookFormat: this.state.format
         }
-        axiosSetUp().post(`http://localhost:5002/order/createOrder`, body)
+        axiosSetUp().post(`http://localhost:5002/book/createOrder`, body)
             .then(response => {
                 this.setState({
+                    isOrderCreated: true,
+                    orderId: response.data,
                     message: {
                         body: 'Your request is sent',
                         type: 'success'
@@ -99,42 +103,11 @@ class OrderBook extends React.Component {
             })
     }
 
-    handleFormatChange = (event) => {
-        this.setState({
-            format: event.target.value
-        })
-    }
-
-    handleFontSizeChange = (event) => {
-        let changeValue = event.target.value;
-        if (event.target.value < 8)
-            changeValue = 8;
-        if (changeValue > 20)
-            changeValue = 20;
-        this.setState({
-            fontSize: changeValue
-        })
-    }
-
-    handleChange = (event) => {
-        this.setState({
-            [event.target.name]: event.target.value
-        })
-    }
-
-    handleSubmit = async (values) => {
-        const body = {
-            bookId: this.props.match.params.id,
-            userId: this.props.token.id,
-            amount: values.amount,
-            bookFormat: this.state.format,
-            fontSize: values.fontSize,
-        }
-
+    sendSessionIdRequestRequest = async () => {
         const stripe = await this.stripePromise;
-        axiosSetUp().post('http://localhost:5002/order/createOrder', body)
+        axiosSetUp().get(`http://localhost:5002/order/getSession?orderId=${this.state.orderId}`)
             .then(async response => {
-                const result = await stripe.redirectToCheckout({
+                await stripe.redirectToCheckout({
                     sessionId: response.data.id,
                 });
             })
@@ -147,6 +120,31 @@ class OrderBook extends React.Component {
                 })
             });
     }
+
+
+    handleFormatChange = (event) => {
+        this.setState({
+            format: event.target.value
+        })
+    }
+
+    handleFontSizeChange = (event) => {
+        let fontValue = event.target.value;
+        if (event.target.value < 8)
+            fontValue = 8;
+        if (fontValue > 20)
+            fontValue = 20;
+        this.setState({
+            fontSize: fontValue
+        })
+    }
+
+    handleChange = (event) => {
+        this.setState({
+            [event.target.name]: event.target.value
+        })
+    }
+
 
     computeSymbolsForPageExample = () => {
         let bookFormatKrit = 0;
@@ -170,29 +168,34 @@ class OrderBook extends React.Component {
         return computedText.substring(0, computedText.length - 1) + '...';
     }
 
+    renderButton = () => {
+        if (this.state.isOrderCreated)
+            return <Button variant="contained" color="primary" onClick={() => this.sendSessionIdRequestRequest()}>Go to payment</Button>
+        else
+            return <Button variant="contained" color="primary" type="submit">Create order</Button>
+    }
+
     renderPagePreview = () => {
         switch (this.state.format) {
             case 'Small':
                 return <this.SmallFormatPageExample>
                     <Typography variant="subtitle" style={{ position: "relative", top: "16cm", left: "10cm" }}>page 121</Typography>
-                    <Typography variant="body1" style={{ fontSize: this.state.fontSize + "pt" }}>{this.computeSymbolsForPageExample(1200)}</Typography>
+                    <Typography variant="body1" style={{ fontSize: this.state.fontSize + "pt" }}>{this.computeSymbolsForPageExample()}</Typography>
                 </this.SmallFormatPageExample>
             case 'Medium':
                 return <this.MediumFormatPageExample>
                     <Typography variant="subtitle" style={{ position: "relative", top: "19.5cm", left: "12cm" }}>page 121</Typography>
-                    <Typography variant="body1" style={{ fontSize: this.state.fontSize + "pt" }}>{this.computeSymbolsForPageExample(1700)}</Typography>
+                    <Typography variant="body1" style={{ fontSize: this.state.fontSize + "pt" }}>{this.computeSymbolsForPageExample()}</Typography>
                 </this.MediumFormatPageExample>
             case 'Large':
                 return <this.LargeFormatPageExample>
                     <Typography variant="subtitle" style={{ position: "relative", top: "23.5cm", left: "15cm" }}>page 121</Typography>
-                    <Typography variant="body1" style={{ fontSize: this.state.fontSize + "pt" }}>{this.computeSymbolsForPageExample(2500)}</Typography>
+                    <Typography variant="body1" style={{ fontSize: this.state.fontSize + "pt" }}>{this.computeSymbolsForPageExample()}</Typography>
                 </this.LargeFormatPageExample>
             default:
                 return <>Error occured while loading page example. Try to reload page.</>
         }
     }
-
-
 
     render() {
         return (<Wrapper>
@@ -204,7 +207,7 @@ class OrderBook extends React.Component {
                 }}
                 validationSchema={this.ParametersSchema}
                 onSubmit={values => {
-                    this.handleSubmit(values)
+                    this.sendOrderBookRequest(values)
                 }}
             >
                 {({ errors, touched }) => (
@@ -222,7 +225,7 @@ class OrderBook extends React.Component {
                             <MenuItem value={'Medium'}>Medium format</MenuItem>
                             <MenuItem value={'Large'}>Large format</MenuItem>
                         </Select><br /><br />
-                        <Button variant="contained" color="primary" type="submit">Create order</Button><br />
+                        {this.renderButton()}
                         {renderMessage(this.state.message.body, this.state.message.type)}
                     </Form>
                 )}
