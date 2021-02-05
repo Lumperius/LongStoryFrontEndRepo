@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../message';
 import axiosSetUp from '../../axiosConfig';
 import Wrapper from '../../objects';
+import buildQuery from '../../helpers';
 
 class Books extends React.Component {
     constructor() {
@@ -50,10 +51,13 @@ class Books extends React.Component {
 
 
     sendGetBookPageRequest = (page = this.state.page, displayAll = this.state.displayAllBooks) => {
-        let url = `http://localhost:5002/book/GetPageOfBooks?page=${page}&count=${this.state.count}`
+        const queryData = {
+           page: page,
+           count: this.state.count
+        }
         if (!displayAll)
-            url += `&userId=${this.props.token.id}`
-        axiosSetUp().get(url)
+        queryData.userId = this.props.token.id
+        axiosSetUp().get(buildQuery('/book/getPageOfBooks', queryData))
             .then(response => {
                 this.setState({
                     BookList: response.data.books,
@@ -78,7 +82,10 @@ class Books extends React.Component {
                 authorIdList.push(book.authorId);
         })
         let jsonIds = JSON.stringify(authorIdList);
-        axiosSetUp().get(`http://localhost:5002/userInfo/getRange?userIdList=${jsonIds}`)
+        const queryData = {
+            userIdList: jsonIds
+        }
+        axiosSetUp().get(buildQuery(`/userInfo/getRange`, queryData))
             .then(response => {
                 this.setState({
                     Authors: response.data.userInfoList || []

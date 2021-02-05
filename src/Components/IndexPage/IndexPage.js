@@ -11,6 +11,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import UserInfoWindow from '../UserInfoWindow/UserInfoWindow';
 import ReactHtmlParser from 'react-html-parser';
 import Wrapper from '../../objects'
+import buildQuery from '../../helpers';
 
 
 class IndexPage extends React.Component {
@@ -118,8 +119,11 @@ class IndexPage extends React.Component {
         if (!this.state.StoriesList.includes(story => story.id === null) && !userIdList.find(id => id === null)) {
             userIdList.push(this.emptyGuid);
         }
-        let JSONids = JSON.stringify(userIdList);
-        axiosSetUp().get(`http://localhost:5002/userInfo/getRange?userIdList=${JSONids}`)
+        let jsonIds = JSON.stringify(userIdList);
+        const queryData = {
+            userIdList: jsonIds
+        }
+        axiosSetUp().get(buildQuery(`/userInfo/getRange`, queryData))
             .then(response => {
                 this.setState({
                     UserInfoList: response.data.userInfoList || []
@@ -137,7 +141,12 @@ class IndexPage extends React.Component {
 
     sendGetRequestAndSetNewPage = (page = this.state.page, sortBy = this.state.sortBy) => {
         if (page < 1) return;
-        axiosSetUp().get(`http://localhost:5002/story/getPage?page=${page}&count=${this.state.pageSize}&sortBy=${sortBy}`)
+        const queryData = {
+            page: page,
+            count: this.state.pageSize,
+            sortBy: sortBy
+        }
+        axiosSetUp().get(buildQuery(`/story/getPage`, queryData))
             .then((response) => {
                 this.setState({
                     StoriesList: response.data || '',

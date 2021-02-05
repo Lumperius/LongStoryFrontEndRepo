@@ -9,6 +9,7 @@ import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 import Wrapper from '../../objects';
+import buildQuery from '../../helpers';
 
 
 class Comments extends React.Component {
@@ -57,8 +58,10 @@ class Comments extends React.Component {
             storyId: this.props.storyId,
             body: JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent()))
         }
-        debugger
-        axiosSetUp().post(`http://localhost:5002/comment/post?storyId=${this.props.storyId}`, body)
+        const queryData = {
+            storyId: this.props.storyId
+        }
+        axiosSetUp().post(buildQuery(`/comment/post`, queryData), body)
             .then(response => {
                 this.setState({
                     message: {
@@ -86,7 +89,10 @@ class Comments extends React.Component {
                 userIdList.push(comment.userId);
         })
         let jsonIds = JSON.stringify(userIdList);
-        axiosSetUp().get(`http://localhost:5002/userInfo/getRange?userIdList=${jsonIds}`)
+        const queryData = {
+            userIdList: jsonIds
+        }
+        axiosSetUp().get(buildQuery(`/userInfo/getRange`, queryData))
             .then(response => {
                 this.setState({
                     UserInfoList: response.data.userInfoList || []
@@ -104,7 +110,10 @@ class Comments extends React.Component {
     }
 
     sendGetCommentsRequest = () => {
-        axiosSetUp().get(`http://localhost:5002/comment/get?storyId=${this.props.storyId}`)
+        const queryData = {
+            storyId: this.props.storyId
+        }
+        axiosSetUp().get(buildQuery(`/comment/get`, queryData))
             .then(response => {
                 this.setState({
                     Comments: response.data || []

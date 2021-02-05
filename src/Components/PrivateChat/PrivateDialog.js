@@ -14,7 +14,7 @@ import Popper from '@material-ui/core/Popper';
 import Input from '@material-ui/core/Input';
 import addUnreadMessage from '../../Actions/addUnreadMessage';
 import removeUnreadMessage from '../../Actions/removeUnreadMessage';
-import Wrapper from '../../objects';
+import Wrapper, { backendDomain } from '../../objects';
 
 
 class PrivateDialog extends React.Component {
@@ -77,7 +77,7 @@ class PrivateDialog extends React.Component {
     connectToHub = () => {
             try {
                 (async () => {
-                    this.hubConnection = await connectToHub('http://localhost:5002/messenger/chat')
+                    this.hubConnection = await connectToHub(`${backendDomain}/messenger/chat`)
                 })().then(() => this.registerHandlers())        
             }
             catch {

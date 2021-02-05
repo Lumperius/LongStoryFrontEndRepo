@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../../message';
 import ReactHtmlParser from 'react-html-parser';
+import buildQuery from '../../../helpers';
 
 
 class UserStories extends React.Component {
@@ -43,8 +44,10 @@ class UserStories extends React.Component {
 
 
     sendGetStoriesRequest = () => {
-        let userId = this.props.token.id;
-        axiosSetUp().get(`http://localhost:5002/story/getForUser?userId=${userId}`)
+        const queryData = {
+            userId: this.props.token.id
+        }
+        axiosSetUp().get(buildQuery(`/story/getForUser`, queryData))
             .then(response => {
                 this.setState({
                     storiesList: response.data.storiesList,

@@ -10,6 +10,7 @@ import renderMessage from '../../message';
 import Comments from './Comments';
 import ReactHtmlParser from 'react-html-parser';
 import Wrapper from '../../objects';
+import buildQuery from '../../helpers';
 
 
 class Story extends React.Component {
@@ -71,8 +72,10 @@ class Story extends React.Component {
     }
 
     sendGetStoryPartsRequest = () => {
-        let storyId = this.props.match.params.id;
-        axiosSetUp().get(`http://localhost:5002/storyPart/getAllParts?storyId=${storyId}`)
+        const queryData = {
+            storyId: this.props.match.params.id
+        }
+        axiosSetUp().get(buildQuery(`/storyPart/getAllParts`, queryData))
             .then(response => {
                 this.setState({
                     StoryParts: response.data || []
@@ -89,13 +92,14 @@ class Story extends React.Component {
     }
 
     sendGetStoryRequest() {
-        let storyId = this.props.match.params.id;
-        let requestUrl = `http://localhost:5002/story/get?storyId=${storyId}`;
+        const queryData = {
+            storyId: this.props.match.params.id,          
+        }
 
         if (this.props.token)
-            requestUrl = `${requestUrl}&userId=${this.props.token.id}`;
+            queryData.userId = this.props.token.id;
 
-        axiosSetUp().get(requestUrl)
+        axiosSetUp().get(buildQuery('/story/get', queryData))
             .then(response => {
                 this.setState({
                     story: {
@@ -130,7 +134,7 @@ class Story extends React.Component {
             userId: userId,
             isPositive: voteType
         }
-        axiosSetUp().post(`http://localhost:5002/story/vote`, body)
+        axiosSetUp().post(buildQuery(`/story/vote`), body)
             .then((response) => {
                 let prevState = this.state;
                 prevState.message = response.data;
@@ -152,12 +156,11 @@ class Story extends React.Component {
     };
 
     sendFinishStoryRequest = () => {
-        let storyId = this.props.match.params.id;
         let body = {
-            storyId: storyId,
+            storyId: this.props.match.params.id,
             userId: this.props.token.id
         }
-        axiosSetUp().post(`http://localhost:5002/story/finish`, body)
+        axiosSetUp().post(buildQuery(`/story/finish`), body)
             .then(response => {
                 this.setState({
                     message: {

@@ -11,7 +11,8 @@ import setAvatar from '../../Actions/setAvatar';
 import renderMessage from '../../message';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import Wrapper from '../../objects';
+import Wrapper, { backendDomain } from '../../objects';
+import buildQuery from '../../helpers';
 
 
 class Authentication extends React.Component {
@@ -50,10 +51,6 @@ class Authentication extends React.Component {
     font-weight: 600;
     text-decoration: underline;
     margin: 10px;
-    `;
-    ErrorMessage = styled.p` 
-    color: red;
-    font-size: 14px;
     `;
 
 
@@ -94,13 +91,12 @@ class Authentication extends React.Component {
             inputType: inputType
         };
         if (!this.validateAuthRequest(body)) { return; }
-        axiosSetUp().post('http://localhost:5002/user/authenticate', body)
+        axiosSetUp().post(buildQuery('/user/authenticate', null), body)
             .then(response => {
                 let tokenData = jwt_decode(response.data);
                 localStorage.setItem('Token', response.data);
                 this.props.setToken(tokenData);
                 this.sendGetAvatarRequest();
-                debugger
                 this.props.history.push('/');
             })
             .catch(error => {
@@ -115,8 +111,11 @@ class Authentication extends React.Component {
     };
 
     sendGetAvatarRequest = () => {
-        let userId = this.props.token.id;
-        axiosSetUp().get(`http://localhost:5002/userInfo/getAvatar?userId=${userId}`)
+        const userId = this.props.token.id;
+        const queryData = {
+           userId: userId
+        }
+        axiosSetUp().get(buildQuery('/userInfo/getAvatar', queryData))
           .then(response => {
             this.props.setAvatar(response.data)
           })

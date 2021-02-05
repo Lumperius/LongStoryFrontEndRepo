@@ -6,6 +6,7 @@ import renderMessage from '../../message';
 import axiosSetUp from '../../axiosConfig';
 import ReactHtmlParser from 'react-html-parser';
 import Wrapper from '../../objects';
+import buildQuery from '../../helpers';
 
 
 class Book extends React.Component {
@@ -26,8 +27,10 @@ class Book extends React.Component {
     }
 
     sendGetBookByIdRequest = () => {
-        let bookId = this.props.match.params.id;
-        axiosSetUp().get(`http://localhost:5002/book/getById?bookId=${bookId}`)
+        const queryData = {
+            bookId: this.props.match.params.id
+        }
+        axiosSetUp().get(buildQuery(`/book/getById`, queryData))
             .then(response => {
                 this.setState({
                     book: response.data

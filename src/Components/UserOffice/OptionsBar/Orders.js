@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import { backendDomain } from '../../../objects';
 import Button from '@material-ui/core/Button';
 import { loadStripe } from "@stripe/stripe-js";
+import buildQuery from '../../../helpers';
 
 
 class Orders extends React.Component {
@@ -46,7 +47,10 @@ class Orders extends React.Component {
     }
 
     sendGetOrdersRequest = () => {
-        axiosSetUp().get(`${backendDomain}/order/getSessions?userId=${this.props.token.id}`)
+        const queryData = {
+            userId: this.props.token.id
+        }
+        axiosSetUp().get(buildQuery(`/order/getSessions`, queryData))
             .then(response => {
                 this.setState({
                     Orders: response.data.sessions

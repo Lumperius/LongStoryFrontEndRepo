@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../message';
 import ReactHtmlParser from 'react-html-parser';
+import buildQuery from '../../helpers';
 
 class CandidatesScroller extends React.Component {
     constructor() {
@@ -52,7 +53,11 @@ class CandidatesScroller extends React.Component {
 
     sendGetCandidatesRequest = () => {
         let userId = this.props.token.id;
-        axiosSetUp().get(`http://localhost:5002/storyPart/getAllCandidates?storyId=${this.props.storyId}&userId=${userId}`)
+        const queryData = {
+            storyId: this.props.storyId,
+            userId: userId
+        }
+        axiosSetUp().get(buildQuery(`/storyPart/getAllCandidates`, queryData))
             .then(response => {
                 if (typeof response.data === 'string') throw response
                 this.setState({
@@ -83,7 +88,7 @@ class CandidatesScroller extends React.Component {
             storyPartCandidateId: candidate.id,
             userId: userId
         }
-        axiosSetUp().post(`http://localhost:5002/storyPart/vote`, body)
+        axiosSetUp().post(buildQuery(`/storyPart/vote`), body)
             .then(response => {
                 this.setState({
                     message: {

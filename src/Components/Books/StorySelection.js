@@ -10,6 +10,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { FormikTextField } from 'formik-material-fields';
 import Wrapper from '../../objects.js';
+import buildQuery from '../../helpers';
 
 
 class StorySelection extends React.Component {
@@ -73,7 +74,7 @@ class StorySelection extends React.Component {
             userId: this.props.token.id,
             title: values.bookTitle
         }
-        axiosSetUp().post(`http://localhost:5002/story/collectStories`, body)
+        axiosSetUp().post(buildQuery(`/story/collectStories`), body)
             .then(response => {
                 this.setState({
                     message: {
@@ -95,7 +96,12 @@ class StorySelection extends React.Component {
 
     sendGetRequestAndSetNewPage = (page = this.state.page, sortBy = this.state.sortBy) => {
         if (page < 1) return;
-        axiosSetUp().get(`http://localhost:5002/story/getPage?page=${page}&count=${this.state.count}&sortBy=${sortBy}`)
+        const queryData = {
+            page: page, 
+            count: this.state.count,
+            sortBy: sortBy
+        }
+        axiosSetUp().get(buildQuery(`/story/getPage`, queryData))
             .then((response) => {
                 this.setState({
                     StoryList: response.data || [],

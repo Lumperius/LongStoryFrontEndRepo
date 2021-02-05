@@ -8,6 +8,7 @@ import { Formik, Form} from 'formik';
 import * as Yup from 'yup';
 import { FormikTextField } from 'formik-material-fields';
 import Wrapper from '../../objects';
+import buildQuery from '../../helpers'
 
 
 class Registration extends React.Component {
@@ -67,7 +68,7 @@ class Registration extends React.Component {
     `;
 
     sendRequest = (values) => {
-        axiosSetUp().post('http://localhost:5002/user/register', values)
+        axiosSetUp().post(buildQuery('/user/register'), values)
             .then(response => {
                 if (response.status === 201)
                     this.props.history.push('/authentication');

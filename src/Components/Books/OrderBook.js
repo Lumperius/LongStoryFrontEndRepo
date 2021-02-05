@@ -13,6 +13,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import text from './ExampleOfText';
 import Wrapper from '../../objects';
 import { loadStripe } from "@stripe/stripe-js";
+import buildQuery from '../../helpers';
 
 
 class OrderBook extends React.Component {
@@ -82,7 +83,7 @@ class OrderBook extends React.Component {
             fontSize: values.fontSize,
             bookFormat: this.state.format
         }
-        axiosSetUp().post(`http://localhost:5002/book/createOrder`, body)
+        axiosSetUp().post(buildQuery(`/book/createOrder`), body)
             .then(response => {
                 this.setState({
                     isOrderCreated: true,
@@ -105,7 +106,10 @@ class OrderBook extends React.Component {
 
     sendSessionIdRequestRequest = async () => {
         const stripe = await this.stripePromise;
-        axiosSetUp().get(`http://localhost:5002/order/getSession?orderId=${this.state.orderId}`)
+        const queryData = {
+            orderId: this.state.orderId
+        }
+        axiosSetUp().get(buildQuery(`/order/getSession`, queryData))
             .then(async response => {
                 await stripe.redirectToCheckout({
                     sessionId: response.data.id,

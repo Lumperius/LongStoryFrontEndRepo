@@ -11,6 +11,7 @@ import logo from './Logo.png'
 import ChatIcon from '@material-ui/icons/Chat';
 import Tooltip from '@material-ui/core/Tooltip';
 import setDialog from '../../Actions/setDialog';
+import buildQuery from '../../helpers';
 
 
 class AuthorizedNavBar extends React.Component {
@@ -118,7 +119,10 @@ class AuthorizedNavBar extends React.Component {
 
   sendGetAvatarRequest = () => {
     let userId = this.props.token.id;
-    axiosSetUp().get(`http://localhost:5002/userInfo/getAvatar?userId=${userId}`)
+    const queryData = {
+      userId: userId
+    }
+    axiosSetUp().get(buildQuery(`/userInfo/getAvatar`, queryData))
       .then(response => {
         this.props.setAvatar(response.data)
       })
@@ -176,7 +180,7 @@ class AuthorizedNavBar extends React.Component {
           </this.NavBarListElement>
 
           <this.NavBarListElement
-            onClick={() => this.handleButtonClick("/storyInit")}>
+            onClick={() => this.handleButtonClick("/initStory")}>
             <NavBarButton linkInfo={{
               text: "Start a story"
             }} />

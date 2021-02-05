@@ -10,6 +10,7 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 import Wrapper from '../../objects';
+import buildQuery from '../../helpers';
 
 class InitializeStory extends React.Component {
 
@@ -70,6 +71,42 @@ class InitializeStory extends React.Component {
             this.props.history.push('authentication');
     }
 
+    sendCreateStoryRequest = () => {
+        if (!this.validateRequestParametrs()) return;
+        let body = {
+            userId: this.props.token.id,
+            title: this.state.title,
+            body: stateToHTML(this.state.editorState.getCurrentContent()),
+            author: this.props.token.login,
+            authorId: this.props.token.id,
+            dateSubmitted: new Date().toISOString()
+        }
+
+        axiosSetUp().post(buildQuery('/story/createStory'), body)
+            .then(response => {
+                this.setState({
+                    message: {
+                        body: response.data.message,
+                        type: 'success'
+                    },
+                    title: '',
+                    editorState: EditorState.createEmpty(),
+                })
+                this.props.history.push('/')
+            })
+            .catch(error => {
+                debugger
+                console.log(error)
+                this.setState({
+                    message: {
+                        body: 'Error occured while creating the story',
+                        type: 'error'
+                    },
+                })
+            })
+    }
+
+
     handleChange = (event) => {
         this.setState({
             [event.target.name]: event.target.value
@@ -106,39 +143,6 @@ class InitializeStory extends React.Component {
         return true;
     }
 
-    sendCreateStoryRequest = () => {
-        if (!this.validateRequestParametrs()) return;
-        let body = {
-            userId: this.props.token.id,
-            title: this.state.title,
-            body: stateToHTML(this.state.editorState.getCurrentContent()),
-            author: this.props.token.login,
-            authorId: this.props.token.id,
-            dateSubmitted: new Date().toISOString()
-        }
-        axiosSetUp().post("http://localhost:5002/story/createStory", body)
-            .then(response => {
-                this.setState({
-                    message: {
-                        body: response.data.message,
-                        type: 'success'
-                    },
-                    title: '',
-                    editorState: EditorState.createEmpty(),
-                })
-                this.props.history.push('/')
-            })
-            .catch(error => {
-                debugger
-                console.log(error)
-                this.setState({
-                    message: {
-                        body: 'Error occured while creating the story',
-                        type: 'error'
-                    },
-                })
-            })
-    }
 
     render() {
         return (

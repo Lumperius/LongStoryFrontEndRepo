@@ -56,7 +56,7 @@ class App extends React.Component {
           <Route exact path="/admin" component={Admin} />
           <Route exact path="/authentication" component={Authentication} />
           <Route exact path="/chat" component={ChatHub} />
-          <Route exact path="/storyInit" component={InitializeStory} />
+          <Route exact path="/initStory" component={InitializeStory} />
           <Route exact path="/logout" component={Logout} />
           <Route exact path="/registration" component={Registration} />
           <Route exact path="/office" component={Office} />

@@ -9,6 +9,7 @@ import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
+import buildQuery from '../../helpers';
 
 
 class AddStoryPart extends React.Component {
@@ -71,7 +72,7 @@ class AddStoryPart extends React.Component {
             author: this.props.token.login,
             dateSubmitted: new Date().toISOString()
         }
-        axiosSetUp().post('http://localhost:5002/storyPart/create', requestBody)
+        axiosSetUp().post(buildQuery('/storyPart/create'), requestBody)
             .then(response => {
                 this.props.stopRenderEditor();
                 this.setState({

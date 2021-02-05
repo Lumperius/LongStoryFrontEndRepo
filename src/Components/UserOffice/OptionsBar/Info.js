@@ -9,6 +9,7 @@ import renderMessage from '../../../message';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { FormikTextField } from 'formik-material-fields';
+import buildQuery from '../../../helpers';
 
 
 
@@ -93,8 +94,10 @@ class Info extends React.Component {
         formData.append('avatar', this.state.avatar, 'this.state.image.name');
         formData.append('title', '');
         formData.append('content', '');
-        let url = `http://localhost:5002/userInfo/setAvatar?userId=${this.props.token.id}`;
-        axiosSetUp().post(url, formData, {
+        const queryData = {
+            userId: this.props.token.id
+        }
+        axiosSetUp().post(buildQuery(`/userInfo/setAvatar`, queryData), formData, {
             headers: {
                 'content-type': 'multipart/form-data',
             }
@@ -107,8 +110,10 @@ class Info extends React.Component {
 
 
     sendGetUserInfoRequest = () => {
-        let userId = this.props.token.id;
-        axiosSetUp().get(`http://localhost:5002/userInfo/get?userId=${userId}`)
+        const queryData = {
+            userId: this.props.token.id
+        }
+        axiosSetUp().get(buildQuery(`/userInfo/get`,queryData))
             .then(response => {
                 this.setState({
                     info: response.data,
@@ -141,7 +146,7 @@ class Info extends React.Component {
             lastName: values.lastName,
             birthDay: values.birthday
         }
-        axiosSetUp().post(`http://localhost:5002/userInfo/setInfo`, body)
+        axiosSetUp().post(buildQuery(`/userInfo/setInfo`), body)
             .then(response => {
                 let state = this.state;
                 if (values.login)

@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button'
 import {Table, TableRow, TableCell, TableHead, TableBody}from '@material-ui/core';
 import renderMessage from '../../message';
 import Wrapper from '../../objects';
+import buildQuery from '../../helpers';
 
 class Admin extends React.Component {
 
@@ -87,7 +88,11 @@ class Admin extends React.Component {
 
     sendRequestAndSetNewPage = (page = this.state.page) => {
         if (page < 1) return;
-        axiosSetUp().get(`http://localhost:5002/user/getpage?page=${page}&count=${this.state.pageSize}`)
+        const queryData = {
+            page: page,
+            count: this.state.pageSize
+        }
+        axiosSetUp().get(buildQuery('/user/getPage', queryData))
             .then((response) => {
                 this.setState({
                     List: [],
@@ -109,7 +114,10 @@ class Admin extends React.Component {
     };
 
     sendDeleteRequest = (id) => {
-        axiosSetUp().delete(`http://localhost:5002/user/id=${id}`)
+        const queryData = {
+            id: id
+        }
+        axiosSetUp().delete(buildQuery('/user', queryData))
             .then((response) => {
                 console.log(response.data);
                 this.sendRequestAndSetNewPage();
@@ -137,7 +145,7 @@ class Admin extends React.Component {
             userId: userId,
             isUnbanRequest: isUnbanRequest
         }
-        axiosSetUp().post(`http://localhost:5002/user/ban`, body)
+        axiosSetUp().post(buildQuery('/user/ban'), body)
         .then(response => {
             this.setState({
                 message: {
