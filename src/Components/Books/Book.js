@@ -30,7 +30,7 @@ class Book extends React.Component {
         const queryData = {
             bookId: this.props.match.params.id
         }
-        axiosSetUp().get(buildQuery(`/book/getById`, queryData))
+        axiosSetUp().get(buildQuery('/book/getById', queryData))
             .then(response => {
                 this.setState({
                     book: response.data

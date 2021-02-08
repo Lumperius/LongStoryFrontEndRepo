@@ -42,8 +42,7 @@ class Comments extends React.Component {
     }
 
     sendPostCommentRequest = () => {
-        if (!this.state.editorState || this.state.editorState.getCurrentContent().getPlainText().length > 1000 ||
-            !this.state.editorState.getCurrentContent().getPlainText().length) {
+        if (!this.state.editorState || this.state.editorState.getCurrentContent().getPlainText().length > 1000) {
             this.setState({
                 message: {
                     body: 'Incorrect text',
@@ -53,15 +52,22 @@ class Comments extends React.Component {
             return;
         }
 
-        let body = {
+        if (JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent())).length > 2000) {
+            this.setState({
+                message: {
+                    body: 'Can\'t post this comment. Consider using less types of styled text.',
+                    type: 'error'
+                }
+            })
+            return;
+        }
+
+        const body = {
             userId: this.props.token.id,
             storyId: this.props.storyId,
             body: JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent()))
         }
-        const queryData = {
-            storyId: this.props.storyId
-        }
-        axiosSetUp().post(buildQuery(`/comment/post`, queryData), body)
+        axiosSetUp().post(buildQuery('/comment/post'), body)
             .then(response => {
                 this.setState({
                     message: {
@@ -88,11 +94,11 @@ class Comments extends React.Component {
             if (!userIdList.find(id => id === comment.userId))
                 userIdList.push(comment.userId);
         })
-        let jsonIds = JSON.stringify(userIdList);
+        const jsonIds = JSON.stringify(userIdList);
         const queryData = {
             userIdList: jsonIds
         }
-        axiosSetUp().get(buildQuery(`/userInfo/getRange`, queryData))
+        axiosSetUp().get(buildQuery('/userInfo/getRange', queryData))
             .then(response => {
                 this.setState({
                     UserInfoList: response.data.userInfoList || []
@@ -113,7 +119,7 @@ class Comments extends React.Component {
         const queryData = {
             storyId: this.props.storyId
         }
-        axiosSetUp().get(buildQuery(`/comment/get`, queryData))
+        axiosSetUp().get(buildQuery('/comment/get', queryData))
             .then(response => {
                 this.setState({
                     Comments: response.data || []
@@ -136,15 +142,26 @@ class Comments extends React.Component {
         })
     }
 
+    handleBeforeInput = () => {
+        if (this.state.editorState.getCurrentContent().getPlainText().length >= 1000)
+            return 'handled'
+    }
+
+    handlePastedText = (pastedText) => {
+        debugger
+        if (this.state.editorState.getCurrentContent().getPlainText().length + pastedText.length > 1000)
+            return 'handled'
+    }
+
 
     renderComments = () => {
         return <>
             {this.state.Comments.map(comment => {
-                let userInfo = this.state.UserInfoList.find(ui => ui.userId === comment.userId) || []
+                const userInfo = this.state.UserInfoList.find(ui => ui.userId === comment.userId) || []
 
-                try   { EditorState.createWithContent(convertFromRaw(JSON.parse(comment.body))) }
+                try { EditorState.createWithContent(convertFromRaw(JSON.parse(comment.body))) }
                 catch {
-                    return <div style={{ backgroundColor: "white", margin: "20px",  padding: "35px", paddingTop: "0px"}}>
+                    return <div style={{ backgroundColor: "white", margin: "20px", padding: "35px", paddingTop: "0px" }}>
                         <this.CommentWrapper>{comment.body}</this.CommentWrapper>
                         <img src={`data:image/jpeg;base64,${userInfo.avatarBase64}`} alt="Not loaded"
                             style={{ float: 'right', marginTop: "0px", marginLeft: "10px" }} width="30px" aling="bottom" vspace="10px" />
@@ -161,7 +178,7 @@ class Comments extends React.Component {
                     />
                     <span style={{ marginTop: "-20px" }}>
                         <img src={`data:image/jpeg;base64,${userInfo.avatarBase64}`} style={{ float: 'right', marginTop: "0px", marginLeft: "10px" }}
-                        width="30px" aling="bottom" vspace="10px"  alt="Not loaded"/>
+                            width="30px" aling="bottom" vspace="10px" alt="Not loaded" />
                         <Typography variant="subtitle1" style={{ float: "right", wordBreak: "break-all" }}>
                             {userInfo.userLogin || undefined} at {comment.datePosted || undefined}
                         </Typography>
@@ -177,13 +194,15 @@ class Comments extends React.Component {
             <Typography variant="h4">Commentaries</Typography>
             <a href="#addComment"><Typography variant="caption" id="Comments">Add a comment</Typography></a>
             {this.renderComments()}
-            <this.EditorWraper><Editor 
-            name="body"
-            onEditorStateChange={this.onEditorStateChange}
-            style={{ backgroundColor: "white" }}
-            toolbar={{
-                option: ['inline','link','list']
-            }} />
+            <this.EditorWraper><Editor
+                name="body"
+                handleBeforeInput={this.handleBeforeInput}
+                handlePastedText={this.handlePastedText}
+                onEditorStateChange={this.onEditorStateChange}
+                style={{ backgroundColor: "white" }}
+                toolbar={{
+                    option: ['inline', 'link', 'list']
+                }} />
             </this.EditorWraper>
             <Typography variant="subtitle2" id="addComment">{this.state.editorState.getCurrentContent().getPlainText().length}/1000</Typography>
             {renderMessage(this.state.message.body, this.state.message.type)}

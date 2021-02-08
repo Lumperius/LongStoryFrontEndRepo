@@ -83,7 +83,7 @@ class OrderBook extends React.Component {
             fontSize: values.fontSize,
             bookFormat: this.state.format
         }
-        axiosSetUp().post(buildQuery(`/book/createOrder`), body)
+        axiosSetUp().post(buildQuery('/book/createOrder'), body)
             .then(response => {
                 this.setState({
                     isOrderCreated: true,
@@ -109,7 +109,7 @@ class OrderBook extends React.Component {
         const queryData = {
             orderId: this.state.orderId
         }
-        axiosSetUp().get(buildQuery(`/order/getSession`, queryData))
+        axiosSetUp().get(buildQuery('/order/getSession', queryData))
             .then(async response => {
                 await stripe.redirectToCheckout({
                     sessionId: response.data.id,

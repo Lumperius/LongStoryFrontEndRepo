@@ -70,7 +70,7 @@ class ChatHub extends React.Component {
     handleSubmit = (event) => {
         if (this.state.messageText !== '' &&
             this.state.messageText.length <= 1000) {
-            let messageObject = {
+            const messageObject = {
                 text: this.state.messageText,
                 user: this.props.token.login,
                 timePosted: Date.now()
@@ -95,7 +95,7 @@ class ChatHub extends React.Component {
                         })
                     })
             }
-            else{
+            else {
                 (async () => {
                     this.hubConnection = await connectToHub('http://localhost:5002/messenger/chatroom')
                 })()
@@ -105,7 +105,7 @@ class ChatHub extends React.Component {
                         type: 'error'
                     }
                 })
-    }
+            }
         }
         else {
             this.setState({

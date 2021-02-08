@@ -73,7 +73,7 @@ class InitializeStory extends React.Component {
 
     sendCreateStoryRequest = () => {
         if (!this.validateRequestParametrs()) return;
-        let body = {
+        const body = {
             userId: this.props.token.id,
             title: this.state.title,
             body: stateToHTML(this.state.editorState.getCurrentContent()),
@@ -95,7 +95,6 @@ class InitializeStory extends React.Component {
                 this.props.history.push('/')
             })
             .catch(error => {
-                debugger
                 console.log(error)
                 this.setState({
                     message: {
@@ -119,6 +118,16 @@ class InitializeStory extends React.Component {
         })
     }
 
+    handleBeforeInput = () => {
+        if (this.state.editorState.getCurrentContent().getPlainText().length >= 1000)
+            return 'handled'
+    }
+
+    handlePastedText = (pastedText) => {
+        if (this.state.editorState.getCurrentContent().getPlainText().length + pastedText.length > 1000)
+            return 'handled'
+    }
+
     validateRequestParametrs = () => {
         if (!this.state.title || this.state.title.length < 1 || this.state.title.length > 50) {
             this.setState({
@@ -140,6 +149,17 @@ class InitializeStory extends React.Component {
             });
             return false;
         }
+        const imgRegex = new RegExp('<img.+?>')
+        const htmlText = stateToHTML(this.state.editorState.getCurrentContent())
+        if (imgRegex.test(htmlText)) {
+            this.setState({
+                message: {
+                    body: 'Images are not allowed in story text.',
+                    type: 'error'
+                }
+            })
+            return false;
+        }
         return true;
     }
 
@@ -149,7 +169,12 @@ class InitializeStory extends React.Component {
             <Wrapper>
                 <this.TitleInput name="title" maxLength="50" placeholder="Enter a title" onChange={this.handleChange}></this.TitleInput><br />
                 <Typography variant="subtitle2">{this.state.title.length}/50</Typography><br />
-                <Editor name="body" placeholder="Type the beginning of story here" onEditorStateChange={this.onEditorStateChange} />
+                <Editor
+                    name="body"
+                    placeholder="Type the beginning of story here"
+                    onEditorStateChange={this.onEditorStateChange}
+                    handleBeforeInput={this.handleBeforeInput}
+                    handlePastedText={this.handlePastedText} />
                 <Typography variant="subtitle2">{this.state.editorState.getCurrentContent().getPlainText().length}/4000</Typography><br />
                 {renderMessage(this.state.message.body, this.state.message.type)}
                 <Button variant="contained" color="primary" onClick={this.sendCreateStoryRequest}>Submit</Button>

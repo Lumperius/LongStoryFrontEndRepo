@@ -13,7 +13,7 @@ import Wrapper from '../../objects.js';
 import buildQuery from '../../helpers';
 
 
-class StorySelection extends React.Component {
+class BookCompose extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -52,7 +52,6 @@ class StorySelection extends React.Component {
     }
 
     sendComposeBookRequest = (values) => {
-        debugger
         if (!this.state.StoryList?.find(story => story?.isMarked === true )) {
             this.setState({
                 message: {
@@ -69,12 +68,12 @@ class StorySelection extends React.Component {
                 MarkedStoryIdList.push(story.id);
             }
         })
-        let body = {
+        const body = {
             StoryIdList: MarkedStoryIdList,
             userId: this.props.token.id,
             title: values.bookTitle
         }
-        axiosSetUp().post(buildQuery(`/story/collectStories`), body)
+        axiosSetUp().post(buildQuery('/story/collectStories'), body)
             .then(response => {
                 this.setState({
                     message: {
@@ -101,7 +100,7 @@ class StorySelection extends React.Component {
             count: this.state.count,
             sortBy: sortBy
         }
-        axiosSetUp().get(buildQuery(`/story/getPage`, queryData))
+        axiosSetUp().get(buildQuery('/story/getPage', queryData))
             .then((response) => {
                 this.setState({
                     StoryList: response.data || [],
@@ -121,7 +120,7 @@ class StorySelection extends React.Component {
 
 
     markTheStory = (story) => {
-        let newStoriesList = [...this.state.StoryList]
+        const newStoriesList = [...this.state.StoryList]
         if (story.isMarked) {
             newStoriesList.find(s => s.id === story.id).isMarked = false
             this.setState({
@@ -138,7 +137,7 @@ class StorySelection extends React.Component {
 
     cutBody = (body) => {
         if (body.length > 110)
-            return body.substring(0, 100) + '...'
+             return body.substring(0, 100) + '...'
         else return body + ' ...'
     }
 
@@ -192,4 +191,4 @@ const mapStateToProps = function (state) {
     };
 }
 
-export default connect(mapStateToProps)(StorySelection)
+export default connect(mapStateToProps)(BookCompose)

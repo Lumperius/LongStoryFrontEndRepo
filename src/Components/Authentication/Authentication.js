@@ -11,7 +11,7 @@ import setAvatar from '../../Actions/setAvatar';
 import renderMessage from '../../message';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import Wrapper, { backendDomain } from '../../objects';
+import Wrapper from '../../objects';
 import buildQuery from '../../helpers';
 
 
@@ -55,7 +55,7 @@ class Authentication extends React.Component {
 
 
     getLoginOrEmailType = (loginOrEmail) => {
-        let emailRegex = /\S+@\S+\.\S+/;
+        const emailRegex = /\S+@\S+\.\S+/;
         if (emailRegex.test(loginOrEmail)) return 'Email';
         else return 'Login';
     }
@@ -84,18 +84,16 @@ class Authentication extends React.Component {
 
 
     sendAuthenticationRequest = (values) => {
-        let inputType = this.getLoginOrEmailType(values.login)
         const body = {
             loginOrEmail: values.loginOrEmail,
             password: values.password,
-            inputType: inputType
+            inputType: this.getLoginOrEmailType(values.login)
         };
         if (!this.validateAuthRequest(body)) { return; }
         axiosSetUp().post(buildQuery('/user/authenticate', null), body)
             .then(response => {
-                let tokenData = jwt_decode(response.data);
                 localStorage.setItem('Token', response.data);
-                this.props.setToken(tokenData);
+                this.props.setToken(jwt_decode(response.data));
                 this.sendGetAvatarRequest();
                 this.props.history.push('/');
             })
@@ -111,9 +109,8 @@ class Authentication extends React.Component {
     };
 
     sendGetAvatarRequest = () => {
-        const userId = this.props.token.id;
         const queryData = {
-           userId: userId
+           userId: this.props.token.id
         }
         axiosSetUp().get(buildQuery('/userInfo/getAvatar', queryData))
           .then(response => {

@@ -81,11 +81,11 @@ class Books extends React.Component {
             if (!authorIdList.find(id => id === book.authorId))
                 authorIdList.push(book.authorId);
         })
-        let jsonIds = JSON.stringify(authorIdList);
+        const jsonIds = JSON.stringify(authorIdList);
         const queryData = {
             userIdList: jsonIds
         }
-        axiosSetUp().get(buildQuery(`/userInfo/getRange`, queryData))
+        axiosSetUp().get(buildQuery('/userInfo/getRange', queryData))
             .then(response => {
                 this.setState({
                     Authors: response.data.userInfoList || []

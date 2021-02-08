@@ -119,11 +119,11 @@ class IndexPage extends React.Component {
         if (!this.state.StoriesList.includes(story => story.id === null) && !userIdList.find(id => id === null)) {
             userIdList.push(this.emptyGuid);
         }
-        let jsonIds = JSON.stringify(userIdList);
+        const jsonIds = JSON.stringify(userIdList);
         const queryData = {
             userIdList: jsonIds
         }
-        axiosSetUp().get(buildQuery(`/userInfo/getRange`, queryData))
+        axiosSetUp().get(buildQuery('/userInfo/getRange', queryData))
             .then(response => {
                 this.setState({
                     UserInfoList: response.data.userInfoList || []
@@ -146,7 +146,7 @@ class IndexPage extends React.Component {
             count: this.state.pageSize,
             sortBy: sortBy
         }
-        axiosSetUp().get(buildQuery(`/story/getPage`, queryData))
+        axiosSetUp().get(buildQuery('/story/getPage', queryData))
             .then((response) => {
                 this.setState({
                     StoriesList: response.data || '',

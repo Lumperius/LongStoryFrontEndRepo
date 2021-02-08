@@ -141,7 +141,7 @@ class Admin extends React.Component {
 
     
     sendBanUserRequest = (userId, isUnbanRequest) => {
-        let body = {
+        const body = {
             userId: userId,
             isUnbanRequest: isUnbanRequest
         }

@@ -52,12 +52,11 @@ class CandidatesScroller extends React.Component {
     }
 
     sendGetCandidatesRequest = () => {
-        let userId = this.props.token.id;
         const queryData = {
             storyId: this.props.storyId,
-            userId: userId
+            userId: this.props.token.id
         }
-        axiosSetUp().get(buildQuery(`/storyPart/getAllCandidates`, queryData))
+        axiosSetUp().get(buildQuery('/storyPart/getAllCandidates', queryData))
             .then(response => {
                 if (typeof response.data === 'string') throw response
                 this.setState({
@@ -83,12 +82,11 @@ class CandidatesScroller extends React.Component {
                 type: 'error'
             }
         });
-        let userId = this.props.token.id;
-        let body = {
+        const body = {
             storyPartCandidateId: candidate.id,
-            userId: userId
+            userId: this.props.token.id
         }
-        axiosSetUp().post(buildQuery(`/storyPart/vote`), body)
+        axiosSetUp().post(buildQuery('/storyPart/vote'), body)
             .then(response => {
                 this.setState({
                     message: {

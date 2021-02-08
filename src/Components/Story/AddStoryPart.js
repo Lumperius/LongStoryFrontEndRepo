@@ -35,8 +35,6 @@ class AddStoryPart extends React.Component {
     outline: none;
     resize: none;
     `;
-    SubmitButton = styled.button`
-    `;
     ErrorMessage = styled.p`
     color: red;
     font-size: 14px;
@@ -49,14 +47,38 @@ class AddStoryPart extends React.Component {
         })
     }
 
+    handleBeforeInput = () => {
+        if (this.state.editorState.getCurrentContent().getPlainText().length >= 1000)
+            return 'handled'
+    }
+
+    handlePastedText = (pastedText) => {
+        if (this.state.e)
+        if (this.state.editorState.getCurrentContent().getPlainText().length + pastedText.length > 1000)
+            return 'handled'
+    }
+
+
 
     validateRequestParametrs = () => {
-        if (!this.state.editorState || this.state.editorState.getCurrentContent().getPlainText().length < 20 || 
-        this.state.editorState.getCurrentContent().getPlainText().body >= 4000) {
-            this.setState({ message:{
-                body: 'Incorrect text of the story part.',
-                type: 'error'
-                } 
+        if (!this.state.editorState || this.state.editorState.getCurrentContent().getPlainText().length < 20 ||
+            this.state.editorState.getCurrentContent().getPlainText().body >= 4000) {
+            this.setState({
+                message: {
+                    body: 'Incorrect text of the story part.',
+                    type: 'error'
+                }
+            })
+            return false;
+        }
+        const imgRegex = new RegExp('<img.+?>')
+        const htmlText = stateToHTML(this.state.editorState.getCurrentContent())
+        if(imgRegex.test(htmlText)){
+            this.setState({
+                message: {
+                    body: 'Images are not allowed in story text.',
+                    type: 'error'
+                }
             })
             return false;
         }
@@ -65,7 +87,7 @@ class AddStoryPart extends React.Component {
 
     sendNewStoryPartRequest = () => {
         if (!this.validateRequestParametrs()) return;
-        let requestBody = {
+        const requestBody = {
             storyId: this.props.storyId,
             authorId: this.props.token.id,
             body: stateToHTML(this.state.editorState.getCurrentContent()),
@@ -97,7 +119,11 @@ class AddStoryPart extends React.Component {
 
     render() {
         return <>
-            <Editor name="body" onEditorStateChange={this.onEditorStateChange} />
+            <Editor
+                name="body"
+                onEditorStateChange={this.onEditorStateChange}
+                handlePastedText={this.handlePastedText} 
+                handleBeforeInput={this.handleBeforeInput}/>
             <Typography variant="subtitle2">{this.state.editorState.getCurrentContent().getPlainText().length}/4000</Typography>
             {renderMessage(this.state.message.body, this.state.message.type)}
             <Button variant="contained" color="primary" onClick={this.sendNewStoryPartRequest}>submit</Button>

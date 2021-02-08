@@ -28,7 +28,7 @@ class Template extends React.Component {
     }
 }
 
-const mapStateToProps = function (state) {
+const mapStateToProps = state => {
     return {
         token: state.token.tokenObj,
     };

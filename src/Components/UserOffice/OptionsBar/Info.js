@@ -68,7 +68,7 @@ class Info extends React.Component {
         this.setState({
             avatar: event.target.files[0]
         })
-        var fr = new FileReader();
+        const fr = new FileReader();
         fr.addEventListener('load', () => this.handleImageLoadEvent(fr.result), false);
 
         if (event.target.files[0]) {
@@ -80,32 +80,43 @@ class Info extends React.Component {
 
     handleSubmit = (event) => {
         event.preventDefault();
-        console.log(this.state);
         let formData = new FormData();
         if (this.state.avatar === null) {
             this.setState({
                 message: {
-                    body: 'You need to choose avatar before submitting it.',
+                    body: 'You need to choose avatar first.',
                     type: 'error'
                 }
             })
             return;
         }
-        formData.append('avatar', this.state.avatar, 'this.state.image.name');
+        formData.append('avatar', this.state.avatar);
         formData.append('title', '');
         formData.append('content', '');
         const queryData = {
             userId: this.props.token.id
         }
-        axiosSetUp().post(buildQuery(`/userInfo/setAvatar`, queryData), formData, {
+        axiosSetUp().post(buildQuery('/userInfo/setAvatar', queryData), formData, {
             headers: {
                 'content-type': 'multipart/form-data',
             }
         })
             .then(response => {
-                console.log(response.data);
+                this.setState({
+                    message: {
+                        body: 'New avatar saved.',
+                        type: 'success'
+                    }
+                })
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                this.setState({
+                    message: {
+                        body: 'Error occured while setting new avatar.',
+                        type: 'error'
+                    }
+                })
+            })
     };
 
 
@@ -113,7 +124,7 @@ class Info extends React.Component {
         const queryData = {
             userId: this.props.token.id
         }
-        axiosSetUp().get(buildQuery(`/userInfo/get`,queryData))
+        axiosSetUp().get(buildQuery('/userInfo/get',queryData))
             .then(response => {
                 this.setState({
                     info: response.data,
@@ -146,7 +157,7 @@ class Info extends React.Component {
             lastName: values.lastName,
             birthDay: values.birthday
         }
-        axiosSetUp().post(buildQuery(`/userInfo/setInfo`), body)
+        axiosSetUp().post(buildQuery('/userInfo/setInfo'), body)
             .then(response => {
                 let state = this.state;
                 if (values.login)

@@ -106,7 +106,7 @@ class AuthorizedNavBar extends React.Component {
 
   handleIconClick = () => {
     if (this.props.dialog.UnreadMessages.some(x => x));
-    let dialog = {
+    const dialog = {
       targetUser: this.props.dialog.UnreadMessages[0],
       open: true
     }
@@ -118,11 +118,10 @@ class AuthorizedNavBar extends React.Component {
   }
 
   sendGetAvatarRequest = () => {
-    let userId = this.props.token.id;
     const queryData = {
-      userId: userId
+      userId: this.props.token.id
     }
-    axiosSetUp().get(buildQuery(`/userInfo/getAvatar`, queryData))
+    axiosSetUp().get(buildQuery('/userInfo/getAvatar', queryData))
       .then(response => {
         this.props.setAvatar(response.data)
       })

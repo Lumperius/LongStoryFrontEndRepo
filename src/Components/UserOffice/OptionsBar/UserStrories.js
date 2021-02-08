@@ -47,7 +47,7 @@ class UserStories extends React.Component {
         const queryData = {
             userId: this.props.token.id
         }
-        axiosSetUp().get(buildQuery(`/story/getForUser`, queryData))
+        axiosSetUp().get(buildQuery('/story/getForUser', queryData))
             .then(response => {
                 this.setState({
                     storiesList: response.data.storiesList,
@@ -97,7 +97,7 @@ class UserStories extends React.Component {
 
     renderStoryPart = (storyPart) => {
         return <>
-            <Typography variant="caption" style={{ textAlign: "right", wordBreak: "break-all" }}>From: {ReactHtmlParser(storyPart.body)}</Typography><br />
+            <Typography variant="caption" style={{ textAlign: "right", wordBreak: "break-all" }}>From: {ReactHtmlParser(storyPart.titleOfStory)}</Typography><br />
             {ReactHtmlParser(storyPart.body)}<hr />
         </>
     }

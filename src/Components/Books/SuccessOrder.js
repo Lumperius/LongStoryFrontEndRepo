@@ -23,12 +23,13 @@ class SuccessOrder extends React.Component {
 
     render() {
         return (<Wrapper>
-          <Typography>Your payment is accepted and your order will be delivered in span of 1 month or something.</Typography>
+          <Typography variant="h2" style={{textIndent: "40px", color: "darkblue"}}>Thank you!</Typography>
+          <Typography variant="h4" style={{textIndent: "40px"}}>Your payment is accepted and your order will be delivered in span of 1 month or something.</Typography>
         </Wrapper>)
     }
 }
 
-const mapStateToProps = function (state) {
+const mapStateToProps = (state) => {
     return {
         token: state.token.tokenObj,
     };

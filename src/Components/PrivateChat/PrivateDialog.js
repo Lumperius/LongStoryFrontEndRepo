@@ -75,14 +75,14 @@ class PrivateDialog extends React.Component {
     }
 
     connectToHub = () => {
-            try {
-                (async () => {
-                    this.hubConnection = await connectToHub(`${backendDomain}/messenger/chat`)
-                })().then(() => this.registerHandlers())        
-            }
-            catch {
-                setTimeout(this.connectToHub(), 10000)
-            }
+        try {
+            (async () => {
+                this.hubConnection = await connectToHub(`${backendDomain}/messenger/chat`)
+            })().then(() => this.registerHandlers())
+        }
+        catch {
+            setTimeout(this.connectToHub(), 10000)
+        }
     }
 
     registerHandlers = () => {
@@ -111,12 +111,12 @@ class PrivateDialog extends React.Component {
                 }
             }
         })
-}
+    }
 
     shouldComponentUpdate(nextProps) {
         if (this.props.dialog.dialogInfo.targetUser !== nextProps.dialog.dialogInfo.targetUser) {
             this.props.removeUnreadMessage(nextProps.dialog.dialogInfo.targetUser);
-            let refList = this.props.dialog?.UserDialogs?.find(dialog =>
+            const refList = this.props.dialog?.UserDialogs?.find(dialog =>
                 dialog.user === nextProps.dialog.dialogInfo.targetUser) || [];
             let nextDialog = {};
             Object.assign(nextDialog, refList);
@@ -142,7 +142,7 @@ class PrivateDialog extends React.Component {
     addMessageToStore = (message, user) => {
         let MessageList = [...this.props.dialog?.UserDialogs?.find(ml => ml.user === user)?.MessageList || []];
         MessageList.unshift(message);
-        let dialogHistory = {
+        const dialogHistory = {
             user: user,
             MessageList: MessageList
         }
@@ -162,7 +162,7 @@ class PrivateDialog extends React.Component {
     }
 
     handleClose = () => {
-        let dialog = {
+        const dialog = {
             targetUser: null,
             open: false
         }
@@ -172,12 +172,12 @@ class PrivateDialog extends React.Component {
     handleSubmit = (event) => {
         if (this.state.messageText !== '' &&
             this.state.messageText.length <= 1000) {
-            let messageObject = {
+            const messageObject = {
                 text: this.state.messageText,
                 user: this.props.token.login,
                 timePosted: Date.now()
             };
-            let msg = JSON.stringify(messageObject)
+            const msg = JSON.stringify(messageObject)
             if (this.hubConnection.state === signalR.HubConnectionState.Connected) {
                 this.setState({
                     message: {

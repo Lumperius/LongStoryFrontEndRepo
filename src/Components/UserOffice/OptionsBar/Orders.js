@@ -38,19 +38,34 @@ class Orders extends React.Component {
         this.sendGetOrdersRequest();
     }
 
-    handleButtonClick = async (sessionId) => {
-        const stripePromise = loadStripe("pk_test_51IFyntKGKkWeV1dSDPnoKRgzIynRZqV5mubF4AQ79ZwVqQL5heQbPnLLfjRhAfkDvpi82Yrq1KKEFOIwNAB2DoB700XJa7leJW");
-        const stripe = await stripePromise;
-        stripe.redirectToCheckout({
-            sessionId: sessionId,
-        });
+    sendDeleteOrdersRequest = (sessionId) => {
+        const queryData = {
+            sessionId: sessionId
+        }
+        axiosSetUp().delete(buildQuery('/order', queryData))
+        .then(response => {
+            this.setState({
+                message: {
+                    body: 'Order deleted',
+                    type: 'info'
+                }
+            })
+        })
+        .catch(error => {
+            this.setState({
+                message: {
+                    body: 'Error occured while deleting order',
+                    type: 'error'
+                }
+            })
+        })
     }
 
-    sendGetOrdersRequest = () => {
+    sendGetOrdersRequest = (sessionId) => {
         const queryData = {
             userId: this.props.token.id
         }
-        axiosSetUp().get(buildQuery(`/order/getSessions`, queryData))
+        axiosSetUp().get(buildQuery('/order/getSessions', queryData))
             .then(response => {
                 this.setState({
                     Orders: response.data.sessions
@@ -67,6 +82,19 @@ class Orders extends React.Component {
     }
 
 
+    handleCancelButtonClick = (sessionId) => {
+        this.sendDeleteOrdersRequest(sessionId)
+    }
+
+    handleButtonClick = async (sessionId) => {
+        const stripePromise = loadStripe('pk_test_51IFyntKGKkWeV1dSDPnoKRgzIynRZqV5mubF4AQ79ZwVqQL5heQbPnLLfjRhAfkDvpi82Yrq1KKEFOIwNAB2DoB700XJa7leJW');
+        const stripe = await stripePromise;
+        stripe.redirectToCheckout({
+            sessionId: sessionId,
+        });
+    }
+
+
     render() {
         return (<>
             <Typography variant="body">List of your orders</Typography>
@@ -74,7 +102,19 @@ class Orders extends React.Component {
             {this.state.Orders.map(order => {
                 return <>
                     <this.OrderWrapper>
-                        <Button variant="contained" size="large" color="primary" style={{ float: "right" }} onClick={() => this.handleButtonClick(order.sessionId)}>Commit the payment </Button>
+                        <Button
+                            variant="contained"
+                            size="small"
+                            style={{ float: "right", borderRadius: "30px"}}
+                            onClick={() => this.handleButtonClick(order.sessionId)}>Cancel
+                        </Button>
+                        <Button
+                            variant="contained"
+                            size="small"
+                            color="primary"
+                            style={{ float: "right", borderRadius: "30px", marginRight: "10px"}}
+                            onClick={() => this.handleCancelButtonClick(order.sessionId)}>Pay
+                        </Button>
                         <Typography variant="body" style={{ fontSize: "25px" }}>{order.bookTitle}</Typography>
                         <Typography variant="subtitle1" style={{ fontSize: "15px" }}>{order.dateCreated}</Typography>
                     </this.OrderWrapper>

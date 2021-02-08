@@ -18,7 +18,7 @@ import 'typeface-roboto'
 import { withTheme } from '@material-ui/core/styles';
 import ChatHub from './Components/ChatHub/ChatHub';
 import PrivateDialog from './Components/PrivateChat/PrivateDialog';
-import StorySelection from './Components/Books//StorySelection';
+import BookCompose from './Components/Books/BookCompose';
 import BookPage from './Components/Books/BookPage';
 import Book from './Components/Books/Book';
 import OrderBook from './Components/Books/OrderBook';
@@ -55,17 +55,17 @@ class App extends React.Component {
           <Route exact path="/" component={Welcome} />
           <Route exact path="/admin" component={Admin} />
           <Route exact path="/authentication" component={Authentication} />
+          <Route exact path="/books" component={BookPage} />
+          <Route exact path="/books/book:id" component={Book} />
+          <Route exact path="/books/composeBook" component={BookCompose} />
+          <Route exact path="/books/orderBook:id" component={OrderBook} />
+          <Route exact path="/books/success" component={SuccessOrder} />
           <Route exact path="/chat" component={ChatHub} />
-          <Route exact path="/initStory" component={InitializeStory} />
           <Route exact path="/logout" component={Logout} />
           <Route exact path="/registration" component={Registration} />
           <Route exact path="/office" component={Office} />
+          <Route exact path="/initStory" component={InitializeStory} />
           <Route exact path="/story:id" component={Story} />
-          <Route exact path="/books" component={BookPage} />
-          <Route exact path="/books/book:id" component={Book} />
-          <Route exact path="/books/composeBook" component={StorySelection} />
-          <Route exact path="/books/orderBook:id" component={OrderBook} />
-          <Route exact path="/books/success" component={SuccessOrder} />
         </Router>
         {this.renderMessenger()}
       </div>

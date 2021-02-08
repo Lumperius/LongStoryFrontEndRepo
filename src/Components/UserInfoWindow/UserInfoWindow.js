@@ -37,7 +37,7 @@ class UserInfoWindow extends React.Component {
         const queryData = {
             userId: this.props.userId
         }
-        axiosSetUp().get(buildQuery(`/userInfo/get`, queryData))
+        axiosSetUp().get(buildQuery('/userInfo/get', queryData))
             .then(response => {
                 this.setState({
                     userInfo: response.data || null,
@@ -56,7 +56,7 @@ class UserInfoWindow extends React.Component {
 
     handleWhisper = () => {
         if (this.state.userInfo) {
-            let dialog = {
+            const dialog = {
                 open: true,
                 targetUser: this.state.userInfo.login
             }

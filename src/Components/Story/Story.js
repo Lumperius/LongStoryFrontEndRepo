@@ -75,7 +75,7 @@ class Story extends React.Component {
         const queryData = {
             storyId: this.props.match.params.id
         }
-        axiosSetUp().get(buildQuery(`/storyPart/getAllParts`, queryData))
+        axiosSetUp().get(buildQuery('/storyPart/getAllParts', queryData))
             .then(response => {
                 this.setState({
                     StoryParts: response.data || []
@@ -127,14 +127,12 @@ class Story extends React.Component {
     }
 
     sendVoteRequest = (voteType) => {
-        let storyId = this.props.match.params.id;
-        let userId = this.props.token.id;
         let body = {
-            storyId: storyId,
-            userId: userId,
+            storyId: this.props.match.params.id,
+            userId: this.props.token.id,
             isPositive: voteType
         }
-        axiosSetUp().post(buildQuery(`/story/vote`), body)
+        axiosSetUp().post(buildQuery('/story/vote'), body)
             .then((response) => {
                 let prevState = this.state;
                 prevState.message = response.data;
@@ -160,7 +158,7 @@ class Story extends React.Component {
             storyId: this.props.match.params.id,
             userId: this.props.token.id
         }
-        axiosSetUp().post(buildQuery(`/story/finish`), body)
+        axiosSetUp().post(buildQuery('/story/finish'), body)
             .then(response => {
                 this.setState({
                     message: {
