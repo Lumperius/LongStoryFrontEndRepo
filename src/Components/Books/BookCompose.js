@@ -12,6 +12,8 @@ import { FormikTextField } from 'formik-material-fields';
 import Wrapper from '../../objects.js';
 import buildQuery from '../../helpers';
 
+const TITLE_MAX_LENGTH = 100;
+const DISPLAYED_BODY_MAX_LENGTH = 100;
 
 class BookCompose extends React.Component {
     constructor() {
@@ -33,7 +35,7 @@ class BookCompose extends React.Component {
     ParametersSchema = Yup.object().shape({
         bookTitle: Yup.string()
             .required('Enter title of the book')
-            .max(100, 'Title can\'t be longer than 100 symbols'),
+            .max(TITLE_MAX_LENGTH, `Title can\'t be longer than ${TITLE_MAX_LENGTH} symbols`),
     });
 
 
@@ -52,7 +54,7 @@ class BookCompose extends React.Component {
     }
 
     sendComposeBookRequest = (values) => {
-        if (!this.state.StoryList?.find(story => story?.isMarked === true )) {
+        if (!this.state.StoryList?.find(story => story?.isMarked === true)) {
             this.setState({
                 message: {
                     body: 'You need to choose stories for the book first.',
@@ -96,7 +98,7 @@ class BookCompose extends React.Component {
     sendGetRequestAndSetNewPage = (page = this.state.page, sortBy = this.state.sortBy) => {
         if (page < 1) return;
         const queryData = {
-            page: page, 
+            page: page,
             count: this.state.count,
             sortBy: sortBy
         }
@@ -136,8 +138,8 @@ class BookCompose extends React.Component {
     }
 
     cutBody = (body) => {
-        if (body.length > 110)
-             return body.substring(0, 100) + '...'
+        if (body.length > DISPLAYED_BODY_MAX_LENGTH + 10)
+            return body.substring(0, DISPLAYED_BODY_MAX_LENGTH) + '...'
         else return body + ' ...'
     }
 
@@ -166,7 +168,7 @@ class BookCompose extends React.Component {
                 </>
             })}
             <Formik
-                initialValues = {{
+                initialValues={{
                     bookTitle: ''
                 }}
                 validationSchema={this.ParametersSchema}

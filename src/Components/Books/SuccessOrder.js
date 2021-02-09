@@ -15,11 +15,8 @@ class SuccessOrder extends React.Component {
         }
     }
 
-
     componentDidMount() {
-
     }
-
 
     render() {
         return (<Wrapper>

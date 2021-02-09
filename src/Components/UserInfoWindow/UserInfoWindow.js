@@ -45,7 +45,7 @@ class UserInfoWindow extends React.Component {
             })
             .catch(error => {
                 this.setState({
-                    userInfo:  null,
+                    userInfo: null,
                     message: {
                         body: 'Error occured while downloading user information',
                         type: 'error'
@@ -67,7 +67,9 @@ class UserInfoWindow extends React.Component {
     renderStartChatLink = () => {
         if (this.props.token && this.props.userId !== this.props.token.id) {
             return <>
-                <Typography variant="text" onClick={this.handleWhisper} style={{ cursor: "pointer", textDecoration: "underline", fontSize: "20px" }}>Start chat</Typography>
+                <Typography variant="text" onClick={this.handleWhisper} style={{ cursor: "pointer", textDecoration: "underline", fontSize: "20px" }}>
+                    Start chat
+                </Typography>
             </>
         }
     }
@@ -78,9 +80,9 @@ class UserInfoWindow extends React.Component {
                 {renderMessage(this.state.message.body, this.state.message.type)}
                 <Typography variant="subtitle1">
                     {this.state.userInfo.role || null} {this.state.userInfo.login || null}<br />
-                Name: {this.state.userInfo.firstName || null} {this.state.userInfo.secondName || 'unknown'}<br />
-                Birthday: {this.state.userInfo.birtDay || null}<br />
-                Registered: {this.state.userInfo.dateRegistered || ''}<br />
+                    Name: {this.state.userInfo.firstName || null} {this.state.userInfo.secondName || 'unknown'}<br />
+                    Birthday: {this.state.userInfo.birtDay || null}<br />
+                    Registered: {this.state.userInfo.dateRegistered || ''}<br />
                 </Typography>
                 {this.renderStartChatLink()}
             </>
@@ -103,16 +105,17 @@ class UserInfoWindow extends React.Component {
     }
 }
 
-const mapStateToProps = function (state) {
+const mapStateToProps = state => {
     return {
         token: state.token.tokenObj,
     };
 }
 
-const mapDispatchToProps = dispatch => {   
+const mapDispatchToProps = dispatch => {
     return {
-        setDialog: dialog =>{
-            dispatch(setDialog(dialog))},
+        setDialog: dialog => {
+            dispatch(setDialog(dialog))
+        },
     };
 };
 

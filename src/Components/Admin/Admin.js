@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import axiosSetUp from '../../axiosConfig';
 import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button'
-import {Table, TableRow, TableCell, TableHead, TableBody}from '@material-ui/core';
+import { Table, TableRow, TableCell, TableHead, TableBody } from '@material-ui/core';
 import renderMessage from '../../message';
 import Wrapper from '../../objects';
 import buildQuery from '../../helpers';
@@ -81,8 +81,8 @@ class Admin extends React.Component {
 
 
     componentDidMount() {
-         if (this.props.token === undefined || this.props.token.scope !== 'Admin') 
-             this.props.history.push('authentication');
+        if (this.props.token === undefined || this.props.token.scope !== 'Admin')
+            this.props.history.push('authentication');
         this.sendRequestAndSetNewPage();
     }
 
@@ -122,7 +122,7 @@ class Admin extends React.Component {
                 console.log(response.data);
                 this.sendRequestAndSetNewPage();
                 this.setState({
-                    message:{
+                    message: {
                         body: response.data,
                         type: 'info'
                     }
@@ -139,49 +139,52 @@ class Admin extends React.Component {
             })
     }
 
-    
+
     sendBanUserRequest = (userId, isUnbanRequest) => {
         const body = {
             userId: userId,
             isUnbanRequest: isUnbanRequest
         }
         axiosSetUp().post(buildQuery('/user/ban'), body)
-        .then(response => {
-            this.setState({
-                message: {
-                    body: response.data,
-                    type: 'success'
-                }
+            .then(response => {
+                this.setState({
+                    message: {
+                        body: response.data,
+                        type: 'success'
+                    }
+                })
             })
-        })
-        .catch(error => {
-            this.setState({
-                message: {
-                    body: 'Operation failed',
-                    type: 'error'
-                }
+            .catch(error => {
+                this.setState({
+                    message: {
+                        body: 'Operation failed',
+                        type: 'error'
+                    }
+                })
             })
-        })
     }
-    
+
 
     renderUserRow = (user) => {
         let bannedUntil;
-        if(user.bannedUntil){
+        if (user.bannedUntil) {
             bannedUntil = 'Until ' + new Date(user.bannedUntil).toLocaleDateString() + ' ' + new Date(user.bannedUntil).toLocaleTimeString();
         }
-        else{
+        else {
             bannedUntil = 'Not banned';
         }
-        
+
         return <TableRow>
             <TableCell >{user.login}</TableCell> <TableCell>{user.email}</TableCell>
             <TableCell >{user.roleName}</TableCell>
             <TableCell >{bannedUntil}</TableCell>
-            <TableCell style={{ width: "20%"}}>
-                <Button variant="outlined" style={{ backgroundColor: "red" }}                    key={user.login} onClick={() => this.sendDeleteRequest(user.id)}>Delete</Button>
-                <Button variant="outlined" style={{ backgroundColor: "orange", margin: "10px" }} key={user.login} onClick={() => this.sendBanUserRequest(user.id, false)}>Ban</Button>
-                <Button variant="outlined" style={{ backgroundColor: "green" }}                  key={user.login} onClick={() => this.sendBanUserRequest(user.id, true)}>Unban</Button>
+            <TableCell style={{ width: "20%" }}>
+                <Button variant="outlined" style={{ backgroundColor: "red" }}
+                    key={user.login} onClick={() => this.sendDeleteRequest(user.id)}>Delete</Button>
+                <Button variant="outlined" style={{ backgroundColor: "orange", margin: "10px" }}
+                    key={user.login} onClick={() => this.sendBanUserRequest(user.id, false)}>Ban</Button>
+                <Button variant="outlined" style={{ backgroundColor: "green" }}
+                    key={user.login} onClick={() => this.sendBanUserRequest(user.id, true)}>Unban</Button>
             </TableCell>
         </TableRow>
     }
@@ -197,7 +200,7 @@ class Admin extends React.Component {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                    {this.state.List.map((user) => {
+                        {this.state.List.map((user) => {
                             return <> {this.renderUserRow(user)}</>
                         })}
                     </TableBody>

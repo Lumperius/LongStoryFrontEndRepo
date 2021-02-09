@@ -10,7 +10,10 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 import Wrapper from '../../objects';
 import buildQuery from '../../helpers';
+import { stateToHTML } from 'draft-js-export-html';
 
+
+const MAX_COMMENT_BODY_LENGTH = 1000;
 
 class Comments extends React.Component {
     constructor() {
@@ -41,27 +44,37 @@ class Comments extends React.Component {
         this.sendGetCommentsRequest();
     }
 
-    sendPostCommentRequest = () => {
-        if (!this.state.editorState || this.state.editorState.getCurrentContent().getPlainText().length > 1000) {
+    isCommentValid = () => {
+        debugger
+        if (!this.state.editorState || this.state.editorState.getCurrentContent().getPlainText().length > MAX_COMMENT_BODY_LENGTH
+        || this.state.editorState.getCurrentContent().getPlainText().length < 1) {
             this.setState({
                 message: {
                     body: 'Incorrect text',
                     type: 'error'
                 }
             })
-            return;
+            return false;
         }
 
-        if (JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent())).length > 2000) {
+        const imgRegex = new RegExp('<img.+?>')
+        const htmlText = stateToHTML(this.state.editorState.getCurrentContent())
+        if (imgRegex.test(htmlText)) {
             this.setState({
                 message: {
-                    body: 'Can\'t post this comment. Consider using less types of styled text.',
+                    body: 'Images are not allowed.',
                     type: 'error'
                 }
             })
-            return;
+            return false;
         }
+        return true;
+    }
 
+    sendPostCommentRequest = () => {
+        debugger
+        if (!this.isCommentValid())
+            return;
         const body = {
             userId: this.props.token.id,
             storyId: this.props.storyId,
@@ -143,13 +156,12 @@ class Comments extends React.Component {
     }
 
     handleBeforeInput = () => {
-        if (this.state.editorState.getCurrentContent().getPlainText().length >= 1000)
+        if (this.state.editorState.getCurrentContent().getPlainText().length >= MAX_COMMENT_BODY_LENGTH)
             return 'handled'
     }
 
     handlePastedText = (pastedText) => {
-        debugger
-        if (this.state.editorState.getCurrentContent().getPlainText().length + pastedText.length > 1000)
+        if (this.state.editorState.getCurrentContent().getPlainText().length + pastedText.length > MAX_COMMENT_BODY_LENGTH)
             return 'handled'
     }
 
@@ -204,7 +216,7 @@ class Comments extends React.Component {
                     option: ['inline', 'link', 'list']
                 }} />
             </this.EditorWraper>
-            <Typography variant="subtitle2" id="addComment">{this.state.editorState.getCurrentContent().getPlainText().length}/1000</Typography>
+            <Typography variant="subtitle2" id="addComment">{this.state.editorState.getCurrentContent().getPlainText().length}/{MAX_COMMENT_BODY_LENGTH}</Typography>
             {renderMessage(this.state.message.body, this.state.message.type)}
             <Button color="primary" variant="contained" onClick={this.sendPostCommentRequest}>submit</Button><br />
         </Wrapper>)

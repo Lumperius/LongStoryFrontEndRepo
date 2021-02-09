@@ -7,10 +7,15 @@ import Button from '@material-ui/core/Button';
 import renderMessage from '../../message';
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 import Wrapper from '../../objects';
 import buildQuery from '../../helpers';
+import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
+
+
+const MAX_STORYPART_LENGTH = 1000;
+const MIN_STORYPART_LENGTH = 20;
+const MAX_TITLE_LENGTH = 50;
 
 class InitializeStory extends React.Component {
 
@@ -76,7 +81,7 @@ class InitializeStory extends React.Component {
         const body = {
             userId: this.props.token.id,
             title: this.state.title,
-            body: stateToHTML(this.state.editorState.getCurrentContent()),
+            body: JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent())),
             author: this.props.token.login,
             authorId: this.props.token.id,
             dateSubmitted: new Date().toISOString()
@@ -119,31 +124,31 @@ class InitializeStory extends React.Component {
     }
 
     handleBeforeInput = () => {
-        if (this.state.editorState.getCurrentContent().getPlainText().length >= 1000)
+        if (this.state.editorState.getCurrentContent().getPlainText().length >= MAX_STORYPART_LENGTH)
             return 'handled'
     }
 
     handlePastedText = (pastedText) => {
-        if (this.state.editorState.getCurrentContent().getPlainText().length + pastedText.length > 1000)
+        if (this.state.editorState.getCurrentContent().getPlainText().length + pastedText.length > MAX_STORYPART_LENGTH)
             return 'handled'
     }
 
     validateRequestParametrs = () => {
-        if (!this.state.title || this.state.title.length < 1 || this.state.title.length > 50) {
+        if (!this.state.title || this.state.title.length < 1 || this.state.title.length > MAX_TITLE_LENGTH) {
             this.setState({
                 message: {
-                    body: 'Incorrect title. It must more than 1 and less than 50 symbols.',
+                    body: `Incorrect title. It must more than 1 and less than ${MAX_TITLE_LENGTH} symbols.`,
                     type: 'error'
                 }
             });
             return false;
         }
 
-        if (!this.state.editorState?.getCurrentContent() || this.state.editorState?.getCurrentContent().getPlainText().length < 20 ||
-            this.state.editorState?.getCurrentContent().getPlainText().length >= 4000) {
+        if (!this.state.editorState?.getCurrentContent() || this.state.editorState?.getCurrentContent().getPlainText().length < MIN_STORYPART_LENGTH ||
+            this.state.editorState?.getCurrentContent().getPlainText().length >= MAX_STORYPART_LENGTH) {
             this.setState({
                 message: {
-                    body: 'Incorrect text. It must more than 20 and less than 4000 symbols.',
+                    body: `Incorrect text. It must more than ${MIN_STORYPART_LENGTH} and less than ${MAX_STORYPART_LENGTH} symbols.`,
                     type: 'error'
                 }
             });
@@ -167,15 +172,15 @@ class InitializeStory extends React.Component {
     render() {
         return (
             <Wrapper>
-                <this.TitleInput name="title" maxLength="50" placeholder="Enter a title" onChange={this.handleChange}></this.TitleInput><br />
-                <Typography variant="subtitle2">{this.state.title.length}/50</Typography><br />
+                <this.TitleInput name="title" maxLength={MAX_TITLE_LENGTH} placeholder="Enter a title" onChange={this.handleChange}></this.TitleInput><br />
+                <Typography variant="subtitle2">{this.state.title.length}/{MAX_TITLE_LENGTH}</Typography><br />
                 <Editor
                     name="body"
                     placeholder="Type the beginning of story here"
                     onEditorStateChange={this.onEditorStateChange}
                     handleBeforeInput={this.handleBeforeInput}
                     handlePastedText={this.handlePastedText} />
-                <Typography variant="subtitle2">{this.state.editorState.getCurrentContent().getPlainText().length}/4000</Typography><br />
+                <Typography variant="subtitle2">{this.state.editorState.getCurrentContent().getPlainText().length}/{MAX_STORYPART_LENGTH}</Typography><br />
                 {renderMessage(this.state.message.body, this.state.message.type)}
                 <Button variant="contained" color="primary" onClick={this.sendCreateStoryRequest}>Submit</Button>
             </Wrapper>

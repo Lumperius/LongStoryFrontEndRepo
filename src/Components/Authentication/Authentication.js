@@ -14,6 +14,7 @@ import * as Yup from 'yup';
 import Wrapper from '../../objects';
 import buildQuery from '../../helpers';
 
+const MAX_INPUT_SYMBOLS = 30;
 
 class Authentication extends React.Component {
 
@@ -29,9 +30,11 @@ class Authentication extends React.Component {
 
     LoginSchema = Yup.object().shape({
         loginOrEmail: Yup.string()
-        .required('Required'),
+        .required('Required')
+        .max(MAX_INPUT_SYMBOLS,'Invalid input'),
         password: Yup.string()
-        .required('Required'),
+        .required('Required')
+        .max(MAX_INPUT_SYMBOLS,'Invalid input'),
     });
 
     SubmitButton = styled.button`
@@ -60,28 +63,6 @@ class Authentication extends React.Component {
         else return 'Login';
     }
 
-    validateAuthRequest = (body) => {
-        if (body.loginOrEmail.toString().length < 1 || body.loginOrEmail.toString().length > 30) {
-            this.setState({
-                message: {
-                    body: 'Wrong login/email',
-                    type: 'error'
-                }
-            })
-            return false;
-        }
-        if (body.password.toString().length < 1 || body.password.toString().length > 30) {
-            this.setState({
-                message: {
-                    body: 'Wrong password',
-                    type: 'error'
-                }
-            })
-            return false;
-        }
-        return true;
-    }
-
 
     sendAuthenticationRequest = (values) => {
         const body = {
@@ -89,7 +70,6 @@ class Authentication extends React.Component {
             password: values.password,
             inputType: this.getLoginOrEmailType(values.login)
         };
-        if (!this.validateAuthRequest(body)) { return; }
         axiosSetUp().post(buildQuery('/user/authenticate', null), body)
             .then(response => {
                 localStorage.setItem('Token', response.data);
@@ -154,7 +134,7 @@ class Authentication extends React.Component {
     }
 }
 
-const mapStateToProps = function (state) {
+const mapStateToProps = state => {
     return {
         token: state.token.tokenObj
     };

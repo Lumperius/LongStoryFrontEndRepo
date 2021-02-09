@@ -16,6 +16,8 @@ import addUnreadMessage from '../../Actions/addUnreadMessage';
 import removeUnreadMessage from '../../Actions/removeUnreadMessage';
 import Wrapper, { backendDomain } from '../../objects';
 
+const MESSSAGE_MAX_LENGTH = 1000;
+const CONNECTION_TIMEOUT = 10000;
 
 class PrivateDialog extends React.Component {
     constructor() {
@@ -81,7 +83,7 @@ class PrivateDialog extends React.Component {
             })().then(() => this.registerHandlers())
         }
         catch {
-            setTimeout(this.connectToHub(), 10000)
+            setTimeout(this.connectToHub(), CONNECTION_TIMEOUT)
         }
     }
 
@@ -171,7 +173,7 @@ class PrivateDialog extends React.Component {
 
     handleSubmit = (event) => {
         if (this.state.messageText !== '' &&
-            this.state.messageText.length <= 1000) {
+            this.state.messageText.length <= MESSSAGE_MAX_LENGTH) {
             const messageObject = {
                 text: this.state.messageText,
                 user: this.props.token.login,
@@ -214,7 +216,7 @@ class PrivateDialog extends React.Component {
         else {
             this.setState({
                 message: {
-                    body: 'Incorrect message. Must be text 1-1000 symbols long.',
+                    body: `Incorrect message. Must be text ${MESSSAGE_MAX_LENGTH} symbols long.`,
                     type: 'error'
                 }
             })

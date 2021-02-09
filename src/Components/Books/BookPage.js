@@ -52,11 +52,11 @@ class Books extends React.Component {
 
     sendGetBookPageRequest = (page = this.state.page, displayAll = this.state.displayAllBooks) => {
         const queryData = {
-           page: page,
-           count: this.state.count
+            page: page,
+            count: this.state.count
         }
         if (!displayAll)
-        queryData.userId = this.props.token.id
+            queryData.userId = this.props.token.id
         axiosSetUp().get(buildQuery('/book/getPageOfBooks', queryData))
             .then(response => {
                 this.setState({
@@ -153,7 +153,9 @@ class Books extends React.Component {
     renderABook = (book, index) => {
         let authorLogin = this.state.Authors?.find(author => author.userId === book.authorId)?.userLogin || 'Undefined'
         return <div style={{ padding: "5px" }}>
-            <this.StoryTitle onClick={() => this.props.history.push(`books/book${book.bookId}`)}>{index + 1 + (this.state.page - 1) * this.state.count}: {book.title}</this.StoryTitle>
+            <this.StoryTitle onClick={() => this.props.history.push(`books/book${book.bookId}`)}>
+                {index + 1 + (this.state.page - 1) * this.state.count}: {book.title}
+            </this.StoryTitle>
             <Typography style={{ fontWeight: "300", fontSize: "14px", float: "right-bottom" }}>&nbsp;By {authorLogin}</Typography>
             <Typography style={{ fontWeight: "300", fontSize: "14px", float: "right-bottom" }}> {book.dateCreated} </Typography><hr />
         </div>

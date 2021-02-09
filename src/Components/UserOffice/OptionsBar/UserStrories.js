@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../../message';
 import ReactHtmlParser from 'react-html-parser';
-import buildQuery from '../../../helpers';
+import buildQuery, { tryRenderRichTextFromRawJSON } from '../../../helpers';
 
 
 class UserStories extends React.Component {
@@ -90,7 +90,7 @@ class UserStories extends React.Component {
     renderStory = (story) => {
         return <>
             <Typography variant="h5">{story.title}</Typography><br />
-            <Typography variant="body1" style={{ textIndent: "15px", wordBreak: "break-all" }}>{ReactHtmlParser(story.body)}</Typography><br />
+            <Typography variant="body1" style={{ textIndent: "15px", wordBreak: "break-all" }}>{tryRenderRichTextFromRawJSON(story.body)}</Typography><br />
             <Typography variant="subtitle1">{story.dateSubmitted}</Typography><hr />
         </>
     };
@@ -98,7 +98,7 @@ class UserStories extends React.Component {
     renderStoryPart = (storyPart) => {
         return <>
             <Typography variant="caption" style={{ textAlign: "right", wordBreak: "break-all" }}>From: {ReactHtmlParser(storyPart.titleOfStory)}</Typography><br />
-            {ReactHtmlParser(storyPart.body)}<hr />
+            {tryRenderRichTextFromRawJSON(storyPart.body)}<hr />
         </>
     }
 

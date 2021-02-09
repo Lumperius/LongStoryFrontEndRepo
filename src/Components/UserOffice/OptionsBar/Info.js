@@ -11,7 +11,9 @@ import * as Yup from 'yup';
 import { FormikTextField } from 'formik-material-fields';
 import buildQuery from '../../../helpers';
 
-
+const MAX_LOGIN_LENGTH = 16;
+const MIN_LOGIN_LENGTH = 8;
+const MAX_NAME_LENGTH = 32;
 
 class Info extends React.Component {
 
@@ -31,14 +33,14 @@ class Info extends React.Component {
 
     SignupSchema = Yup.object().shape({
         login: Yup.string()
-            .min(8, 'This login is too short, 8 symbols is minimum')
-            .max(16, 'This login is too long, 16 symbols maximum'),
+            .min(MIN_LOGIN_LENGTH, `This login is too short, ${MIN_LOGIN_LENGTH} symbols is minimum`)
+            .max(MAX_LOGIN_LENGTH, `This login is too long, ${MAX_LOGIN_LENGTH} symbols maximum`),
         firstName: Yup.string()
             .min(1, 'Name must contain 1 symbol at least')
-            .max(32, 'Name can\'t be longer than 32 symbols'),
+            .max(MAX_NAME_LENGTH, `Name can\'t be longer than ${MAX_NAME_LENGTH} symbols`),
         lastName: Yup.string()
             .min(1, 'Name must contain 1 symbol at least')
-            .max(32, 'Name can\'t be longer than 32 symbols'),
+            .max(MAX_NAME_LENGTH, `Name can\'t be longer than ${MAX_NAME_LENGTH} symbols`),
         birthday: Yup.date().transform((value, originalValue) => {
             value = originalValue.toISOString;
             return value;
@@ -124,7 +126,7 @@ class Info extends React.Component {
         const queryData = {
             userId: this.props.token.id
         }
-        axiosSetUp().get(buildQuery('/userInfo/get',queryData))
+        axiosSetUp().get(buildQuery('/userInfo/get', queryData))
             .then(response => {
                 this.setState({
                     info: response.data,
@@ -187,15 +189,15 @@ class Info extends React.Component {
     renderAvatarSelection = () => {
         if (this.state.avatar) {
             return <form onSubmit={this.handleSubmit}>
-                <img src={this.state.avatarPath} width="40px" height="40px"  alt="Not loaded" /><br />
-                <TextField id="image" type="file" label="Change avatar" accept="image/png, image/jpeg"onChange={this.handleImageChange} /><br />
-                <Button variant="contained" color="primary" type="submit" style={{margin: "10px"}} on>Change avatar</Button>
+                <img src={this.state.avatarPath} width="40px" height="40px" alt="Not loaded" /><br />
+                <TextField id="image" type="file" label="Change avatar" accept="image/png, image/jpeg" onChange={this.handleImageChange} /><br />
+                <Button variant="contained" color="primary" type="submit" style={{ margin: "10px" }} on>Change avatar</Button>
             </form>
         }
         if (this.props.avatar) {
             return <form onSubmit={this.handleSubmit}>
                 <Typography variant="subtitle1">CURRENT AVATAR</Typography>
-                <img src={`data:image/jpeg;base64,${this.props.avatar}`} width="40px" height="40px" alt="Not loaded"/><br />
+                <img src={`data:image/jpeg;base64,${this.props.avatar}`} width="40px" height="40px" alt="Not loaded" /><br />
                 <TextField id="image" type="file" label="Change avatar" accept="image/png, image/jpeg" onChange={this.handleImageChange} /><br />
             </form>
         }
@@ -218,18 +220,34 @@ class Info extends React.Component {
                 >
                     {({ errors, touched }) => (
                         <Form>
-                            <Typography variant="subtitle1" >LOGIN: {this.state.info.login}</Typography>
-                            <FormikTextField name="login" type="text" label="Change login" style={{ width: "20%" }} /><br /><br />
-                            <Typography variant="subtitle1">EMAIL: {this.state.info.email}</Typography>
-                            <Typography variant="subtitle1">ROLE: {this.state.info.role}</Typography><br />
-                            <Typography variant="subtitle1">FIRST AND SECOND NAME: {this.state.info.firstName} {this.state.info.lastName}</Typography>
-                            <FormikTextField name="firstName" label="First name" type="text" style={{ width: "20%" }} /><br />
-                            <FormikTextField name="lastName" label="Last name" type="text" style={{ width: "20%" }} /><br /><br />
-                            <Typography variant="subtitle1">BIRTHDAY: {this.state.info.birthDay}</Typography>
-                            <FormikTextField name="birthday" type="date" style={{ width: "10%" }} /><br /><br />
-                            <Typography variant="subtitle1">REGISTERED: {this.state.info.dateRegistered}</Typography>
+                            <Typography variant="subtitle1" >
+                                LOGIN: {this.state.info.login}
+                            </Typography>
+                            <FormikTextField name="login" type="text" label="Change login" style={{ width: "20%" }} />
+                            <br /><br />
+                            <Typography variant="subtitle1">
+                                EMAIL: {this.state.info.email}
+                            </Typography>
+                            <Typography variant="subtitle1">
+                                ROLE: {this.state.info.role}
+                            </Typography><br />
+                            <Typography variant="subtitle1">
+                                FIRST AND SECOND NAME: {this.state.info.firstName} {this.state.info.lastName}
+                            </Typography>
+                            <FormikTextField name="firstName" label="First name" type="text" style={{ width: "20%" }} />
+                            <br />
+                            <FormikTextField name="lastName" label="Last name" type="text" style={{ width: "20%" }} />
+                            <br /><br />
+                            <Typography variant="subtitle1">
+                                BIRTHDAY: {this.state.info.birthDay}
+                            </Typography>
+                            <FormikTextField name="birthday" type="date" style={{ width: "10%" }} />
+                            <br /><br />
+                            <Typography variant="subtitle1">
+                                REGISTERED: {this.state.info.dateRegistered}
+                            </Typography>
                             {renderMessage(this.state.message.body, this.state.message.type)}
-                            <Button variant="contained" color="primary" type="submit" style={{margin: "10px"}}>Edit</Button><hr />
+                            <Button variant="contained" color="primary" type="submit" style={{ margin: "10px" }}>Edit</Button><hr />
                         </Form>
                     )}
                 </Formik>

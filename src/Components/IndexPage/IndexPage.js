@@ -13,6 +13,8 @@ import ReactHtmlParser from 'react-html-parser';
 import Wrapper from '../../objects'
 import buildQuery from '../../helpers';
 
+const MAX_DISPLAYED_BODY_LENGTH = 1000;
+const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
 
 class IndexPage extends React.Component {
     constructor() {
@@ -36,7 +38,6 @@ class IndexPage extends React.Component {
         }
     }
 
-    emptyGuid = '00000000-0000-0000-0000-000000000000';
 
     StoryBlock = styled.div`
     margin: 20px;
@@ -49,22 +50,10 @@ class IndexPage extends React.Component {
         cursor: pointer;
     }
     `;
-    Title = styled.h2`
-    font-family: TimesNewRoman;
-    margin-left: 10px;
-    `;
-    StoryBody = styled.p`
-    font-family: TimesNewRoman;
-    text-indent: 20px;
-    `;
     Signature = styled.p`
     margin-bottom: -20px;
     font-size: 12px;
     font-family: TimesNewRoman;
-    `;
-    HrLine = styled.hr`
-    border: 1px solid darkgrey;
-    margin: -5px;
     `;
     Page = styled.p`
     display: inline-block;
@@ -116,8 +105,8 @@ class IndexPage extends React.Component {
             if (!userIdList.find(id => id === story.userId))
                 userIdList.push(story.userId);
         })
-        if (!this.state.StoriesList.includes(story => story.id === null) && !userIdList.find(id => id === null)) {
-            userIdList.push(this.emptyGuid);
+        if (this.state.StoriesList.includes(story => story.id === null) && !userIdList.find(id => id === null)) {
+            userIdList.push(EMPTY_GUID);
         }
         const jsonIds = JSON.stringify(userIdList);
         const queryData = {
@@ -166,8 +155,8 @@ class IndexPage extends React.Component {
     };
 
     cutStoryBody = (body) => {
-        if (body && body.length > 1010)
-            return body.substring(0, 1000) + '...'
+        if (body && body.length > MAX_DISPLAYED_BODY_LENGTH + 10)
+            return body.substring(0, MAX_DISPLAYED_BODY_LENGTH) + '...'
     }
 
     handleAuthorClick = (event) => {
@@ -224,7 +213,7 @@ class IndexPage extends React.Component {
         </>
     }
 
-    renderAStory = (story) => {
+    renderStory = (story) => {
         let color = 'black';
         let rating = story.rating;
         if (story.rating > 0) {
@@ -233,17 +222,21 @@ class IndexPage extends React.Component {
         }
         if (story.rating < 0)
             color = 'red';
-
-        let info = this.state.UserInfoList.find(ui => ui.userId === story.userId) || this.state.UserInfoList.find(ui => ui.userId === this.emptyGuid) 
+        let info = this.state.UserInfoList?.find(ui => ui.userId === story.userId) || this.state.UserInfoList.find(ui => ui.userId === EMPTY_GUID)
         story.firstPartBody = this.cutStoryBody(story.firstPartBody) || story.firstPartBody;
         return <>
             <this.Signature>
-                <this.Avatar src={`data:image/jpeg;base64,${info?.avatarBase64}`} width="40px" height="40px" onClick={this.handleAuthorClick} />
-                <Typography variant="subtitle2">By <this.Login id={story.userId} onClick={this.handleAuthorClick}>{info?.userLogin || 'Unknown'}</this.Login> {story.dateSubmitted}</Typography>
+                <this.Avatar width="40px" height="40px" onClick={this.handleAuthorClick}
+                    src={`data:image/jpeg;base64,${info?.avatarBase64 || null}`}/>
+                <Typography variant="subtitle2">
+                    By <this.Login id={story.userId} onClick={this.handleAuthorClick}>{info?.userLogin || 'Unknown'}</this.Login> {story.dateSubmitted}
+                </Typography>
             </this.Signature>
             <this.StoryBlock id={story.userId} onClick={() => this.props.history.push(`story${story.id}`)}>
                 <Typography variant='h5' style={{ wordBreak: "break-all" }}>{story.title}</Typography>
-                <Typography variant='subtitle1' style={{ wordBreak: "break-all", textIndent: "15px", marginBottom: "10px" }}>{ReactHtmlParser(story.firstPartBody)}</Typography>
+                <Typography variant='subtitle1' style={{ wordBreak: "break-all", textIndent: "15px", marginBottom: "10px" }}>
+                    {ReactHtmlParser(story.firstPartBody)}
+                </Typography>
             </this.StoryBlock>
             <this.Rating style={{ color: color }}>{rating}</this.Rating>
             <br />
@@ -272,7 +265,7 @@ class IndexPage extends React.Component {
                     <MenuItem value={'title'}>Title</MenuItem>
                 </Select><br /><br />
                 {this.state.StoriesList.map((story) => {
-                    return <> {this.renderAStory(story)} </>
+                    return <> {this.renderStory(story)} </>
                 })}
                 {<Button variant="contained" color="primary" onClick={() => this.sendGetRequestAndSetNewPage(this.state.page - 1)}>Prev</Button>}
                 {this.renderPageSelection()}

@@ -8,9 +8,8 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import renderMessage from '../../message';
 import Comments from './Comments';
-import ReactHtmlParser from 'react-html-parser';
 import Wrapper from '../../objects';
-import buildQuery from '../../helpers';
+import buildQuery, { tryRenderRichTextFromRawJSON } from '../../helpers';
 
 
 class Story extends React.Component {
@@ -93,7 +92,7 @@ class Story extends React.Component {
 
     sendGetStoryRequest() {
         const queryData = {
-            storyId: this.props.match.params.id,          
+            storyId: this.props.match.params.id,
         }
 
         if (this.props.token)
@@ -217,11 +216,7 @@ class Story extends React.Component {
 
     renderStoryPart = (storyPart) => {
         if (storyPart.body) {
-            return <>
-                <Typography variant="body" style={{ wordBreak: "break-all", textIndent: "15px" }}>{ReactHtmlParser(storyPart.body)}</Typography>
-                <this.Signature>{storyPart.author} at {storyPart.dateAdded} with {storyPart.rating} votes</this.Signature>
-                <hr />
-            </>
+            return tryRenderRichTextFromRawJSON(storyPart.body)
         }
     }
 
@@ -250,7 +245,7 @@ class Story extends React.Component {
 
     render() {
         return <Wrapper>
-            <Typography variant="h3" style={{wordBreak: "break-all"}}>{this.state.story.title}</Typography>
+            <Typography variant="h3" style={{ wordBreak: "break-all" }}>{this.state.story.title}</Typography>
             <this.Signature>
                 <this.Rating>{this.state.story.rating}</this.Rating>
                 {this.state.story.author}_
@@ -270,7 +265,7 @@ class Story extends React.Component {
     }
 }
 
-const mapStateToProps = function (state) {
+const mapStateToProps = state => {
     return {
         token: state.token.tokenObj,
     };

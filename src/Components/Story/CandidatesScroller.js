@@ -5,7 +5,10 @@ import { connect } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../message';
 import ReactHtmlParser from 'react-html-parser';
-import buildQuery from '../../helpers';
+import buildQuery, {tryRenderRichTextFromRawJSON} from '../../helpers';
+import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
+import { Editor } from "react-draft-wysiwyg";
+
 
 class CandidatesScroller extends React.Component {
     constructor() {
@@ -110,20 +113,33 @@ class CandidatesScroller extends React.Component {
 
     }
 
-
     renderCandidate = (candidate) => {
         let voteMessage;
         if (candidate.isRated) voteMessage = 'Already rated'
         else voteMessage = 'Click to vote'
+        try { EditorState.createWithContent(convertFromRaw(JSON.parse(candidate.body))) }
+        catch {
+            return <this.CandidateBlock onClick={() => {
+                this.sendVoteCandidateRequsest(candidate);
+            }}>
+                <Typography variant="body" style={{ wordBreak: "break-all", textIndent: "15px" }}>
+                    {tryRenderRichTextFromRawJSON(candidate.body)}
+                </Typography>
+                <this.Signature><b>{candidate.rating} {voteMessage}</b> {candidate.author} {candidate.dateSubmitted}</this.Signature>
+            </this.CandidateBlock>
+        }
         return <this.CandidateBlock onClick={() => {
             this.sendVoteCandidateRequsest(candidate);
         }}>
-            <Typography variant="body" style={{ wordBreak: "break-all", textIndent: "15px" }}>
-                {ReactHtmlParser(candidate.body)}
-            </Typography>
+            <Editor
+                toolbarHidden={true}
+                editorState={EditorState?.createWithContent(convertFromRaw(JSON.parse(candidate.body) || null)) || null}
+            />
+            <hr />
             <this.Signature><b>{candidate.rating} {voteMessage}</b> {candidate.author} {candidate.dateSubmitted}</this.Signature>
         </this.CandidateBlock>
     }
+
 
 
     render() {

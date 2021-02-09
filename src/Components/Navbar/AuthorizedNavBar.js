@@ -106,8 +106,9 @@ class AuthorizedNavBar extends React.Component {
 
   handleIconClick = () => {
     if (this.props.dialog.UnreadMessages.some(x => x));
+    const firstUnreadMessageUser = this.props.dialog.UnreadMessages[0];
     const dialog = {
-      targetUser: this.props.dialog.UnreadMessages[0],
+      targetUser: firstUnreadMessageUser,
       open: true
     }
     this.props.setDialog(dialog)

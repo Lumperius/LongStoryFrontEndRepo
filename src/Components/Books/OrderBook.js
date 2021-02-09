@@ -152,6 +152,8 @@ class OrderBook extends React.Component {
 
     computeSymbolsForPageExample = () => {
         let bookFormatKrit = 0;
+        const GENERAL_KRIT = 1780000;
+        const FONT_SIZE_POWER = 2.05;
         switch (this.state.format) {
             case 'Small':
                 bookFormatKrit = 0.13;
@@ -165,7 +167,7 @@ class OrderBook extends React.Component {
             default:
                 bookFormatKrit = 0;
         }
-        const pageSize = 1780000 * bookFormatKrit / this.state.fontSize ** 2.05;
+        const pageSize = GENERAL_KRIT * bookFormatKrit / this.state.fontSize ** FONT_SIZE_POWER;
         let computedText = text.substring(0, pageSize);
         while (!computedText.endsWith(' '))
             computedText = computedText.substring(0, computedText.length - 1)

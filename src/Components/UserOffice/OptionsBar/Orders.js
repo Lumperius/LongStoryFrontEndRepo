@@ -28,7 +28,7 @@ class Orders extends React.Component {
     margin: 10px;
     padding: 10px;
     &: hover {
-        background-color: gray;
+        background-color: grey;
         cursor: pointer;
     }
     `;

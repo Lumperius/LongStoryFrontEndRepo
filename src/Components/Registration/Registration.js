@@ -10,6 +10,8 @@ import { FormikTextField } from 'formik-material-fields';
 import Wrapper from '../../objects';
 import buildQuery from '../../helpers'
 
+const MIN_INPUT_LENGTH = 8;
+const MAX_INPUT_LENGTH = 16;
 
 class Registration extends React.Component {
 
@@ -25,15 +27,15 @@ class Registration extends React.Component {
 
     SignupSchema = Yup.object().shape({
         login: Yup.string()
-            .min(8, 'This login is too short, 8 symbols is minimum')
-            .max(16, 'This login is too long, 16 symbols maximum')
+            .min(MIN_INPUT_LENGTH, `This login is too short, ${MIN_INPUT_LENGTH} symbols is minimum`)
+            .max(MAX_INPUT_LENGTH, `This login is too long, ${MAX_INPUT_LENGTH} symbols maximum`)
             .required('Required'),
         email: Yup.string()
             .email('Invalid email')
             .required('Required'),
         password: Yup.string()
-            .min(8, 'This password is too short, 8 symbols is minimum')
-            .max(16, 'This password is too long, 16 symbols maximum')
+            .min(MIN_INPUT_LENGTH, `This password is too short, ${MIN_INPUT_LENGTH} symbols is minimum`)
+            .max(MAX_INPUT_LENGTH, `This password is too long, ${MAX_INPUT_LENGTH} symbols maximum`)
             .required('Required'),
         repeat_password: Yup.string()
             .oneOf([Yup.ref('password'), null], 'Passwords must match')

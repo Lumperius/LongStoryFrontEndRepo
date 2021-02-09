@@ -7,10 +7,13 @@ import Button from '@material-ui/core/Button';
 import renderMessage from '../../message';
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 import buildQuery from '../../helpers';
+import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 
+
+const MAX_STORYPART_LENGTH_PLAIN = 1000;
+const MIN_STORYPART_LENGTH_PLAIN = 20;
 
 class AddStoryPart extends React.Component {
 
@@ -39,7 +42,7 @@ class AddStoryPart extends React.Component {
     color: red;
     font-size: 14px;
     `;
-
+   
 
     onEditorStateChange = (editorState) => {
         this.setState({
@@ -48,21 +51,21 @@ class AddStoryPart extends React.Component {
     }
 
     handleBeforeInput = () => {
-        if (this.state.editorState.getCurrentContent().getPlainText().length >= 1000)
+        if (this.state.editorState.getCurrentContent().getPlainText().length >= MAX_STORYPART_LENGTH_PLAIN)
             return 'handled'
     }
 
     handlePastedText = (pastedText) => {
         if (this.state.e)
-        if (this.state.editorState.getCurrentContent().getPlainText().length + pastedText.length > 1000)
+        if (this.state.editorState.getCurrentContent().getPlainText().length + pastedText.length > MAX_STORYPART_LENGTH_PLAIN)
             return 'handled'
     }
 
 
 
     validateRequestParametrs = () => {
-        if (!this.state.editorState || this.state.editorState.getCurrentContent().getPlainText().length < 20 ||
-            this.state.editorState.getCurrentContent().getPlainText().body >= 4000) {
+        if (!this.state.editorState || this.state.editorState.getCurrentContent().getPlainText().length < MIN_STORYPART_LENGTH_PLAIN ||
+            this.state.editorState.getCurrentContent().getPlainText().body >= MAX_STORYPART_LENGTH_PLAIN) {
             this.setState({
                 message: {
                     body: 'Incorrect text of the story part.',
@@ -90,7 +93,7 @@ class AddStoryPart extends React.Component {
         const requestBody = {
             storyId: this.props.storyId,
             authorId: this.props.token.id,
-            body: stateToHTML(this.state.editorState.getCurrentContent()),
+            body: JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent())),
             author: this.props.token.login,
             dateSubmitted: new Date().toISOString()
         }
@@ -124,7 +127,7 @@ class AddStoryPart extends React.Component {
                 onEditorStateChange={this.onEditorStateChange}
                 handlePastedText={this.handlePastedText} 
                 handleBeforeInput={this.handleBeforeInput}/>
-            <Typography variant="subtitle2">{this.state.editorState.getCurrentContent().getPlainText().length}/4000</Typography>
+            <Typography variant="subtitle2">{this.state.editorState.getCurrentContent().getPlainText().length}/{MAX_STORYPART_LENGTH_PLAIN}</Typography>
             {renderMessage(this.state.message.body, this.state.message.type)}
             <Button variant="contained" color="primary" onClick={this.sendNewStoryPartRequest}>submit</Button>
         </>

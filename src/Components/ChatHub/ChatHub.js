@@ -7,8 +7,9 @@ import renderMessage from '../../message';
 import * as signalR from "@microsoft/signalr";
 import Input from '@material-ui/core/Input';
 import connectToHub from '../../hubConnection';
-import Wrapper from '../../objects';
+import Wrapper, { backendDomain } from '../../objects';
 
+const MAX_MESSAGE_LENGTH = 1000;
 
 class ChatHub extends React.Component {
     constructor() {
@@ -47,7 +48,7 @@ class ChatHub extends React.Component {
         if (!this.props.token)
             this.props.history.push('authentication');
         (async () => {
-            this.hubConnection = await connectToHub('http://localhost:5002/messenger/chatroom')
+            this.hubConnection = await connectToHub(`${backendDomain}/messenger/chatroom`)
         })().then(() => {
             this.hubConnection.on('Message', recievedMessage => {
                 let message = JSON.parse(recievedMessage);
@@ -69,12 +70,12 @@ class ChatHub extends React.Component {
 
     handleSubmit = (event) => {
         if (this.state.messageText !== '' &&
-            this.state.messageText.length <= 1000) {
+            this.state.messageText.length <= MAX_MESSAGE_LENGTH) {
             const messageObject = {
                 text: this.state.messageText,
                 user: this.props.token.login,
                 timePosted: Date.now()
-            };
+            }
             JSON.stringify()
             if (this.hubConnection.state === signalR.HubConnectionState.Connected) {
                 this.hubConnection.invoke('PublishMessage', JSON.stringify(messageObject))
@@ -85,7 +86,7 @@ class ChatHub extends React.Component {
                     })
                     .catch(error => {
                         (async () => {
-                            this.hubConnection = await connectToHub('http://localhost:5002/messenger/chatroom')
+                            this.hubConnection = await connectToHub(`${backendDomain}/messenger/chatroom`)
                         })()
                         this.setState({
                             message: {
@@ -97,7 +98,7 @@ class ChatHub extends React.Component {
             }
             else {
                 (async () => {
-                    this.hubConnection = await connectToHub('http://localhost:5002/messenger/chatroom')
+                    this.hubConnection = await connectToHub(`${backendDomain}/messenger/chatroom`)
                 })()
                 this.setState({
                     message: {
@@ -110,7 +111,7 @@ class ChatHub extends React.Component {
         else {
             this.setState({
                 message: {
-                    body: 'Incorrect message. Must be text 1-1000 symbols long.',
+                    body: `Incorrect message. Must be text 1-${MAX_MESSAGE_LENGTH} symbols long.`,
                     type: 'error'
                 }
             })
@@ -141,7 +142,7 @@ class ChatHub extends React.Component {
             <br />
             <Input name="messageText"
                 multiline={true}
-                inputProps={{ maxLength: 1000 }}
+                inputProps={{ maxLength: MAX_MESSAGE_LENGTH }}
                 value={this.state.messageText}
                 onChange={this.handleChange}
                 style={{ width: "20vw" }} />
