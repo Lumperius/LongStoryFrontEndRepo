@@ -16,6 +16,7 @@ export default function buildQuery(url, queryData) {
 };
 
 export const tryRenderRichTextFromRawJSON = (textBody) => {
+    //debugger
     try { EditorState.createWithContent(convertFromRaw(JSON.parse(textBody))) }
     catch {
         return textBody

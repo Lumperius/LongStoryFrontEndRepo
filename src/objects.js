@@ -13,3 +13,4 @@ background-color: white;
 export default Wrapper;
 
 export const backendDomain = 'http://localhost:5002';
+

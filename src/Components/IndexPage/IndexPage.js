@@ -9,9 +9,8 @@ import renderMessage from '../../message';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import UserInfoWindow from '../UserInfoWindow/UserInfoWindow';
-import ReactHtmlParser from 'react-html-parser';
 import Wrapper from '../../objects'
-import buildQuery from '../../helpers';
+import buildQuery, {tryRenderRichTextFromRawJSON} from '../../helpers';
 
 const MAX_DISPLAYED_BODY_LENGTH = 1000;
 const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
@@ -235,7 +234,7 @@ class IndexPage extends React.Component {
             <this.StoryBlock id={story.userId} onClick={() => this.props.history.push(`story${story.id}`)}>
                 <Typography variant='h5' style={{ wordBreak: "break-all" }}>{story.title}</Typography>
                 <Typography variant='subtitle1' style={{ wordBreak: "break-all", textIndent: "15px", marginBottom: "10px" }}>
-                    {ReactHtmlParser(story.firstPartBody)}
+                    {tryRenderRichTextFromRawJSON(story.firstPartBody)}
                 </Typography>
             </this.StoryBlock>
             <this.Rating style={{ color: color }}>{rating}</this.Rating>

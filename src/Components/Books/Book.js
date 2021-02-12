@@ -6,7 +6,7 @@ import renderMessage from '../../message';
 import axiosSetUp from '../../axiosConfig';
 import ReactHtmlParser from 'react-html-parser';
 import Wrapper from '../../objects';
-import buildQuery from '../../helpers';
+import buildQuery, { tryRenderRichTextFromRawJSON } from '../../helpers';
 
 
 class Book extends React.Component {
@@ -53,7 +53,7 @@ class Book extends React.Component {
             <Button variant="contained" color="primary" onClick={() => this.props.history.push(`/books/orderBook${this.props.match.params.id}`)}
                 style={{ float: "right" }} size="large">Order this book</Button>
             <Typography variant="h3">{this.state.book?.title}</Typography>
-            <Typography>{ReactHtmlParser(this.state.book?.body)}</Typography><br/>
+            <Typography>{tryRenderRichTextFromRawJSON(this.state.book?.body)}</Typography><br/>
         </Wrapper>)
     }
 }

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import renderMessage from '../message';
 import Wrapper from '../objects';
 
+
 class Template extends React.Component {
     constructor() {
         super()

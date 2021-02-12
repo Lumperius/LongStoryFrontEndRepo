@@ -10,7 +10,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { FormikTextField } from 'formik-material-fields';
 import Wrapper from '../../objects.js';
-import buildQuery from '../../helpers';
+import buildQuery, { tryRenderRichTextFromRawJSON } from '../../helpers';
 
 const TITLE_MAX_LENGTH = 100;
 const DISPLAYED_BODY_MAX_LENGTH = 100;
@@ -28,7 +28,8 @@ class BookCompose extends React.Component {
             count: 30,
             sortBy: 'date',
             secondStage: false,
-            bookTitle: ''
+            bookTitle: '',
+            type: 'all'
         }
     }
 
@@ -100,7 +101,8 @@ class BookCompose extends React.Component {
         const queryData = {
             page: page,
             count: this.state.count,
-            sortBy: sortBy
+            sortBy: sortBy,
+            type: this.state.type
         }
         axiosSetUp().get(buildQuery('/story/getPage', queryData))
             .then((response) => {
@@ -119,6 +121,10 @@ class BookCompose extends React.Component {
                 })
             })
     };
+
+    sendGetFavoriteStoriesRequest = () => {
+
+    }
 
 
     markTheStory = (story) => {
@@ -147,13 +153,13 @@ class BookCompose extends React.Component {
         if (story.isMarked) {
             return <this.Story style={{ backgroundColor: "grey" }} onClick={() => this.markTheStory(story)}>
                 <Typography variant="h5" style={{ textIndent: "20px", wordBreak: "break-all" }}>{story.title}</Typography>
-                <Typography style={{ textIndent: "10px", wordBreak: "break-all" }}>{ReactHtmlParser(story.firstPartBody)}</Typography>
+                <Typography style={{ textIndent: "10px", wordBreak: "break-all" }}>{tryRenderRichTextFromRawJSON(story.firstPartBody)}</Typography>
             </this.Story>
         }
         else {
             return <this.Story onClick={() => this.markTheStory(story)}>
                 <Typography variant="h5" style={{ textIndent: "20px", wordBreak: "break-all" }}>{story.title}</Typography>
-                <Typography variant="subtitle1" style={{ textIndent: "10px", wordBreak: "break-all" }}>{ReactHtmlParser(story.firstPartBody)}</Typography>
+                <Typography variant="subtitle1" style={{ textIndent: "10px", wordBreak: "break-all" }}>{tryRenderRichTextFromRawJSON(story.firstPartBody)}</Typography>
             </this.Story>
         }
     }
@@ -179,7 +185,7 @@ class BookCompose extends React.Component {
                 {({ errors, touched }) => (
                     <Form>
                         <FormikTextField label="Title of the book" name="bookTitle" style={{ width: "20%" }} /><br />
-                        <Button variant="contained" color="primary" type="submit">Create order</Button>
+                        <Button variant="contained" color="primary" type="submit">Create book</Button>
                     </Form>)}
             </Formik>
             {renderMessage(this.state.message.body, this.state.message.type)}
@@ -187,7 +193,7 @@ class BookCompose extends React.Component {
     }
 }
 
-const mapStateToProps = function (state) {
+const mapStateToProps = state => {
     return {
         token: state.token.tokenObj,
     };

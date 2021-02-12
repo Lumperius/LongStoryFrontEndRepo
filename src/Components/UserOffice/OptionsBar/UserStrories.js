@@ -7,6 +7,10 @@ import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../../message';
 import ReactHtmlParser from 'react-html-parser';
 import buildQuery, { tryRenderRichTextFromRawJSON } from '../../../helpers';
+import UserStoryParts from './Stories/UserStoryParts';
+import FavoriteStories from './Stories/FavoriteStories';
+import StoriesOfUser from './Stories/StoriesOfUser';
+import history from '../../../history'
 
 
 class UserStories extends React.Component {
@@ -18,51 +22,19 @@ class UserStories extends React.Component {
                 body: '',
                 type: ''
             },
-            render: 'stories',
-            storiesList: [],
-            storyPartsList: []
+            render: 'favorites',
+            UserStoriesList: [],
+            FavoriteStoriesList: [],
+            StoryPartsList: [],
         }
     }
-
-    Wraper = styled.div`
-    text-align:left;
-    margin:30px;
-    padding: 50px;
-    font-size: 28px;
-    border-style: solid;
-    border-width:1px;
-    border-radius: 20px;
-    border-color: lightgrey;
-    `;
 
 
     componentDidMount() {
         if (this.props.token === undefined)
-            this.props.history.push('authentication');
-        this.sendGetStoriesRequest();
+            history.push('authentication');
     }
 
-
-    sendGetStoriesRequest = () => {
-        const queryData = {
-            userId: this.props.token.id
-        }
-        axiosSetUp().get(buildQuery('/story/getForUser', queryData))
-            .then(response => {
-                this.setState({
-                    storiesList: response.data.storiesList,
-                    storyPartsList: response.data.storyPartsList
-                })
-            })
-            .catch(error => {
-                this.setState({
-                    message: {
-                        body: 'Error occured while downloading data',
-                        type: 'error'
-                    }
-                })
-            })
-    }
 
     handleClick = (render) => {
         this.setState({ render: render })
@@ -70,57 +42,29 @@ class UserStories extends React.Component {
 
     renderList = () => {
         switch (this.state.render) {
+            case 'favorites':
+                return <FavoriteStories Stories={this.state.FavoriteStoriesList} />
             case 'stories':
-                return <>
-                    {this.state.storiesList.map((story) => {
-                        return <>
-                            {this.renderStory(story)}
-                        </>
-                    })}</>
+                return <StoriesOfUser Stories={this.state.UserStoriesList} />
             default:
-                return <>
-                    {this.state.storyPartsList.map((storyPart) => {
-                        return <>
-                            {this.renderStoryPart(storyPart)}
-                        </>
-                    })}</>
+                return <UserStoryParts StoryParts={this.state.StoryPartsList} />
         }
     }
 
-    renderStory = (story) => {
-        return <>
-            <Typography variant="h5">{story.title}</Typography><br />
-            <Typography variant="body1" style={{ textIndent: "15px", wordBreak: "break-all" }}>{tryRenderRichTextFromRawJSON(story.body)}</Typography><br />
-            <Typography variant="subtitle1">{story.dateSubmitted}</Typography><hr />
-        </>
-    };
+    renderButton = (type) => {
+        let variant;
+        if (type === this.state.render) variant = 'contained';
+        else variant = 'outlined';
 
-    renderStoryPart = (storyPart) => {
-        return <>
-            <Typography variant="caption" style={{ textAlign: "right", wordBreak: "break-all" }}>From: {ReactHtmlParser(storyPart.titleOfStory)}</Typography><br />
-            {tryRenderRichTextFromRawJSON(storyPart.body)}<hr />
-        </>
+        return <Button variant={variant} onClick={() => this.handleClick(type)}>{type}</Button>
     }
 
     renderButtons = () => {
-        switch (this.state.render) {
-            case 'stories':
-                return <>
-                    <Button variant="outlined" onClick={() => this.handleClick('stories')}>Stories</Button>
-                    <Button variant="contained" onClick={() => this.handleClick('storyParts')}>Story parts</Button><br /><br />
-                </>
-            case 'storyParts':
-                return <>
-                    <Button variant="contained" onClick={() => this.handleClick('stories')}>Stories</Button>
-                    <Button variant="outlined" onClick={() => this.handleClick('storyParts')}>Story parts</Button><br /><br />
-                </>
-            default:
-                return <>
-                    <Button variant="contained" onClick={() => this.handleClick('stories')}>Stories</Button>
-                    <Button variant="contained" onClick={() => this.handleClick('storyParts')}>Story parts</Button><br /><br />
-                </>
-
-        }
+        return <>
+            {this.renderButton('favorites')}
+            {this.renderButton('stories')}
+            {this.renderButton('story parts')}
+        </>
     }
 
 
@@ -128,14 +72,14 @@ class UserStories extends React.Component {
         return (
             <>
                 {renderMessage(this.state.message.body, this.state.message.type)}
-                {this.renderButtons()}
+                {this.renderButtons()}<br /><br />
                 {this.renderList()}
             </>
         )
     }
 }
 
-const mapStateToProps = function (state) {
+const mapStateToProps = state => {
     return {
         token: state.token.tokenObj,
     };

@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import renderMessage from '../../message';
 import Comments from './Comments';
-import Wrapper from '../../objects';
+import Wrapper, { backendDomain } from '../../objects';
 import buildQuery, { tryRenderRichTextFromRawJSON } from '../../helpers';
 
 
@@ -176,6 +176,33 @@ class Story extends React.Component {
             });
     };
 
+    sendAddToFavoriteRequest = () => {
+        const body = {
+            userId: this.props.token.id,
+            storyId: this.props.match.params.id
+        }
+        axiosSetUp().post(buildQuery(`/userFavoriteStory/create`), body)
+            .then(response => {
+                this.setState({
+                    message: {
+                        body: 'Added to favorites.',
+                        type: 'success'
+                    }
+                })
+            })
+            .catch(error => {
+                let errorMessage = 'Error occured while adding story to favorites. Try again later.'
+                if (error.data === 'This story is already favorite for this user.')
+                    errorMessage = 'This story is already favorite.'
+                this.setState({
+                    message: {
+                        body: errorMessage,
+                        type: 'error'
+                    }
+                })
+            })
+    }
+
 
     handleStopRenderingEditor = () => {
         this.setState({
@@ -252,6 +279,7 @@ class Story extends React.Component {
                 {this.state.story.dateSubmitted}
                 _{this.state.story.isFinishedMessage}
                 {this.renderVoteButtons()}
+                <Button size="small" variant="contained" style={{ backgroundColor: "Gold", padding: "0px" }} onClick={() => this.sendAddToFavoriteRequest()}>Fav</Button>
             </this.Signature>
             <hr /><hr />
             {this.state.StoryParts.map((storyPart) => {
