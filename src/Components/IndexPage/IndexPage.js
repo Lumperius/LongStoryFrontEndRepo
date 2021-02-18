@@ -10,7 +10,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import UserInfoWindow from '../UserInfoWindow/UserInfoWindow';
 import Wrapper from '../../objects'
-import buildQuery, {tryRenderRichTextFromRawJSON} from '../../helpers';
+import buildRequest, {tryRenderRichTextFromRawJSON} from '../../helpers';
 
 const MAX_DISPLAYED_BODY_LENGTH = 1000;
 const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
@@ -111,7 +111,7 @@ class IndexPage extends React.Component {
         const queryData = {
             userIdList: jsonIds
         }
-        axiosSetUp().get(buildQuery('/userInfo/getRange', queryData))
+        axiosSetUp().get(buildRequest('/userInfo/getRange', queryData))
             .then(response => {
                 this.setState({
                     UserInfoList: response.data.userInfoList || []
@@ -134,7 +134,7 @@ class IndexPage extends React.Component {
             count: this.state.pageSize,
             sortBy: sortBy
         }
-        axiosSetUp().get(buildQuery('/story/getPage', queryData))
+        axiosSetUp().get(buildRequest('/story/getPage', queryData))
             .then((response) => {
                 this.setState({
                     StoriesList: response.data || '',
@@ -154,8 +154,8 @@ class IndexPage extends React.Component {
     };
 
     cutStoryBody = (body) => {
-        if (body && body.length > MAX_DISPLAYED_BODY_LENGTH + 10)
-            return body.substring(0, MAX_DISPLAYED_BODY_LENGTH) + '...'
+        if (body && body.length > MAX_DISPLAYED_BODY_LENGTH)
+            return body.substring(0, MAX_DISPLAYED_BODY_LENGTH - 5) + '...'
     }
 
     handleAuthorClick = (event) => {

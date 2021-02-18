@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import renderMessage from '../../../../message';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import buildQuery, { tryRenderRichTextFromRawJSON } from '../../../../helpers';
+import buildRequest, { tryRenderRichTextFromRawJSON } from '../../../../helpers';
 import axiosSetUp from '../../../../axiosConfig';
 import styled from 'styled-components';
 
@@ -48,7 +48,7 @@ class FavoriteStories extends React.Component {
             page: 1,
             count: 10
         }
-        axiosSetUp().get(buildQuery('/userFavoriteStory/get', queryData))
+        axiosSetUp().get(buildRequest('/userFavoriteStory/get', queryData))
             .then(response => {
                  this.setState({
                     FavoriteStoryIds: response.data.favoriteStories
@@ -73,7 +73,7 @@ class FavoriteStories extends React.Component {
             count: this.state.count
         }
 
-        axiosSetUp().get(buildQuery('/story/getFavoritePage', queryData))
+        axiosSetUp().get(buildRequest('/story/getFavoritePage', queryData))
             .then(response => {
                 this.setState({
                     FavoriteStoryList: response.data.favoriteStories || [],
@@ -96,7 +96,7 @@ class FavoriteStories extends React.Component {
             userId: this.props.token.id,
             storyId: storyId
         }
-        axiosSetUp().delete(buildQuery('/userFavoriteStory/delete', queryData))
+        axiosSetUp().delete(buildRequest('/userFavoriteStory/delete', queryData))
             .then(response => {
                 let state = this.state;
                 state.message = {
@@ -143,7 +143,7 @@ class FavoriteStories extends React.Component {
             <Button variant="outlined" style={{ float: "right", marginLeft: "5px" }} onClick={() => this.sendRemoveFromFavoritesRequest(story.storyId)}>Remove</Button>
             <Button variant="contained" color="primary" style={{ float: "right" }} onClick={() => window.open(`../story${story.storyId}`, "_blank")}>Inspect</Button>
             <Typography variant="h5">{story.title}</Typography><br />
-            <Typography variant="body1" style={{ textIndent: "15px", wordBreak: "break-all" }}>{tryRenderRichTextFromRawJSON(story.body)}</Typography><br />
+            <Typography variant="body1" style={{ textIndent: "15px", wordBreak: "break-all" }}>{tryRenderRichTextFromRawJSON(story.firstPartBody)}</Typography><br />
             <Typography variant="subtitle1">{story.dateSubmitted}</Typography><hr />
         </>
     }

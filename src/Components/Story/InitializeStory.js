@@ -9,8 +9,8 @@ import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { stateToHTML } from 'draft-js-export-html';
 import Wrapper from '../../objects';
-import buildQuery from '../../helpers';
-import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
+import buildRequest from '../../helpers';
+import { EditorState, convertToRaw } from 'draft-js';
 
 
 const MAX_STORYPART_LENGTH = 1000;
@@ -87,7 +87,7 @@ class InitializeStory extends React.Component {
             dateSubmitted: new Date().toISOString()
         }
 
-        axiosSetUp().post(buildQuery('/story/createStory'), body)
+        axiosSetUp().post(buildRequest('/story/createStory'), body)
             .then(response => {
                 this.setState({
                     message: {

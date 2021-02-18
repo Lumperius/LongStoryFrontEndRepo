@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import renderMessage from '../../../../message';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import buildQuery, { tryRenderRichTextFromRawJSON } from '../../../../helpers';
+import buildRequest, { tryRenderRichTextFromRawJSON } from '../../../../helpers';
 import axiosSetUp from '../../../../axiosConfig';
 import styled from 'styled-components';
 
@@ -46,7 +46,7 @@ class StoriesOfUser extends React.Component {
             page: this.state.page,
             count: this.state.count
         }
-        axiosSetUp().get(buildQuery('/story/getOfUserPage', queryData))
+        axiosSetUp().get(buildRequest('/story/getOfUserPage', queryData))
         .then(response => {
             this.setState({
                 Stories: response.data.stories || [],

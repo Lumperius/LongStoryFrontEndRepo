@@ -5,7 +5,7 @@ import renderMessage from '../../message';
 import axiosSetUp from '../../axiosConfig';
 import setDialog from '../../Actions/setDialog'
 import Wrapper from '../../objects';
-import buildQuery from '../../helpers';
+import buildRequest from '../../helpers';
 
 class UserInfoWindow extends React.Component {
     constructor() {
@@ -37,7 +37,7 @@ class UserInfoWindow extends React.Component {
         const queryData = {
             userId: this.props.userId
         }
-        axiosSetUp().get(buildQuery('/userInfo/get', queryData))
+        axiosSetUp().get(buildRequest('/userInfo/get', queryData))
             .then(response => {
                 this.setState({
                     userInfo: response.data || null,

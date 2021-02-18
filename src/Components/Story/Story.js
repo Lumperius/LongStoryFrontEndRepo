@@ -8,8 +8,8 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import renderMessage from '../../message';
 import Comments from './Comments';
-import Wrapper, { backendDomain } from '../../objects';
-import buildQuery, { tryRenderRichTextFromRawJSON } from '../../helpers';
+import Wrapper from '../../objects';
+import buildRequest, { tryRenderRichTextFromRawJSON } from '../../helpers';
 
 
 class Story extends React.Component {
@@ -72,9 +72,9 @@ class Story extends React.Component {
 
     sendGetStoryPartsRequest = () => {
         const queryData = {
-            storyId: this.props.match.params.id
+            storyId: this.props.match.params.storyId
         }
-        axiosSetUp().get(buildQuery('/storyPart/getAllParts', queryData))
+        axiosSetUp().get(buildRequest('/storyPart/getAllParts', queryData))
             .then(response => {
                 this.setState({
                     StoryParts: response.data || []
@@ -92,13 +92,13 @@ class Story extends React.Component {
 
     sendGetStoryRequest() {
         const queryData = {
-            storyId: this.props.match.params.id,
+            storyId: this.props.match.params.storyId,
         }
 
         if (this.props.token)
             queryData.userId = this.props.token.id;
 
-        axiosSetUp().get(buildQuery('/story/get', queryData))
+        axiosSetUp().get(buildRequest('/story/get', queryData))
             .then(response => {
                 this.setState({
                     story: {
@@ -127,11 +127,11 @@ class Story extends React.Component {
 
     sendVoteRequest = (voteType) => {
         let body = {
-            storyId: this.props.match.params.id,
+            storyId: this.props.match.params.storyId,
             userId: this.props.token.id,
             isPositive: voteType
         }
-        axiosSetUp().post(buildQuery('/story/vote'), body)
+        axiosSetUp().post(buildRequest('/story/vote'), body)
             .then((response) => {
                 let prevState = this.state;
                 prevState.message = response.data;
@@ -154,10 +154,10 @@ class Story extends React.Component {
 
     sendFinishStoryRequest = () => {
         let body = {
-            storyId: this.props.match.params.id,
+            storyId: this.props.match.params.storyId,
             userId: this.props.token.id
         }
-        axiosSetUp().post(buildQuery('/story/finish'), body)
+        axiosSetUp().post(buildRequest('/story/finish'), body)
             .then(response => {
                 this.setState({
                     message: {
@@ -179,9 +179,9 @@ class Story extends React.Component {
     sendAddToFavoriteRequest = () => {
         const body = {
             userId: this.props.token.id,
-            storyId: this.props.match.params.id
+            storyId: this.props.match.params.storyId
         }
-        axiosSetUp().post(buildQuery(`/userFavoriteStory/create`), body)
+        axiosSetUp().post(buildRequest(`/userFavoriteStory/create`), body)
             .then(response => {
                 this.setState({
                     message: {
@@ -215,7 +215,7 @@ class Story extends React.Component {
             switch (this.state.story.state) {
                 case 'Alive':
                     if (this.state.showEditor) {
-                        let storyId = this.props.match.params.id;
+                        let storyId = this.props.match.params.storyId;
                         return <AddStoryPart storyId={storyId} stopRenderEditor={this.handleStopRenderingEditor} />
                     }
                     else return <>
@@ -287,7 +287,7 @@ class Story extends React.Component {
             })}
             {renderMessage(this.state.message.body, this.state.message.type)}
             {this.renderEditor()}
-            <Comments storyId={this.props.match.params.id} />
+            <Comments storyId={this.props.match.params.storyId} />
             {this.renderFinishStoryButton()}<br /><br />
         </Wrapper>
     }

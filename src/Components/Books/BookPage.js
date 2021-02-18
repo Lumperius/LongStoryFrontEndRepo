@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../message';
 import axiosSetUp from '../../axiosConfig';
 import Wrapper from '../../objects';
-import buildQuery from '../../helpers';
+import buildRequest from '../../helpers';
 
 class Books extends React.Component {
     constructor() {
@@ -57,7 +57,7 @@ class Books extends React.Component {
         }
         if (!displayAll)
             queryData.userId = this.props.token.id
-        axiosSetUp().get(buildQuery('/book/getPageOfBooks', queryData))
+        axiosSetUp().get(buildRequest('/book/getPageOfBooks', queryData))
             .then(response => {
                 this.setState({
                     BookList: response.data.books,
@@ -85,7 +85,7 @@ class Books extends React.Component {
         const queryData = {
             userIdList: jsonIds
         }
-        axiosSetUp().get(buildQuery('/userInfo/getRange', queryData))
+        axiosSetUp().get(buildRequest('/userInfo/getRange', queryData))
             .then(response => {
                 this.setState({
                     Authors: response.data.userInfoList || []
@@ -151,6 +151,7 @@ class Books extends React.Component {
     }
 
     renderABook = (book, index) => {
+        debugger
         let authorLogin = this.state.Authors?.find(author => author.userId === book.authorId)?.userLogin || 'Undefined'
         return <div style={{ padding: "5px" }}>
             <this.StoryTitle onClick={() => this.props.history.push(`books/book${book.bookId}`)}>

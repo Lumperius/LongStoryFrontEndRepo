@@ -203,7 +203,7 @@ class PrivateDialog extends React.Component {
             }
             else {
                 (async () => {
-                    this.hubConnection = await connectToHub('http://localhost:5002/messenger/chat')
+                    this.hubConnection = await connectToHub(`${backendDomain}/messenger/chat`)
                 })()
                 this.setState({
                     message: {

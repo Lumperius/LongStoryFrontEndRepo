@@ -4,10 +4,9 @@ import styled from 'styled-components';
 import axiosSetUp from '../../../axiosConfig';
 import renderMessage from '../../../message';
 import Typography from '@material-ui/core/Typography';
-import { backendDomain } from '../../../objects';
 import Button from '@material-ui/core/Button';
 import { loadStripe } from "@stripe/stripe-js";
-import buildQuery from '../../../helpers';
+import buildRequest from '../../../helpers';
 
 
 class Orders extends React.Component {
@@ -58,7 +57,7 @@ class Orders extends React.Component {
         const queryData = {
             orderId: orderId
         }
-        axiosSetUp().delete(buildQuery('/order/delete', queryData))
+        axiosSetUp().delete(buildRequest('/order/delete', queryData))
             .then(response => {
                 let state = this.state;
                 state.message = {
@@ -88,7 +87,7 @@ class Orders extends React.Component {
             page: page,
             count: this.state.count
         }
-        axiosSetUp().get(buildQuery('/order/getPage', queryData))
+        axiosSetUp().get(buildRequest('/order/getPage', queryData))
             .then(response => {
                 this.setState({
                     Orders: response.data.sessions || [],
@@ -121,13 +120,20 @@ class Orders extends React.Component {
     renderTitle = () => {
         if (this.state.Orders.length > 0)
             return <>
-            <Typography variant="body">List of your orders</Typography>
-            {this.renderPageSelection()}
+                <Typography variant="body">List of your orders</Typography><br />
+                {this.renderPageSelection()}
             </>
+        else if (this.state.page > 1)
+            return <><Typography variant="body">
+                No more orders.
+                </Typography><br />
+                {this.renderPageSelection()}
+                </>
         else
             return <Typography variant="body">
                 You have no unpaid orders at the moment. To create an order you need to go to the book section and choose a book you would like to order.
                 </Typography>
+
     }
 
     renderPageSelection = () => {
@@ -172,7 +178,7 @@ class Orders extends React.Component {
                         <Typography variant="subtitle1" style={{ fontSize: "15px" }}>{order.dateCreated}</Typography>
                     </this.OrderWrapper>
                 </>
-            })}<br/>
+            })}<br />
         </>)
     }
 }

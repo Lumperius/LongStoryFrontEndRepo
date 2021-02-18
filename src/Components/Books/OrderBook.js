@@ -11,10 +11,8 @@ import axiosSetUp from '../../axiosConfig';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import text from './ExampleOfText';
-import Wrapper from '../../objects';
-import { loadStripe } from "@stripe/stripe-js";
-import buildQuery from '../../helpers';
-
+import Wrapper, { backendDomain } from '../../objects';
+import buildRequest from '../../helpers';
 
 class OrderBook extends React.Component {
     constructor() {
@@ -26,12 +24,11 @@ class OrderBook extends React.Component {
             },
             format: 'Large',
             fontSize: 12,
-            isOrderCreated: false,
-            orderId: ''
+            orderState: 'no order',
+            orderId: '',
         }
     }
 
-    stripePromise = loadStripe("pk_test_51IFyntKGKkWeV1dSDPnoKRgzIynRZqV5mubF4AQ79ZwVqQL5heQbPnLLfjRhAfkDvpi82Yrq1KKEFOIwNAB2DoB700XJa7leJW");
 
     ParametersSchema = Yup.object().shape({
         amount: Yup.number()
@@ -75,21 +72,24 @@ class OrderBook extends React.Component {
             this.props.history.push('authentication');
     }
 
+
     sendOrderBookRequest = (values) => {
+        debugger
         let body = {
-            bookId: this.props.match.params.id,
+            bookId: this.props.match.params.bookId,
             userId: this.props.token.id,
             amount: values.amount,
             fontSize: values.fontSize,
             bookFormat: this.state.format
         }
-        axiosSetUp().post(buildQuery('/book/createOrder'), body)
+        this.setState({
+            orderState: 'sent'
+        })
+        axiosSetUp().post(buildRequest('/book/createOrder'), body)
             .then(response => {
                 this.setState({
-                    isOrderCreated: true,
-                    orderId: response.data,
                     message: {
-                        body: 'Your request is sent',
+                        body: 'The order is sent, a notification will appear on navbar when it\'s ready to payment.',
                         type: 'success'
                     },
                 })
@@ -102,27 +102,6 @@ class OrderBook extends React.Component {
                     }
                 })
             })
-    }
-
-    sendSessionIdRequestRequest = async () => {
-        const stripe = await this.stripePromise;
-        const queryData = {
-            orderId: this.state.orderId
-        }
-        axiosSetUp().get(buildQuery('/order/getSession', queryData))
-            .then(async response => {
-                await stripe.redirectToCheckout({
-                    sessionId: response.data.id,
-                });
-            })
-            .catch(error => {
-                this.setState({
-                    message: {
-                        body: 'Error while creating an order. Try again later.',
-                        type: 'error'
-                    }
-                })
-            });
     }
 
 
@@ -153,7 +132,7 @@ class OrderBook extends React.Component {
     computeSymbolsForPageExample = () => {
         let bookFormatKrit = 0;
         const GENERAL_KRIT = 1780000;
-        const FONT_SIZE_POWER = 2.05;
+        const FONT_SIZE_KRIT = 2.05;
         switch (this.state.format) {
             case 'Small':
                 bookFormatKrit = 0.13;
@@ -167,17 +146,16 @@ class OrderBook extends React.Component {
             default:
                 bookFormatKrit = 0;
         }
-        const pageSize = GENERAL_KRIT * bookFormatKrit / this.state.fontSize ** FONT_SIZE_POWER;
+        const pageSize = GENERAL_KRIT * bookFormatKrit / this.state.fontSize ** FONT_SIZE_KRIT;
         let computedText = text.substring(0, pageSize);
         while (!computedText.endsWith(' '))
             computedText = computedText.substring(0, computedText.length - 1)
         return computedText.substring(0, computedText.length - 1) + '...';
     }
 
+
     renderButton = () => {
-        if (this.state.isOrderCreated)
-            return <Button variant="contained" color="primary" onClick={() => this.sendSessionIdRequestRequest()}>Go to payment</Button>
-        else
+        if (this.state.orderState !== 'sent')
             return <Button variant="contained" color="primary" type="submit">Create order</Button>
     }
 

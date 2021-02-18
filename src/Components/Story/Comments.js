@@ -9,7 +9,7 @@ import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 import Wrapper from '../../objects';
-import buildQuery from '../../helpers';
+import buildRequest from '../../helpers';
 import { stateToHTML } from 'draft-js-export-html';
 
 
@@ -80,7 +80,7 @@ class Comments extends React.Component {
             storyId: this.props.storyId,
             body: JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent()))
         }
-        axiosSetUp().post(buildQuery('/comment/post'), body)
+        axiosSetUp().post(buildRequest('/comment/post'), body)
             .then(response => {
                 this.setState({
                     message: {
@@ -111,7 +111,7 @@ class Comments extends React.Component {
         const queryData = {
             userIdList: jsonIds
         }
-        axiosSetUp().get(buildQuery('/userInfo/getRange', queryData))
+        axiosSetUp().get(buildRequest('/userInfo/getRange', queryData))
             .then(response => {
                 this.setState({
                     UserInfoList: response.data.userInfoList || []
@@ -132,7 +132,7 @@ class Comments extends React.Component {
         const queryData = {
             storyId: this.props.storyId
         }
-        axiosSetUp().get(buildQuery('/comment/get', queryData))
+        axiosSetUp().get(buildRequest('/comment/get', queryData))
             .then(response => {
                 this.setState({
                     Comments: response.data || []

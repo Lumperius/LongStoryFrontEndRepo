@@ -8,7 +8,7 @@ import { Formik, Form} from 'formik';
 import * as Yup from 'yup';
 import { FormikTextField } from 'formik-material-fields';
 import Wrapper from '../../objects';
-import buildQuery from '../../helpers'
+import buildRequest from '../../helpers'
 
 const MIN_INPUT_LENGTH = 8;
 const MAX_INPUT_LENGTH = 16;
@@ -70,7 +70,7 @@ class Registration extends React.Component {
     `;
 
     sendRequest = (values) => {
-        axiosSetUp().post(buildQuery('/user/register'), values)
+        axiosSetUp().post(buildRequest('/user/register'), values)
             .then(response => {
                 if (response.status === 201)
                     this.props.history.push('/authentication');

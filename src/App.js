@@ -23,22 +23,24 @@ import BookPage from './Components/Books/BookPage';
 import Book from './Components/Books/Book';
 import OrderBook from './Components/Books/OrderBook';
 import SuccessOrder from './Components/Books/SuccessOrder';
+import OrderWebSocketConnection from './Components/OrderWebSocketConnection/OrderWebSocketConnection';
 
 
 class App extends React.Component {
 
   componentDidMount() {
     let token = getParsedToken();
-    if (token !== null) {
+    if (token) {
       this.props.setToken(token);
     }
   }
+
 
   renderNavBar = () => {
     if (this.props.tokenObj) {
       return <AuthorizedNavBar />;
     }
-    else {  return <NavBar />; }
+    else { return <NavBar />; }
   }
 
   renderMessenger = () => {
@@ -56,18 +58,19 @@ class App extends React.Component {
           <Route exact path="/admin" component={Admin} />
           <Route exact path="/authentication" component={Authentication} />
           <Route exact path="/books" component={BookPage} />
-          <Route exact path="/books/book:id" component={Book} />
+          <Route exact path="/books/book:bookId" component={Book} />
           <Route exact path="/books/composeBook" component={BookCompose} />
-          <Route exact path="/books/orderBook:id" component={OrderBook} />
+          <Route exact path="/books/orderBook:bookId" component={OrderBook} />
           <Route exact path="/books/success" component={SuccessOrder} />
           <Route exact path="/chat" component={ChatHub} />
           <Route exact path="/logout" component={Logout} />
           <Route exact path="/registration" component={Registration} />
           <Route exact path="/office" component={Office} />
           <Route exact path="/initStory" component={InitializeStory} />
-          <Route exact path="/story:id" component={Story} />
+          <Route exact path="/story:storyId" component={Story} />
         </Router>
         {this.renderMessenger()}
+        <OrderWebSocketConnection />
       </div>
     );
   }

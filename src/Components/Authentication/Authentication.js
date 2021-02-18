@@ -12,7 +12,7 @@ import renderMessage from '../../message';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import Wrapper from '../../objects';
-import buildQuery from '../../helpers';
+import buildRequest from '../../helpers';
 
 const MAX_INPUT_SYMBOLS = 30;
 
@@ -70,7 +70,7 @@ class Authentication extends React.Component {
             password: values.password,
             inputType: this.getLoginOrEmailType(values.login)
         };
-        axiosSetUp().post(buildQuery('/user/authenticate', null), body)
+        axiosSetUp().post(buildRequest('/user/authenticate', null), body)
             .then(response => {
                 localStorage.setItem('Token', response.data);
                 this.props.setToken(jwt_decode(response.data));
@@ -92,7 +92,7 @@ class Authentication extends React.Component {
         const queryData = {
            userId: this.props.token.id
         }
-        axiosSetUp().get(buildQuery('/userInfo/getAvatar', queryData))
+        axiosSetUp().get(buildRequest('/userInfo/getAvatar', queryData))
           .then(response => {
             this.props.setAvatar(response.data)
           })

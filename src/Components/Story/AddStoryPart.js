@@ -8,8 +8,8 @@ import renderMessage from '../../message';
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { stateToHTML } from 'draft-js-export-html';
-import buildQuery from '../../helpers';
-import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
+import buildRequest from '../../helpers';
+import { EditorState, convertToRaw } from 'draft-js';
 
 
 const MAX_STORYPART_LENGTH_PLAIN = 1000;
@@ -97,7 +97,7 @@ class AddStoryPart extends React.Component {
             author: this.props.token.login,
             dateSubmitted: new Date().toISOString()
         }
-        axiosSetUp().post(buildQuery('/storyPart/create'), requestBody)
+        axiosSetUp().post(buildRequest('/storyPart/create'), requestBody)
             .then(response => {
                 this.props.stopRenderEditor();
                 this.setState({

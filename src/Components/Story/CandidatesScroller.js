@@ -4,9 +4,8 @@ import axiosSetUp from '../../axiosConfig';
 import { connect } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../message';
-import ReactHtmlParser from 'react-html-parser';
-import buildQuery, {tryRenderRichTextFromRawJSON} from '../../helpers';
-import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
+import buildRequest, {tryRenderRichTextFromRawJSON} from '../../helpers';
+import { EditorState, convertFromRaw } from 'draft-js';
 import { Editor } from "react-draft-wysiwyg";
 
 
@@ -59,7 +58,7 @@ class CandidatesScroller extends React.Component {
             storyId: this.props.storyId,
             userId: this.props.token.id
         }
-        axiosSetUp().get(buildQuery('/storyPart/getAllCandidates', queryData))
+        axiosSetUp().get(buildRequest('/storyPart/getAllCandidates', queryData))
             .then(response => {
                 if (typeof response.data === 'string') throw response
                 this.setState({
@@ -89,7 +88,7 @@ class CandidatesScroller extends React.Component {
             storyPartCandidateId: candidate.id,
             userId: this.props.token.id
         }
-        axiosSetUp().post(buildQuery('/storyPart/vote'), body)
+        axiosSetUp().post(buildRequest('/storyPart/vote'), body)
             .then(response => {
                 this.setState({
                     message: {

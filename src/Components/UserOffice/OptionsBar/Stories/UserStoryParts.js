@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import renderMessage from '../../../../message';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import buildQuery, { tryRenderRichTextFromRawJSON } from '../../../../helpers';
+import buildRequest, { tryRenderRichTextFromRawJSON } from '../../../../helpers';
 import axiosSetUp from '../../../../axiosConfig';
 import styled from 'styled-components';
+import history from '../../../../history';
 
 class UserStoryParts extends React.Component {
     constructor() {
@@ -34,6 +34,12 @@ class UserStoryParts extends React.Component {
     font-size:20px;
     margin: 30px;
     `;
+    StoryTitle = styled.i`
+    &:hover {
+        cursor: pointer;
+        text-decoration: underline;
+    }
+    `;
 
 
     componentDidMount() {
@@ -46,7 +52,7 @@ class UserStoryParts extends React.Component {
             page: page,
             count: this.state.count
         }
-        axiosSetUp().get(buildQuery('/storyPart/getOfUser', queryData))
+        axiosSetUp().get(buildRequest('/storyPart/getOfUser', queryData))
             .then(response => {
                 this.setState({
                     StoryParts: response.data.storyParts || [],
@@ -66,7 +72,9 @@ class UserStoryParts extends React.Component {
 
     renderStoryPart = (storyPart) => {
         return <>
-            <Typography variant="caption" style={{ textAlign: "right", wordBreak: "break-all" }}>From: {storyPart.titleOfStory}</Typography><br />
+            <Typography variant="caption" style={{ textAlign: "right", wordBreak: "break-all" }}>
+                From: <this.StoryTitle onClick={() => history.push(`story${storyPart.storyId}`)}>{storyPart.titleOfStory}</this.StoryTitle> with <b style={{fontSize: "14px"}}>{storyPart.rating}</b> votes
+            </Typography><br />
             {tryRenderRichTextFromRawJSON(storyPart.body)}<hr />
         </>
     }

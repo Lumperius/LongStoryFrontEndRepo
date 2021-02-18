@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button'
 import { Table, TableRow, TableCell, TableHead, TableBody } from '@material-ui/core';
 import renderMessage from '../../message';
 import Wrapper from '../../objects';
-import buildQuery from '../../helpers';
+import buildRequest from '../../helpers';
 
 class Admin extends React.Component {
 
@@ -92,7 +92,7 @@ class Admin extends React.Component {
             page: page,
             count: this.state.pageSize
         }
-        axiosSetUp().get(buildQuery('/user/getPage', queryData))
+        axiosSetUp().get(buildRequest('/user/getPage', queryData))
             .then((response) => {
                 this.setState({
                     List: [],
@@ -117,7 +117,7 @@ class Admin extends React.Component {
         const queryData = {
             id: id
         }
-        axiosSetUp().delete(buildQuery('/user', queryData))
+        axiosSetUp().delete(buildRequest('/user', queryData))
             .then((response) => {
                 console.log(response.data);
                 this.sendRequestAndSetNewPage();
@@ -145,7 +145,7 @@ class Admin extends React.Component {
             userId: userId,
             isUnbanRequest: isUnbanRequest
         }
-        axiosSetUp().post(buildQuery('/user/ban'), body)
+        axiosSetUp().post(buildRequest('/user/ban'), body)
             .then(response => {
                 this.setState({
                     message: {

@@ -1,12 +1,7 @@
 import React from 'react'
-import styled from 'styled-components';
-import axiosSetUp from '../../../axiosConfig';
 import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../../message';
-import ReactHtmlParser from 'react-html-parser';
-import buildQuery, { tryRenderRichTextFromRawJSON } from '../../../helpers';
 import UserStoryParts from './Stories/UserStoryParts';
 import FavoriteStories from './Stories/FavoriteStories';
 import StoriesOfUser from './Stories/StoriesOfUser';

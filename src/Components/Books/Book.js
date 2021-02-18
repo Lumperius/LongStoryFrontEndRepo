@@ -4,9 +4,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../message';
 import axiosSetUp from '../../axiosConfig';
-import ReactHtmlParser from 'react-html-parser';
 import Wrapper from '../../objects';
-import buildQuery, { tryRenderRichTextFromRawJSON } from '../../helpers';
+import buildRequest, { tryRenderRichTextFromRawJSON } from '../../helpers';
 
 
 class Book extends React.Component {
@@ -28,9 +27,9 @@ class Book extends React.Component {
 
     sendGetBookByIdRequest = () => {
         const queryData = {
-            bookId: this.props.match.params.id
+            bookId: this.props.match.params.bookId
         }
-        axiosSetUp().get(buildQuery('/book/getById', queryData))
+        axiosSetUp().get(buildRequest('/book/getById', queryData))
             .then(response => {
                 this.setState({
                     book: response.data
@@ -50,10 +49,10 @@ class Book extends React.Component {
     render() {
         return (<Wrapper>
             {renderMessage(this.state.message.body, this.state.message.type)}
-            <Button variant="contained" color="primary" onClick={() => this.props.history.push(`/books/orderBook${this.props.match.params.id}`)}
+            <Button variant="contained" color="primary" onClick={() => this.props.history.push(`/books/orderBook${this.props.match.params.bookId}`)}
                 style={{ float: "right" }} size="large">Order this book</Button>
-            <Typography variant="h3">{this.state.book?.title}</Typography>
-            <Typography>{tryRenderRichTextFromRawJSON(this.state.book?.body)}</Typography><br/>
+            <Typography variant="h3">{this.state.book?.title || 'Unknown'}</Typography>
+            <Typography>{tryRenderRichTextFromRawJSON(this.state.book?.body) || 'Text loading is failed'}</Typography><br/>
         </Wrapper>)
     }
 }

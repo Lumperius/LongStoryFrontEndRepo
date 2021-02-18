@@ -9,10 +9,15 @@ import { withTheme } from '@material-ui/core/styles';
 import history from '../../history.js'
 import logo from './Logo.png'
 import ChatIcon from '@material-ui/icons/Chat';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import Tooltip from '@material-ui/core/Tooltip';
 import setDialog from '../../Actions/setDialog';
-import buildQuery from '../../helpers';
+import buildRequest from '../../helpers';
+import addUncheckedOrder from '../../Actions/addUncheckedOrder';
+import removeUncheckedOrder from '../../Actions/removeUncheckedOrder';
+import { loadStripe } from "@stripe/stripe-js";
 
+const STRIPE_KEY = "pk_test_51IFyntKGKkWeV1dSDPnoKRgzIynRZqV5mubF4AQ79ZwVqQL5heQbPnLLfjRhAfkDvpi82Yrq1KKEFOIwNAB2DoB700XJa7leJW"
 
 class AuthorizedNavBar extends React.Component {
 
@@ -92,6 +97,9 @@ class AuthorizedNavBar extends React.Component {
     cursor: pointer;
   }`;
 
+  stripePromise = loadStripe();
+ 
+
   componentDidMount() {
     if (!this.props.token)
       this.props.history.push('authentication');
@@ -100,11 +108,22 @@ class AuthorizedNavBar extends React.Component {
       this.sendGetAvatarRequest();
   }
 
+  sendCheckNotificationRequest = (sessionId) => {
+    debugger
+    const body = {
+        sessionId: sessionId
+    }
+    axiosSetUp().post(buildRequest('/order/setNotified'), body)
+    .then(response => {
+      console.log('Cachaka!')
+    });
+  }
+
   handleLogoClick = () => {
     history.push('/');
   }
 
-  handleIconClick = () => {
+  handleMessageIconClick = () => {
     if (this.props.dialog.UnreadMessages.some(x => x));
     const firstUnreadMessageUser = this.props.dialog.UnreadMessages[0];
     const dialog = {
@@ -114,6 +133,19 @@ class AuthorizedNavBar extends React.Component {
     this.props.setDialog(dialog)
   }
 
+  handleOrderIconClick = async () => {
+    if ( this.props.orders.some(x => x));
+    const firstUncheckedOrder = this.props.orders[0];
+    this.sendCheckNotificationRequest(firstUncheckedOrder);
+    this.props.removeUncheckedOrder(firstUncheckedOrder);
+    const stripePromise = loadStripe(STRIPE_KEY);
+    const stripe = await stripePromise;
+    stripe.redirectToCheckout({
+        sessionId: firstUncheckedOrder,
+    })
+}
+
+
   handleButtonClick = (path) => {
     history.push(path)
   }
@@ -122,7 +154,7 @@ class AuthorizedNavBar extends React.Component {
     const queryData = {
       userId: this.props.token.id
     }
-    axiosSetUp().get(buildQuery('/userInfo/getAvatar', queryData))
+    axiosSetUp().get(buildRequest('/userInfo/getAvatar', queryData))
       .then(response => {
         this.props.setAvatar(response.data)
       })
@@ -144,7 +176,7 @@ class AuthorizedNavBar extends React.Component {
     }
   }
 
-  renderUnreadNotification = () => {
+  renderUnreadMessageNotification = () => {
     if (this.props.dialog.UnreadMessages.some(x => x))
       return <Tooltip title={
         <div style={{ fontSize: "14px", fontWeight: "300" }}>
@@ -154,10 +186,26 @@ class AuthorizedNavBar extends React.Component {
         <ChatIcon
           style={{ color: "orange", float: "right", margin: "9px", marginRight: "20px" }}
           fontSize="large"
-          onClick={this.handleIconClick}
+          onClick={this.handleMessageIconClick}
         />
       </Tooltip>
   }
+
+  renderUncheckedOrderNotification = () => {
+    if (this.props.orders.some(x => x))
+      return <Tooltip title={
+        <div style={{ fontSize: "14px", fontWeight: "300" }}>
+          You have {this.props.orders.length} new orders awaiting payment.<br />
+       Click to see next or manage them in your office.
+       </div>}>
+        <ShoppingCartIcon
+          style={{ color: "lime", float: "right", margin: "9px", marginRight: "20px" }}
+          fontSize="large"
+          onClick={this.handleOrderIconClick}
+        />
+      </Tooltip>
+  }
+
 
   render() {
     return (
@@ -209,7 +257,8 @@ class AuthorizedNavBar extends React.Component {
           <this.Avatar src={`data:image/jpeg;base64,${this.props.avatar}`} width="50px" />
           <this.CurrentUser> Welcome {this.props.token.login}! </this.CurrentUser>
 
-          {this.renderUnreadNotification()}
+          {this.renderUnreadMessageNotification()}
+          {this.renderUncheckedOrderNotification()}
         </this.NavBarList>
       </nav>
     )
@@ -219,7 +268,9 @@ class AuthorizedNavBar extends React.Component {
 const mapDispatchToProps = dispatch => {
   return {
     setAvatar: avatar => dispatch(setAvatar(avatar)),
-    setDialog: dialog => dispatch(setDialog(dialog))
+    setDialog: dialog => dispatch(setDialog(dialog)),
+    addUncheckedOrder: order => dispatch(addUncheckedOrder(order)),
+    removeUncheckedOrder: order => dispatch(removeUncheckedOrder(order)),
   };
 };
 
@@ -227,7 +278,8 @@ const mapStateToProps = state => {
   return {
     dialog: state.dialog,
     avatar: state.avatar.avatar || null,
-    token: state.token.tokenObj
+    token: state.token.tokenObj,
+    orders: state.order.UncheckedOrders || []
   }
 }
 

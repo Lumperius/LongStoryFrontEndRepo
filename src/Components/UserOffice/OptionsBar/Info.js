@@ -9,7 +9,7 @@ import renderMessage from '../../../message';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { FormikTextField } from 'formik-material-fields';
-import buildQuery from '../../../helpers';
+import buildRequest from '../../../helpers';
 
 const MAX_LOGIN_LENGTH = 16;
 const MIN_LOGIN_LENGTH = 8;
@@ -37,10 +37,10 @@ class Info extends React.Component {
             .max(MAX_LOGIN_LENGTH, `This login is too long, ${MAX_LOGIN_LENGTH} symbols maximum`),
         firstName: Yup.string()
             .min(1, 'Name must contain 1 symbol at least')
-            .max(MAX_NAME_LENGTH, `Name can\'t be longer than ${MAX_NAME_LENGTH} symbols`),
+            .max(MAX_NAME_LENGTH, `Name can't be longer than ${MAX_NAME_LENGTH} symbols`),
         lastName: Yup.string()
             .min(1, 'Name must contain 1 symbol at least')
-            .max(MAX_NAME_LENGTH, `Name can\'t be longer than ${MAX_NAME_LENGTH} symbols`),
+            .max(MAX_NAME_LENGTH, `Name can't be longer than ${MAX_NAME_LENGTH} symbols`),
         birthday: Yup.date().transform((value, originalValue) => {
             value = originalValue.toISOString;
             return value;
@@ -98,7 +98,7 @@ class Info extends React.Component {
         const queryData = {
             userId: this.props.token.id
         }
-        axiosSetUp().post(buildQuery('/userInfo/setAvatar', queryData), formData, {
+        axiosSetUp().post(buildRequest('/userInfo/setAvatar', queryData), formData, {
             headers: {
                 'content-type': 'multipart/form-data',
             }
@@ -126,7 +126,7 @@ class Info extends React.Component {
         const queryData = {
             userId: this.props.token.id
         }
-        axiosSetUp().get(buildQuery('/userInfo/get', queryData))
+        axiosSetUp().get(buildRequest('/userInfo/get', queryData))
             .then(response => {
                 this.setState({
                     info: response.data,
@@ -159,7 +159,7 @@ class Info extends React.Component {
             lastName: values.lastName,
             birthDay: values.birthday
         }
-        axiosSetUp().post(buildQuery('/userInfo/setInfo'), body)
+        axiosSetUp().post(buildRequest('/userInfo/setInfo'), body)
             .then(response => {
                 let state = this.state;
                 if (values.login)
