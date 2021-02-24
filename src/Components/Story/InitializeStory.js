@@ -11,6 +11,7 @@ import { stateToHTML } from 'draft-js-export-html';
 import Wrapper from '../../objects';
 import buildRequest from '../../helpers';
 import { EditorState, convertToRaw } from 'draft-js';
+import toolbar from '../../toolBarConfig';
 
 
 const MAX_STORYPART_LENGTH = 1000;
@@ -176,6 +177,7 @@ class InitializeStory extends React.Component {
                 <Typography variant="subtitle2">{this.state.title.length}/{MAX_TITLE_LENGTH}</Typography><br />
                 <Editor
                     name="body"
+                    toolbar={toolbar}
                     placeholder="Type the beginning of story here"
                     onEditorStateChange={this.onEditorStateChange}
                     handleBeforeInput={this.handleBeforeInput}

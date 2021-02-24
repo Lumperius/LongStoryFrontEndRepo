@@ -151,7 +151,6 @@ class Books extends React.Component {
     }
 
     renderABook = (book, index) => {
-        debugger
         let authorLogin = this.state.Authors?.find(author => author.userId === book.authorId)?.userLogin || 'Undefined'
         return <div style={{ padding: "5px" }}>
             <this.StoryTitle onClick={() => this.props.history.push(`books/book${book.bookId}`)}>

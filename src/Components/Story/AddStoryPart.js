@@ -9,6 +9,7 @@ import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { stateToHTML } from 'draft-js-export-html';
 import buildRequest from '../../helpers';
+import toolbar from '../../toolBarConfig';
 import { EditorState, convertToRaw } from 'draft-js';
 
 
@@ -42,7 +43,7 @@ class AddStoryPart extends React.Component {
     color: red;
     font-size: 14px;
     `;
-   
+
 
     onEditorStateChange = (editorState) => {
         this.setState({
@@ -56,7 +57,6 @@ class AddStoryPart extends React.Component {
     }
 
     handlePastedText = (pastedText) => {
-        if (this.state.e)
         if (this.state.editorState.getCurrentContent().getPlainText().length + pastedText.length > MAX_STORYPART_LENGTH_PLAIN)
             return 'handled'
     }
@@ -76,7 +76,7 @@ class AddStoryPart extends React.Component {
         }
         const imgRegex = new RegExp('<img.+?>')
         const htmlText = stateToHTML(this.state.editorState.getCurrentContent())
-        if(imgRegex.test(htmlText)){
+        if (imgRegex.test(htmlText)) {
             this.setState({
                 message: {
                     body: 'Images are not allowed in story text.',
@@ -121,12 +121,15 @@ class AddStoryPart extends React.Component {
 
 
     render() {
+        let a = toolbar;
+        debugger
         return <>
             <Editor
                 name="body"
+                toolbar={toolbar}
                 onEditorStateChange={this.onEditorStateChange}
-                handlePastedText={this.handlePastedText} 
-                handleBeforeInput={this.handleBeforeInput}/>
+                handlePastedText={this.handlePastedText}
+                handleBeforeInput={this.handleBeforeInput} />
             <Typography variant="subtitle2">{this.state.editorState.getCurrentContent().getPlainText().length}/{MAX_STORYPART_LENGTH_PLAIN}</Typography>
             {renderMessage(this.state.message.body, this.state.message.type)}
             <Button variant="contained" color="primary" onClick={this.sendNewStoryPartRequest}>submit</Button>
