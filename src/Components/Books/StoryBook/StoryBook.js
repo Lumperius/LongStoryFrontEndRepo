@@ -2,13 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import renderMessage from '../../message';
-import axiosSetUp from '../../axiosConfig';
-import Wrapper from '../../objects';
-import buildRequest, { tryRenderRichTextFromRawJSON } from '../../helpers';
+import renderMessage from '../../../message';
+import axiosSetUp from '../../../axiosConfig';
+import Wrapper from '../../../objects';
+import buildRequest, { tryRenderRichTextFromRawJSON } from '../../../helpers';
 
 
-class Book extends React.Component {
+class StoryBook extends React.Component {
     constructor() {
         super()
         this.state = {
@@ -29,7 +29,7 @@ class Book extends React.Component {
         const queryData = {
             bookId: this.props.match.params.bookId
         }
-        axiosSetUp().get(buildRequest('/book/getById', queryData))
+        axiosSetUp().get(buildRequest('/storyBook/getById', queryData))
             .then(response => {
                 this.setState({
                     book: response.data
@@ -63,4 +63,4 @@ const mapStateToProps = function (state) {
     };
 }
 
-export default connect(mapStateToProps)(Book)
+export default connect(mapStateToProps)(StoryBook)

@@ -57,7 +57,7 @@ class Books extends React.Component {
         }
         if (!displayAll)
             queryData.userId = this.props.token.id
-        axiosSetUp().get(buildRequest('/book/getPageOfBooks', queryData))
+        axiosSetUp().get(buildRequest('/storyBook/getPageOfBooks', queryData))
             .then(response => {
                 this.setState({
                     BookList: response.data.books,

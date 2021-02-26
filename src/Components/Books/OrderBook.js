@@ -74,7 +74,6 @@ class OrderBook extends React.Component {
 
 
     sendOrderBookRequest = (values) => {
-        debugger
         let body = {
             bookId: this.props.match.params.bookId,
             userId: this.props.token.id,
@@ -85,7 +84,7 @@ class OrderBook extends React.Component {
         this.setState({
             orderState: 'sent'
         })
-        axiosSetUp().post(buildRequest('/book/createOrder'), body)
+        axiosSetUp().post(buildRequest('/storyBook/createOrder'), body)
             .then(response => {
                 this.setState({
                     message: {

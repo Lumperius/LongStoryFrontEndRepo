@@ -6,11 +6,10 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import renderMessage from '../../message';
 import { Editor } from "react-draft-wysiwyg";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { stateToHTML } from 'draft-js-export-html';
+import { EditorState, convertToRaw } from 'draft-js';
 import buildRequest from '../../helpers';
 import toolbar from '../../toolBarConfig';
-import { EditorState, convertToRaw } from 'draft-js';
 
 
 const MAX_STORYPART_LENGTH_PLAIN = 1000;
@@ -121,8 +120,6 @@ class AddStoryPart extends React.Component {
 
 
     render() {
-        let a = toolbar;
-        debugger
         return <>
             <Editor
                 name="body"

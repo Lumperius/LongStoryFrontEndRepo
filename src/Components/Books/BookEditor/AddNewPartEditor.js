@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import renderMessage from '../message';
-import Wrapper from '../objects';
+import renderMessage from '../../../message';
+import { Editor } from "react-draft-wysiwyg";
+import { stateToHTML } from 'draft-js-export-html';
+import { EditorState, convertToRaw } from 'draft-js';
 
-
-class Template extends React.Component {
+class AddNewPartEditor extends React.Component {
     constructor() {
         super()
         this.state = {
@@ -22,10 +23,10 @@ class Template extends React.Component {
 
 
     render() {
-        return (<Wrapper>
+        return (<Editor>
             {renderMessage(this.state.message.body, this.state.message.type)}
             Template
-        </Wrapper>)
+        </Editor>)
     }
 }
 
@@ -35,4 +36,4 @@ const mapStateToProps = state => {
     };
 }
 
-export default connect(mapStateToProps)(Template)
+export default connect(mapStateToProps)(AddNewPartEditor)

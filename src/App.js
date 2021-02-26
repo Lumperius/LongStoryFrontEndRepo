@@ -18,12 +18,13 @@ import 'typeface-roboto'
 import { withTheme } from '@material-ui/core/styles';
 import ChatHub from './Components/ChatHub/ChatHub';
 import PrivateDialog from './Components/PrivateChat/PrivateDialog';
-import BookCompose from './Components/Books/BookCompose';
+import BookCompose from './Components/Books/StoryBook/StoryBookCompose';
 import BookPage from './Components/Books/BookPage';
-import Book from './Components/Books/Book';
+import StoryBook from './Components/Books/StoryBook/StoryBook';
 import OrderBook from './Components/Books/OrderBook';
 import SuccessOrder from './Components/Books/SuccessOrder';
 import OrderWebSocketConnection from './Components/OrderWebSocketConnection/OrderWebSocketConnection';
+import BookRedactor from './Components/Books/BookEditor/BookRedactor';
 
 
 class App extends React.Component {
@@ -58,9 +59,10 @@ class App extends React.Component {
           <Route exact path="/admin" component={Admin} />
           <Route exact path="/authentication" component={Authentication} />
           <Route exact path="/books" component={BookPage} />
-          <Route exact path="/books/book:bookId" component={Book} />
+          <Route exact path="/books/book:bookId" component={StoryBook} />
           <Route exact path="/books/composeBook" component={BookCompose} />
           <Route exact path="/books/orderBook:bookId" component={OrderBook} />
+          <Route exact path="/books/redactor" component={BookRedactor} />
           <Route exact path="/books/success" component={SuccessOrder} />
           <Route exact path="/chat" component={ChatHub} />
           <Route exact path="/logout" component={Logout} />
