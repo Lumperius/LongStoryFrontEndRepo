@@ -10,6 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
 import AddNewPartEditor from './AddNewPartEditor';
+import RedactPartEditor from './RedactPartEditor';
 
 class BookRedactor extends React.Component {
     constructor() {
@@ -25,21 +26,51 @@ class BookRedactor extends React.Component {
             },
             AuthorBookList: [],
             currentBookId: null,
-            showEditor: false
+            showEditor: false,
+            editingPartId: null
         }
     }
 
     TextPartBlock = styled.div`
-    background-color: red;
     padding: 15px;
     &:hover {
-        background-color: green;
+        background-color: AliceBlue;
     }
     `;
 
 
     componentDidMount() {
         this.sendGetBooksForAuthorRequest();
+    }
+
+    sendCreateBookRequest = () => {
+        const title = 'bla bla for now'
+        const body = {
+            authorId: this.props.token.id,
+            title: title
+        }
+        axiosSetUp().post(buildRequest('/book'), body)
+            .then(response => {
+                let state = this.state;
+                state.message = {
+                    body: 'Book successfully created',
+                    type: 'success'
+                };
+                const authorBook = {
+                    bookId: response.data.bookId,
+                    bookTitle: title
+                };
+                state.AuthorBookList.push(authorBook);
+                this.setState(state);
+            })
+            .catch(error => {
+                this.setState({
+                    message: {
+                        body: 'Error occured while creating the book, try again later.',
+                        type: 'error'
+                    }
+                })
+            })
     }
 
     sendGetBooksForAuthorRequest = () => {
@@ -49,9 +80,10 @@ class BookRedactor extends React.Component {
         axiosSetUp().get(buildRequest('/book/getForAuthor', queryData))
             .then(response => {
                 this.setState({
-                    AuthorBookList: response.data.authorBookList
+                    AuthorBookList: response.data.authorBookList,
+                    currentBookId: response.data.authorBookList[0].bookId
                 })
-                this.sendGetBookRequest(this.state.AuthorBookList[0].bookId)
+                this.sendGetBookRequest()
             })
             .catch(error => {
                 this.setState({
@@ -63,7 +95,7 @@ class BookRedactor extends React.Component {
             })
     }
 
-    sendGetBookRequest = (bookId) => {
+    sendGetBookRequest = (bookId = this.state.currentBookId) => {
         const queryData = {
             bookId: bookId,
             userId: this.props.token.id
@@ -72,8 +104,8 @@ class BookRedactor extends React.Component {
             .then(response => {
                 this.setState({
                     book: {
-                        title: response.data.title,
-                        Parts: response.data.textParts
+                        title: response.data.title || 'Undefined',
+                        Parts: response.data.textParts || []
                     }
                 })
             })
@@ -92,7 +124,7 @@ class BookRedactor extends React.Component {
             textPartId: textPartId,
             textPartBody: textPartBody
         }
-        axiosSetUp().put(buildRequest('\textPart'), body)
+        axiosSetUp().put(buildRequest('/textPart'), body)
             .catch(error => {
                 this.setState({
                     message: {
@@ -103,8 +135,52 @@ class BookRedactor extends React.Component {
             })
     }
 
+
+    handleTextPartClick = (textPart) => {
+        this.setState({
+            editingPartId: textPart.textPartId
+        });
+    }
+
+    handleMenuChange = (event) => {
+        this.setState({
+            currentBookId: event.target.value
+        })
+        this.sendGetBookRequest(event.target.value);
+    }
+
+    handleTextPartCreated = (textPart) => {
+        let state = this.state;
+        state.book.Parts.push(textPart)
+        this.setState(state)
+    }
+
+    handleTextPartEdited = (textPart) => {
+        let state = Object.assign({}, this.state);
+        state.editingPartId = null;
+        if(textPart) {
+            state.book.Parts.find(tp => tp.textPartId === textPart.textPartId)
+            .textPartBody = textPart.textPartBody;
+        }
+        this.setState(state);
+    }
+
+    handleCloseEditor = () => {
+        this.setState({
+            showEditor: false
+        })
+    }
+
+
     renderStartCreatingABookButton = () => {
-        return <Button style={{ float: "right" }} size="large" variant="contained" color="primary">Start new book</Button>
+        return <Button
+            style={{ float: "right" }}
+            size="large"
+            variant="contained"
+            color="primary"
+            onClick={() => this.sendCreateBookRequest()}>
+            Start new book
+        </Button>
     }
 
     renderBookSelector = () => {
@@ -114,13 +190,13 @@ class BookRedactor extends React.Component {
                     style={{ width: "300px" }}
                     labelId="select"
                     id="select"
-                    value={this.state.AuthorBookList[0]?.bookId}
-                    onChange={this.handleMenuChange}
-                >
+                    value={this.state.currentBookId}
+                    onChange={this.handleMenuChange}>
+
                     {this.state.AuthorBookList.map(book => {
                         return <MenuItem value={book.bookId}>
-                            <Typography style={{fontWeight: "400", fontSize: "20px"}}>{book.bookTitle}</Typography>
-                            </MenuItem>
+                            <Typography style={{ fontWeight: "400", fontSize: "20px" }}>{book.bookTitle}</Typography>
+                        </MenuItem>
                     })}
                 </Select><br />
             </>
@@ -129,24 +205,39 @@ class BookRedactor extends React.Component {
 
     renderBook = () => {
         return <>
-            <Typography variant="h3" style={{textAlign: "center"}}>{this.state.book.title}</Typography>
-            {this.state.book.Parts.map(textPart => {
+            <Typography variant="h4" style={{ textAlign: "center" }}>{this.state.book.title}</Typography>
+            {this.state.book?.Parts?.map(textPart => {
                 return this.renderTextPart(textPart)
-            })}
+            }) || <Typography>No text yet. Click "ADD MORE" button to add new text.</Typography>}
         </>
     }
 
     renderTextPart = (textPart) => {
-        return <this.TextPartBlock>
-            <Typography style={{fontSize: "50px"}}>{ tryRenderRichTextFromRawJSON(textPart.textPartBody)}</Typography>
-            <Typography style={{float: "right"}} variant="subtitle2">{ textPart.dateAdded}</Typography>
-        </this.TextPartBlock>
+        if (this.state.editingPartId === textPart.textPartId)
+            return <RedactPartEditor
+                textPart={textPart}
+                textPartEdited={textPart => this.handleTextPartEdited(textPart)}
+            />
+        else
+            return <this.TextPartBlock onClick={() => this.handleTextPartClick(textPart)}>
+                <Typography>{tryRenderRichTextFromRawJSON(textPart.textPartBody)}</Typography>
+                <Typography style={{ float: "right" }} variant="subtitle2">{textPart.dateAdded}</Typography>
+            </this.TextPartBlock>
     }
 
-    renderNewPartEditor = () => {
-        if(this.state.showEditor)
-        return <AddNewPartEditor/>
-        else return <Button onClick={() => this.setState({showEditor: true})}>
+    renderEditor = () => {
+        if (this.state.showEditor)
+            return <AddNewPartEditor
+                bookId={this.state.currentBookId}
+                textPart={this.state.editedPart}
+                textPartCreated={textPart => this.handleTextPartCreated(textPart)}
+                closeEditor={() => this.handleCloseEditor()}
+            />
+        else return <Button
+            onClick={() => this.setState({
+                showEditor: true,
+            })}
+            variant="outlined">
             Add more
             </Button>
     }
@@ -155,10 +246,11 @@ class BookRedactor extends React.Component {
     render() {
         return (<Wrapper>
             {this.renderStartCreatingABookButton()}
-            {this.renderBookSelector()}
-            {this.renderBook()}
             {renderMessage(this.state.message.body, this.state.message.type)}
-            {this.renderNewPartEditor()}
+            {this.renderBookSelector()}<br />
+            <a href="#editor"><Typography variant="caption" id="Comments">Go to editor</Typography></a>
+            {this.renderBook()}<br />
+            <span id="editor">{this.state.renderEditor || this.renderEditor()}</span>
         </Wrapper>)
     }
 }

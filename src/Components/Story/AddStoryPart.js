@@ -62,7 +62,7 @@ class AddStoryPart extends React.Component {
 
 
 
-    validateRequestParametrs = () => {
+    isRequestValid = () => {
         if (!this.state.editorState || this.state.editorState.getCurrentContent().getPlainText().length < MIN_STORYPART_LENGTH_PLAIN ||
             this.state.editorState.getCurrentContent().getPlainText().body >= MAX_STORYPART_LENGTH_PLAIN) {
             this.setState({
@@ -88,7 +88,7 @@ class AddStoryPart extends React.Component {
     }
 
     sendNewStoryPartRequest = () => {
-        if (!this.validateRequestParametrs()) return;
+        if (!this.isRequestValid()) return;
         const requestBody = {
             storyId: this.props.storyId,
             authorId: this.props.token.id,

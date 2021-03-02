@@ -242,6 +242,13 @@ class AuthorizedNavBar extends React.Component {
           </this.NavBarListElement>
 
           <this.NavBarListElement
+            onClick={() => this.handleButtonClick("/books/redactor")}>
+            <NavBarButton linkInfo={{
+              text: "Redactor"
+            }} />
+          </this.NavBarListElement>
+
+          <this.NavBarListElement
             onClick={() => this.handleButtonClick("/chat")}>
             <NavBarButton linkInfo={{
               text: "Chat room"

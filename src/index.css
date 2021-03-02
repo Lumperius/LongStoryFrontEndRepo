@@ -5,10 +5,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color:AliceBlue;
+  background-color:rgb(34, 44, 53);
   border: solid black;
   border-width: 1px;
-  border-radius: 5px;
 }
 
 code {
