@@ -4,16 +4,16 @@ import styled from 'styled-components';
 import renderMessage from '../../message';
 import * as signalR from "@microsoft/signalr";
 import connectToHub from '../../hubConnection';
-import setDialog from '../../Actions/setDialog';
-import setDialogHistory from '../../Actions/setDialogHistory';
+import setDialog from '../../Actions/DialogActions/setDialog';
+import setDialogHistory from '../../Actions/DialogActions/setDialogHistory';
 
 import CloseIcon from '@material-ui/icons/Close';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Popper from '@material-ui/core/Popper';
 import Input from '@material-ui/core/Input';
-import addUnreadMessage from '../../Actions/addUnreadMessage';
-import removeUnreadMessage from '../../Actions/removeUnreadMessage';
+import addUnreadMessage from '../../Actions/MessageActions/addUnreadMessage';
+import removeUnreadMessage from '../../Actions/MessageActions/removeUnreadMessage';
 import Wrapper, { backendDomain } from '../../objects';
 
 const MESSSAGE_MAX_LENGTH = 1000;

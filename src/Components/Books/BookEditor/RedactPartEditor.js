@@ -81,10 +81,9 @@ class RedactPartEditor extends React.Component {
         }
         axiosSetUp().delete(buildRequest('/textPart', queryData))
             .then(response => {
-                this.props.textPartEdited()
+                this.props.textPartDeleted(this.props.textPart)
             })
             .catch(error => {
-                debugger
                 this.setState({
                     message: {
                         body: 'Error occured while deleting text part, try again later.',
@@ -99,7 +98,7 @@ class RedactPartEditor extends React.Component {
         if (plainText.length === 0 || plainText.trim() === '') {
             this.setState({
                 message: {
-                    body: 'Text of the text part connot be empty.',
+                    body: 'Text is required.',
                     type: 'error'
                 }
             })

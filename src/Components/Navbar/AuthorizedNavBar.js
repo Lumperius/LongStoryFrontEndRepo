@@ -11,10 +11,10 @@ import logo from './Logo.png'
 import ChatIcon from '@material-ui/icons/Chat';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import Tooltip from '@material-ui/core/Tooltip';
-import setDialog from '../../Actions/setDialog';
+import setDialog from '../../Actions/DialogActions/setDialog';
 import buildRequest from '../../helpers';
-import addUncheckedOrder from '../../Actions/addUncheckedOrder';
-import removeUncheckedOrder from '../../Actions/removeUncheckedOrder';
+import addUncheckedOrder from '../../Actions/OrderActions/addUncheckedOrder';
+import removeUncheckedOrder from '../../Actions/OrderActions/removeUncheckedOrder';
 import { loadStripe } from "@stripe/stripe-js";
 
 const STRIPE_KEY = "pk_test_51IFyntKGKkWeV1dSDPnoKRgzIynRZqV5mubF4AQ79ZwVqQL5heQbPnLLfjRhAfkDvpi82Yrq1KKEFOIwNAB2DoB700XJa7leJW"
@@ -98,7 +98,7 @@ class AuthorizedNavBar extends React.Component {
   }`;
 
   stripePromise = loadStripe();
- 
+
 
   componentDidMount() {
     if (!this.props.token)
@@ -109,14 +109,13 @@ class AuthorizedNavBar extends React.Component {
   }
 
   sendCheckNotificationRequest = (sessionId) => {
-    debugger
     const body = {
-        sessionId: sessionId
+      sessionId: sessionId
     }
     axiosSetUp().post(buildRequest('/order/setNotified'), body)
-    .then(response => {
-      console.log('Cachaka!')
-    });
+      .then(response => {
+        console.log('Cachaka!')
+      });
   }
 
   handleLogoClick = () => {
@@ -134,16 +133,16 @@ class AuthorizedNavBar extends React.Component {
   }
 
   handleOrderIconClick = async () => {
-    if ( this.props.orders.some(x => x));
+    if (this.props.orders.some(x => x));
     const firstUncheckedOrder = this.props.orders[0];
     this.sendCheckNotificationRequest(firstUncheckedOrder);
     this.props.removeUncheckedOrder(firstUncheckedOrder);
     const stripePromise = loadStripe(STRIPE_KEY);
     const stripe = await stripePromise;
     stripe.redirectToCheckout({
-        sessionId: firstUncheckedOrder,
+      sessionId: firstUncheckedOrder,
     })
-}
+  }
 
 
   handleButtonClick = (path) => {
@@ -209,65 +208,63 @@ class AuthorizedNavBar extends React.Component {
 
   render() {
     return (
-      <nav>
-        <this.NavBarList style={{ backgroundColor: this.props.theme.palette.primary.main }}>
-          <this.NavBarListElement style={{ fontWeight: "600" }}>
-            <this.NavBarLogo
-              src={logo}
-              width="auto"
-              onClick={this.handleLogoClick}
-            />
-          </this.NavBarListElement>
+      <this.NavBarList style={{ backgroundColor: this.props.theme.palette.primary.main }}>
+        <this.NavBarListElement style={{ fontWeight: "600" }}>
+          <this.NavBarLogo
+            src={logo}
+            width="auto"
+            onClick={this.handleLogoClick}
+          />
+        </this.NavBarListElement>
 
-          <this.NavBarListElement
-            onClick={() => this.handleButtonClick("/office")}>
-            <NavBarButton linkInfo={{
-              text: "Your office",
-            }}
-            />
-          </this.NavBarListElement>
+        <this.NavBarListElement
+          onClick={() => this.handleButtonClick("/office")}>
+          <NavBarButton linkInfo={{
+            text: "Your office",
+          }}
+          />
+        </this.NavBarListElement>
 
-          <this.NavBarListElement
-            onClick={() => this.handleButtonClick("/initStory")}>
-            <NavBarButton linkInfo={{
-              text: "Start a story"
-            }} />
-          </this.NavBarListElement>
+        <this.NavBarListElement
+          onClick={() => this.handleButtonClick("/initStory")}>
+          <NavBarButton linkInfo={{
+            text: "Start a story"
+          }} />
+        </this.NavBarListElement>
 
-          <this.NavBarListElement
-            onClick={() => this.handleButtonClick("/books")}>
-            <NavBarButton linkInfo={{
-              text: "Books"
-            }} />
-          </this.NavBarListElement>
+        <this.NavBarListElement
+          onClick={() => this.handleButtonClick("/books")}>
+          <NavBarButton linkInfo={{
+            text: "Books"
+          }} />
+        </this.NavBarListElement>
 
-          <this.NavBarListElement
-            onClick={() => this.handleButtonClick("/books/redactor")}>
-            <NavBarButton linkInfo={{
-              text: "Redactor"
-            }} />
-          </this.NavBarListElement>
+        <this.NavBarListElement
+          onClick={() => this.handleButtonClick("/books/redactor")}>
+          <NavBarButton linkInfo={{
+            text: "Redactor"
+          }} />
+        </this.NavBarListElement>
 
-          <this.NavBarListElement
-            onClick={() => this.handleButtonClick("/chat")}>
-            <NavBarButton linkInfo={{
-              text: "Chat room"
-            }} />
-          </this.NavBarListElement>
+        <this.NavBarListElement
+          onClick={() => this.handleButtonClick("/chat")}>
+          <NavBarButton linkInfo={{
+            text: "Chat room"
+          }} />
+        </this.NavBarListElement>
 
-          {this.adminElement()}
+        {this.adminElement()}
 
-          <this.LogoutElement>
-            <Logout />
-          </this.LogoutElement>
+        <this.LogoutElement>
+          <Logout />
+        </this.LogoutElement>
 
-          <this.Avatar src={`data:image/jpeg;base64,${this.props.avatar}`} width="50px" />
-          <this.CurrentUser> Welcome {this.props.token.login}! </this.CurrentUser>
+        <this.Avatar src={`data:image/jpeg;base64,${this.props.avatar}`} width="50px" />
+        <this.CurrentUser> Welcome {this.props.token.login}! </this.CurrentUser>
 
-          {this.renderUnreadMessageNotification()}
-          {this.renderUncheckedOrderNotification()}
-        </this.NavBarList>
-      </nav>
+        {this.renderUnreadMessageNotification()}
+        {this.renderUncheckedOrderNotification()}
+      </this.NavBarList>
     )
   }
 }

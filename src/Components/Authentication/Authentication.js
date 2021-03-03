@@ -3,14 +3,14 @@ import styled from 'styled-components';
 import { connect } from 'react-redux';
 import axiosSetUp from '../../axiosConfig';
 import jwt_decode from 'jwt-decode';
-import setToken from '../../Actions/setToken';
+import setToken from '../../Actions/TokenActions/setToken';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { FormikTextField } from 'formik-material-fields';
 import setAvatar from '../../Actions/setAvatar';
 import renderMessage from '../../message';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
+import { FormikTextField } from 'formik-material-fields';
 import Wrapper from '../../objects';
 import buildRequest from '../../helpers';
 

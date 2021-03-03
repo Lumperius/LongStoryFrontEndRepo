@@ -9,7 +9,7 @@ import Admin from './Components/Admin/Admin';
 import Office from './Components/UserOffice/Office';
 import { connect } from 'react-redux';
 import getParsedToken from './Services/Service';
-import setToken from './Actions/setToken'
+import setToken from './Actions/TokenActions/setToken'
 import Logout from './Components/Logout/Logout';
 import InitializeStory from './Components/Story/InitializeStory';
 import Story from './Components/Story/Story';

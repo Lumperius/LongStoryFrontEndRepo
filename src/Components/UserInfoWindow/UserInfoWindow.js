@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import renderMessage from '../../message';
 import axiosSetUp from '../../axiosConfig';
-import setDialog from '../../Actions/setDialog'
+import setDialog from '../../Actions/DialogActions/setDialog'
 import Wrapper from '../../objects';
 import buildRequest from '../../helpers';
 

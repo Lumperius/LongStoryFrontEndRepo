@@ -81,6 +81,7 @@ class AddNewPartEditor extends React.Component {
             })
             return false;
         }
+        return true;
     }
 
 

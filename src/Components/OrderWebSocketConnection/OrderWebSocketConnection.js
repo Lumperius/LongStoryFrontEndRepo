@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import connectToHub from '../../hubConnection';
 import * as signalR from "@microsoft/signalr";
 import { backendDomain } from '../../objects';
-import addUncheckedOrder from '../../Actions/addUncheckedOrder';
-import addRangeUncheckedOrders from '../../Actions/addRangeUncheckedOrders';
+import addUncheckedOrder from '../../Actions/OrderActions/addUncheckedOrder';
+import addRangeUncheckedOrders from '../../Actions/OrderActions/addRangeUncheckedOrders';
 
 const CONNECTION_TIMEOUT = 10000;
 const SOCKET_URL = `${backendDomain}/order/socket`; 

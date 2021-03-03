@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import setToken from '../../Actions/setToken';
+import setToken from '../../Actions/TokenActions/setToken';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Dialog from '@material-ui/core/Dialog';
@@ -25,6 +25,7 @@ class Logout extends React.Component {
     }
 
     handleConfirm = () => {
+        debugger
         localStorage.removeItem('Token');
         this.props.setToken(null);
         history.push('/');

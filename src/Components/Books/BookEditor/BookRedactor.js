@@ -11,6 +11,11 @@ import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
 import AddNewPartEditor from './AddNewPartEditor';
 import RedactPartEditor from './RedactPartEditor';
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
+import { FormikTextField } from 'formik-material-fields';
+
+const MAX_TITLE_LENGTH = 100;
 
 class BookRedactor extends React.Component {
     constructor() {
@@ -26,10 +31,18 @@ class BookRedactor extends React.Component {
             },
             AuthorBookList: [],
             currentBookId: null,
+            editingPartId: null,
             showEditor: false,
-            editingPartId: null
+            isCreatingNewBook: false
         }
     }
+
+    NewBookSchema = Yup.object().shape({
+        title: Yup.string()
+            .required('Required')
+            .max(MAX_TITLE_LENGTH, 'Max title length is 100 symbols'),
+    })
+
 
     TextPartBlock = styled.div`
     padding: 15px;
@@ -43,11 +56,10 @@ class BookRedactor extends React.Component {
         this.sendGetBooksForAuthorRequest();
     }
 
-    sendCreateBookRequest = () => {
-        const title = 'bla bla for now'
+    sendCreateBookRequest = (values) => {
         const body = {
             authorId: this.props.token.id,
-            title: title
+            title: values.title
         }
         axiosSetUp().post(buildRequest('/book'), body)
             .then(response => {
@@ -58,9 +70,10 @@ class BookRedactor extends React.Component {
                 };
                 const authorBook = {
                     bookId: response.data.bookId,
-                    bookTitle: title
+                    bookTitle: values.title
                 };
                 state.AuthorBookList.push(authorBook);
+                this.sendGetBookRequest(response.data.bookId);
                 this.setState(state);
             })
             .catch(error => {
@@ -81,9 +94,10 @@ class BookRedactor extends React.Component {
             .then(response => {
                 this.setState({
                     AuthorBookList: response.data.authorBookList,
-                    currentBookId: response.data.authorBookList[0].bookId
+                    currentBookId: response.data.authorBookList[0]?.bookId || null
                 })
-                this.sendGetBookRequest()
+                if (response.data.authorBookList.length > 0)
+                    this.sendGetBookRequest()
             })
             .catch(error => {
                 this.setState({
@@ -106,7 +120,8 @@ class BookRedactor extends React.Component {
                     book: {
                         title: response.data.title || 'Undefined',
                         Parts: response.data.textParts || []
-                    }
+                    },
+                    currentBookId: bookId
                 })
             })
             .catch(error => {
@@ -150,7 +165,7 @@ class BookRedactor extends React.Component {
     }
 
     handleTextPartCreated = (textPart) => {
-        let state = this.state;
+        let state = Object.assign({}, this.state);
         state.book.Parts.push(textPart)
         this.setState(state)
     }
@@ -158,9 +173,9 @@ class BookRedactor extends React.Component {
     handleTextPartEdited = (textPart) => {
         let state = Object.assign({}, this.state);
         state.editingPartId = null;
-        if(textPart) {
+        if (textPart) {
             state.book.Parts.find(tp => tp.textPartId === textPart.textPartId)
-            .textPartBody = textPart.textPartBody;
+                .textPartBody = textPart.textPartBody;
         }
         this.setState(state);
     }
@@ -171,15 +186,45 @@ class BookRedactor extends React.Component {
         })
     }
 
+    handleTextPartDeleted = (textPart) => {
+        let state = Object.assign({}, this.state);
+        state.editingPartId = null;
+        state.book.Parts.splice(state.book.Parts.indexOf(p => p === textPart) - 1, 1)
+        this.setState(state);
+    }
 
-    renderStartCreatingABookButton = () => {
-        return <Button
-            style={{ float: "right" }}
-            size="large"
-            variant="contained"
-            color="primary"
-            onClick={() => this.sendCreateBookRequest()}>
-            Start new book
+
+    renderStartNewBookButton = () => {
+        if (this.state.isCreatingNewBook)
+            return <Formik
+                initialValues={{
+                    title: '',
+                }}
+                validationSchema={this.NewBookSchema}
+                onSubmit={values => this.sendCreateBookRequest(values)}
+            >
+                {({ errors, touched }) => (
+                    <Form>
+                        <Button
+                            style={{ float: "right" }}
+                            size="large"
+                            variant="contained"
+                            color="primary"
+                            type="submit">
+                            Create
+                        </Button>
+                        <FormikTextField label="Title of the book" name="title" type="text" style={{ width: "20%", float: "right", margin: "10px" }} />
+                    </Form>
+                )}
+            </Formik>
+        else
+            return <Button
+                style={{ float: "right" }}
+                size="large"
+                variant="contained"
+                color="primary"
+                onClick={() => this.setState({ isCreatingNewBook: true })}>
+                Create new book
         </Button>
     }
 
@@ -205,11 +250,15 @@ class BookRedactor extends React.Component {
 
     renderBook = () => {
         return <>
-            <Typography variant="h4" style={{ textAlign: "center" }}>{this.state.book.title}</Typography>
+            {this.renderTitle()}
             {this.state.book?.Parts?.map(textPart => {
                 return this.renderTextPart(textPart)
             }) || <Typography>No text yet. Click "ADD MORE" button to add new text.</Typography>}
         </>
+    }
+
+    renderTitle = () => {
+        return <Typography variant="h4" style={{ textAlign: "center" }} >{this.state.book?.title || null}</Typography>
     }
 
     renderTextPart = (textPart) => {
@@ -217,6 +266,7 @@ class BookRedactor extends React.Component {
             return <RedactPartEditor
                 textPart={textPart}
                 textPartEdited={textPart => this.handleTextPartEdited(textPart)}
+                textPartDeleted={textPart => this.handleTextPartDeleted(textPart)}
             />
         else
             return <this.TextPartBlock onClick={() => this.handleTextPartClick(textPart)}>
@@ -233,7 +283,7 @@ class BookRedactor extends React.Component {
                 textPartCreated={textPart => this.handleTextPartCreated(textPart)}
                 closeEditor={() => this.handleCloseEditor()}
             />
-        else return <Button
+        else if(this.state.currentBookId) return <Button
             onClick={() => this.setState({
                 showEditor: true,
             })}
@@ -245,7 +295,7 @@ class BookRedactor extends React.Component {
 
     render() {
         return (<Wrapper>
-            {this.renderStartCreatingABookButton()}
+            {this.renderStartNewBookButton()}
             {renderMessage(this.state.message.body, this.state.message.type)}
             {this.renderBookSelector()}<br />
             <a href="#editor"><Typography variant="caption" id="Comments">Go to editor</Typography></a>
