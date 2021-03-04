@@ -35,6 +35,8 @@ export default function dialogReducer(state = initialState, action) {
             if (typeof (index) === 'number' && index !== -1)
                 PrevUnreadMessages.splice(index, 1);
             return { ...state, UnreadMessages: PrevUnreadMessages }
+        case 'CLEAN_DIALOGS':
+            return initialState
         default:
             return state;
     }

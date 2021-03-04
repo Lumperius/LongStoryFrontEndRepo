@@ -134,22 +134,6 @@ class BookRedactor extends React.Component {
             })
     }
 
-    sendEditTextPartRequest = (textPartId, textPartBody) => {
-        const body = {
-            textPartId: textPartId,
-            textPartBody: textPartBody
-        }
-        axiosSetUp().put(buildRequest('/textPart'), body)
-            .catch(error => {
-                this.setState({
-                    message: {
-                        body: 'Error occured while saving changes, try again later.',
-                        type: 'error'
-                    }
-                })
-            })
-    }
-
 
     handleTextPartClick = (textPart) => {
         this.setState({

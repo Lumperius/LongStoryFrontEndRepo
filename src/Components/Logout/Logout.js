@@ -7,6 +7,10 @@ import Typography from '@material-ui/core/Typography';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import history from '../../history.js';
+import setAvatar from '../../Actions/setAvatar';
+import cleanUnreadMessages from '../../Actions/MessageActions/removeUnreadMessage';
+import cleanDialogs from '../../Actions/DialogActions/cleanDialogs';
+import cleanUncheckedOrders from '../../Actions/OrderActions/cleanUncheckedOrders';
 
 
 class Logout extends React.Component {
@@ -18,6 +22,13 @@ class Logout extends React.Component {
         }
     }
 
+    returnStorageToInitialState = () => {
+        this.props.setToken(null);
+        this.props.setAvatar(null);
+        this.props.cleanDialogs();
+        this.props.cleanUncheckedOrders();
+    }
+
     handleClick = () => {
         this.setState({
             open: true
@@ -25,9 +36,8 @@ class Logout extends React.Component {
     }
 
     handleConfirm = () => {
-        debugger
         localStorage.removeItem('Token');
-        this.props.setToken(null);
+        this.returnStorageToInitialState();
         history.push('/');
     }
 
@@ -74,6 +84,9 @@ class Logout extends React.Component {
 const mapDispatchToProps = dispatch => {
     return {
         setToken: token => dispatch(setToken(token)),
+        setAvatar: avatar => dispatch(setAvatar(avatar)),
+        cleanDialogs: () => dispatch(cleanDialogs()),
+        cleanUncheckedOrders: () => dispatch(cleanUncheckedOrders())
     };
 };
 

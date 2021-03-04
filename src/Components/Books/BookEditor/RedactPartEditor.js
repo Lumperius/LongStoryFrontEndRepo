@@ -10,6 +10,8 @@ import Button from '@material-ui/core/Button';
 import axiosSetUp from '../../../axiosConfig';
 import buildRequest from '../../../helpers';
 
+const NO_RIGHTS_MESSAGE = 'You do not have rights to edit this book.';
+
 class RedactPartEditor extends React.Component {
     constructor() {
         super()
@@ -66,12 +68,20 @@ class RedactPartEditor extends React.Component {
                 })
             })
             .catch(error => {
-                this.setState({
-                    message: {
-                        body: 'Error occured while editing text, try again later.',
-                        type: 'error'
-                    }
-                })
+                if (error.message = NO_RIGHTS_MESSAGE)
+                    this.setState({
+                        message: {
+                            body: NO_RIGHTS_MESSAGE,
+                            type: 'error'
+                        }
+                    })
+                else
+                    this.setState({
+                        message: {
+                            body: 'Error occured while deleting text part, try again later.',
+                            type: 'error'
+                        }
+                    })
             })
     }
 
@@ -84,12 +94,20 @@ class RedactPartEditor extends React.Component {
                 this.props.textPartDeleted(this.props.textPart)
             })
             .catch(error => {
-                this.setState({
-                    message: {
-                        body: 'Error occured while deleting text part, try again later.',
-                        type: 'error'
-                    }
-                })
+                if (error.message = NO_RIGHTS_MESSAGE)
+                    this.setState({
+                        message: {
+                            body: NO_RIGHTS_MESSAGE,
+                            type: 'error'
+                        }
+                    })
+                else
+                    this.setState({
+                        message: {
+                            body: 'Error occured while deleting text part, try again later.',
+                            type: 'error'
+                        }
+                    })
             })
     }
 
@@ -129,12 +147,12 @@ class RedactPartEditor extends React.Component {
     renderDeleteButton = () => {
         if (this.state.deleteAwaitingConfirm)
             return <>
-                <Typography variant="subtitle2" style={{display: "inline", margin: "10px"}}>Are you sure?</Typography>
-                <Button size="small" variant="contained" style={{margin: "5px"}} onClick={() => this.sendDeleteTextPartRequest()}>Yes</Button>
-                <Button size="small" variant="contained" style={{margin: "5px"}} onClick={() => this.setState({ deleteAwaitingConfirm: false })}>No</Button>
+                <Typography variant="subtitle2" style={{ display: "inline", margin: "10px" }}>Are you sure?</Typography>
+                <Button size="small" variant="contained" style={{ margin: "5px" }} onClick={() => this.sendDeleteTextPartRequest()}>Yes</Button>
+                <Button size="small" variant="contained" style={{ margin: "5px" }} onClick={() => this.setState({ deleteAwaitingConfirm: false })}>No</Button>
             </>
         else
-            return <Button variant="contained" style={{margin: "10px"}} onClick={() => this.setState({ deleteAwaitingConfirm: true })}>Delete</Button>
+            return <Button variant="contained" style={{ margin: "10px" }} onClick={() => this.setState({ deleteAwaitingConfirm: true })}>Delete</Button>
     }
 
 
@@ -148,8 +166,8 @@ class RedactPartEditor extends React.Component {
                     handlePastedText={() => { }}
                     editorState={this.state.editorState}
                 />
-                {renderMessage(this.state.message.body, this.state.message.type)}
             </div>
+            {renderMessage(this.state.message.body, this.state.message.type)}
             <Button variant="contained" color="primary" onClick={() => this.sendEditTextPartRequest()}>Edit</Button>
             {this.renderDeleteButton()}
         </>)

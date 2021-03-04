@@ -9,6 +9,7 @@ export default function orderReducer(state = initialState, action) {
             NewArray = [...state.UncheckedOrders];
             NewArray.push(action.payload)
             return { ...state, UncheckedOrders: NewArray }
+            
         case 'ADD_RANGE_UNCHECKED_ORDERS':
             NewArray = [...state.UncheckedOrders];
             return { ...state, UncheckedOrders: NewArray.concat(action.payload) }
@@ -20,6 +21,10 @@ export default function orderReducer(state = initialState, action) {
                     .indexOf(NewArray
                         .find(o => o === action.payload)), 1)
             return { ...state, UncheckedOrders: NewArray }
+
+        case 'CLEAN_UNCHECKED_ORDERS':
+            return initialState
+            
         default:
             return state
     }

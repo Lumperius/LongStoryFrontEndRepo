@@ -10,6 +10,8 @@ import Button from '@material-ui/core/Button';
 import axiosSetUp from '../../../axiosConfig';
 import buildRequest from '../../../helpers';
 
+const NO_RIGHTS_MESSAGE = 'You do not have rights to edit this book.';
+
 class AddNewPartEditor extends React.Component {
     constructor() {
         super()
@@ -51,12 +53,20 @@ class AddNewPartEditor extends React.Component {
                 })
             })
             .catch(error => {
-                this.setState({
-                    message: {
-                        body: 'Error occured while adding text part, try again later.',
-                        type: 'error'
-                    }
-                })
+                if (error.message = NO_RIGHTS_MESSAGE)
+                    this.setState({
+                        message: {
+                            body: NO_RIGHTS_MESSAGE,
+                            type: 'error'
+                        }
+                    })
+                else
+                    this.setState({
+                        message: {
+                            body: 'Error occured while deleting text part, try again later.',
+                            type: 'error'
+                        }
+                    })
             })
     }
 
