@@ -12,7 +12,6 @@ import Wrapper from '../../../objects.js';
 import buildRequest, { tryRenderRichTextFromRawJSON } from '../../../helpers';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import { RichUtils } from 'draft-js';
 
 const TITLE_MAX_LENGTH = 100;
 const DISPLAYED_BODY_MAX_LENGTH = 100;

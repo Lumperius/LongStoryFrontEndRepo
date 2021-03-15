@@ -8,7 +8,6 @@ import Dialog from '@material-ui/core/Dialog';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import history from '../../history.js';
 import setAvatar from '../../Actions/setAvatar';
-import cleanUnreadMessages from '../../Actions/MessageActions/removeUnreadMessage';
 import cleanDialogs from '../../Actions/DialogActions/cleanDialogs';
 import cleanUncheckedOrders from '../../Actions/OrderActions/cleanUncheckedOrders';
 
@@ -37,6 +36,7 @@ class Logout extends React.Component {
 
     handleConfirm = () => {
         localStorage.removeItem('Token');
+        localStorage.removeItem('RefreshToken');
         this.returnStorageToInitialState();
         history.push('/');
     }

@@ -11,7 +11,7 @@ import axiosSetUp from '../../axiosConfig';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import text from './ExampleOfText';
-import Wrapper, { backendDomain } from '../../objects';
+import Wrapper from '../../objects';
 import buildRequest from '../../helpers';
 
 class OrderBook extends React.Component {
@@ -74,6 +74,7 @@ class OrderBook extends React.Component {
 
 
     sendOrderBookRequest = (values) => {
+        debugger
         let body = {
             bookId: this.props.match.params.bookId,
             userId: this.props.token.id,

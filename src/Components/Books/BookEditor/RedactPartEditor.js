@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import renderMessage from '../../../message';
 import { Editor } from "react-draft-wysiwyg";
-import { stateToHTML } from 'draft-js-export-html';
 import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 import toolbar from '../../../toolBarConfig';
 import Typography from '@material-ui/core/Typography';
@@ -68,7 +67,7 @@ class RedactPartEditor extends React.Component {
                 })
             })
             .catch(error => {
-                if (error.message = NO_RIGHTS_MESSAGE)
+                if (error.message === NO_RIGHTS_MESSAGE)
                     this.setState({
                         message: {
                             body: NO_RIGHTS_MESSAGE,
@@ -94,7 +93,7 @@ class RedactPartEditor extends React.Component {
                 this.props.textPartDeleted(this.props.textPart)
             })
             .catch(error => {
-                if (error.message = NO_RIGHTS_MESSAGE)
+                if (error.message === NO_RIGHTS_MESSAGE)
                     this.setState({
                         message: {
                             body: NO_RIGHTS_MESSAGE,

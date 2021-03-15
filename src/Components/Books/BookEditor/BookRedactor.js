@@ -164,17 +164,17 @@ class BookRedactor extends React.Component {
         this.setState(state);
     }
 
+    handleTextPartDeleted = (textPart) => {
+        let state = Object.assign({}, this.state);
+        state.editingPartId = null;
+        state.book.Parts.splice(state.book.Parts.indexOf(p => p === textPart), 1)
+        this.setState(state);
+    }
+
     handleCloseEditor = () => {
         this.setState({
             showEditor: false
         })
-    }
-
-    handleTextPartDeleted = (textPart) => {
-        let state = Object.assign({}, this.state);
-        state.editingPartId = null;
-        state.book.Parts.splice(state.book.Parts.indexOf(p => p === textPart) - 1, 1)
-        this.setState(state);
     }
 
 

@@ -72,8 +72,9 @@ class Authentication extends React.Component {
         };
         axiosSetUp().post(buildRequest('/user/authenticate', null), body)
             .then(response => {
-                localStorage.setItem('Token', response.data);
-                this.props.setToken(jwt_decode(response.data));
+                localStorage.setItem('Token', response.data.token);
+                localStorage.setItem('RefreshToken', response.data.refreshToken)
+                this.props.setToken(jwt_decode(response.data.token));
                 this.sendGetAvatarRequest();
                 this.props.history.push('/');
             })
